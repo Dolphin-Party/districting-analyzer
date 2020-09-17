@@ -1,0 +1,126 @@
+.site-navigation{
+  height: auto;
+  width: 100%;
+  background: #DFDFDF;
+  display: flex;
+  color: $text-color;
+
+  .leftside-logos{
+    display: flex;
+    padding: 1% 0 1% 0;
+    margin-left: 1%;
+
+    .menu-logo {
+      width: 35%;
+      height: auto;
+      padding: 0% 2% 0% 0%;
+    }
+
+    .menu-title {
+      font-family: 'Abhaya Libre', serif;
+      font-size: 2.3vw;
+      font-weight: 400;
+      align-items: center;
+      padding: 1% 0 0 0;
+    }
+  }
+
+  ul{
+    height: 100%;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-inline-start: 0;
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+    width: 100%;
+    margin-right: 200px;
+
+  a{
+    text-decoration: none;
+    padding: 5px 50px 0 50px;
+    font-size: 1.4vw;
+    text-align: center;
+    color: $text-color;
+    font-family: 'Grandstander', cursive;
+
+    &:hover{
+      color: $text-link;
+    }
+  }
+  }
+
+  .ion-ios-menu{
+    font-size: 36px;
+    width: 65px;
+    align-items: center;
+    cursor: pointer;
+    visibility: hidden;
+    background-color: red;
+    display: block;
+  }
+}
+
+//Mobile Friendly - Needs Further Development
+@media screen and (max-width: 900px){
+  .site-navigation{
+    .leftside-logos{
+      display: block;
+
+      .menu-logo {
+        width: 70%;
+        margin-left: 13%;
+        justify-content: center;
+        padding: 2% 2% 0% 0%;
+        display: block;
+      }
+
+      .menu-title {
+        font-family: 'Abhaya Libre', serif;
+        font-size: 5vw;
+        font-weight: 400;
+        text-align: center;
+        display: block;
+      }
+    }
+
+    .menu-content-container{
+      width: 70%;
+      height: calc(100% - 65px);
+      background: blue;
+      position: absolute;
+      top: 10%;
+      left: -300px;
+      transition: 300ms ease left;
+      flex-direction: column-reverse;
+      text-align: center;
+
+      &.active {
+        left: -50px;
+      }
+
+      ul {
+        flex-direction: column;
+        margin-left: -21%;
+        align-items: baseline;
+      }
+
+      li{
+        margin: 5% 0% 5% 0%;
+        text-align: left;
+      }
+
+      a{
+        font-size: 4.5vw;
+        text-align: left;
+      }
+
+    }
+
+    .ion-ios-menu{
+      display: flex;
+      visibility: visible;
+      background: red;
+    }
+  }
+}

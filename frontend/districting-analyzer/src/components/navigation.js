@@ -22,7 +22,6 @@ const navLinks = [
 
 export default function Navigation({user}) {
   const [menuActive, setMenuActive] = useState(false)
-
     return (
     <nav className="site-navigation" role='navigation'>
       <div className="leftside-logos">

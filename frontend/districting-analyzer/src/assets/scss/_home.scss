@@ -1,0 +1,46 @@
+.leaflet-container {
+  height: 700px;
+  width: 1600px;
+  background-color: $background;
+  overflow:hidden;
+  display: flex;
+  float:left;
+}
+
+.map_information{
+  margin: 1% 1% 1% 1%;
+  padding: 0% 1% 1% 1%;
+  width: 20%;
+  height: 650px;
+  float: right;
+  background: $grey;
+  border-radius: 25px;
+}
+
+  .title{
+    font-size: 1.3vw;
+    font-weight: 400;
+    font-family: 'roboto', serif;
+    text-align: center;
+    margin-top: 2%;
+  }
+
+  .category{
+    font-size: 1vw;
+    font-weight: 400;
+    font-family: 'roboto', serif;
+    font-style: italic;
+    text-align: center;
+    margin-top: -5%;
+  }
+
+.map_filter{
+  margin: 1% 1% 1% 1%;
+  padding: 0% 1% 1% 1%;
+  width: 95%;
+  height: 130px;
+  display: flex;
+  justify-content: center;
+  background: $grey;
+  border-radius: 25px;
+}

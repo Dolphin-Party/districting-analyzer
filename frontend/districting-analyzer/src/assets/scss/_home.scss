@@ -19,28 +19,54 @@
 
   .title{
     font-size: 1.3vw;
-    font-weight: 400;
+    font-weight: 700;
     font-family: 'roboto', serif;
     text-align: center;
     margin-top: 2%;
+    color: $text-color
   }
 
   .category{
-    font-size: 1vw;
-    font-weight: 400;
+    font-size: 1.3vw;
+    font-weight: 500;
     font-family: 'roboto', serif;
-    font-style: italic;
-    text-align: center;
-    margin-top: -5%;
+    // font-style: italic;
+    text-align: left;
+    margin-top: 0%;
+    color: $text-color
   }
 
 .map_filter{
   // margin: 1% 1% 1% 1%;
   // padding: 0% 1% 1% 1%;
   width: 100%;
-  height: 100px;
+  height: 50px;
   display: flex;
-  justify-content: center;
+  // justify-content: center;
   background: $grey;
   // border-radius: 25px;
+
+  .button-space{
+    float: left;
+    margin: 1% 2% 0% 2%;
+  }
+
+  .button{
+    background-color: #b19cd9;
+    // width: 150px;
+    // height: 40px;
+    float: left;
+    margin: 1% 2% 0% 2%;
+    text-decoration: none;
+    border-color: transparent;
+    border-radius: 5px;
+    color: white;
+  }
+  .button:hover{
+    background-color: #ADD8E6;
+  }
+
+    .special-button{
+      background-color: $text-color;
+    }
 }

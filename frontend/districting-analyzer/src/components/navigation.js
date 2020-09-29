@@ -20,7 +20,7 @@ const navLinks = [
   }
 ]
 
-export default function Navigation({user}) {
+export default function Nav({user}) {
   const [menuActive, setMenuActive] = useState(false)
     return (
     <nav className="site-navigation" role='navigation'>

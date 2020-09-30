@@ -27,7 +27,7 @@
   }
 
   .category{
-    font-size: 1.3vw;
+    font-size: 1.2vw;
     font-weight: 500;
     font-family: 'roboto', serif;
     // font-style: italic;
@@ -52,7 +52,7 @@
   }
 
   .button{
-    background-color: #b19cd9;
+    background-color: #3B2B59;
     // width: 150px;
     // height: 40px;
     float: left;
@@ -66,7 +66,7 @@
     background-color: #ADD8E6;
   }
 
-    .special-button{
-      background-color: $text-color;
-    }
+  .special-button{
+    background-color: $text-color;
+  }
 }

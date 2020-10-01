@@ -13,8 +13,21 @@
   width: 22%;
   height: 550px;
   float: right;
+  align-content: center;
   // background: $grey;
   // border-radius: 25px; --> width: 18%
+
+  .slider-button{
+    margin: 5% 2% 2% 2%;
+    display: block;
+  }
+
+  .button{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
 }
 
   .title{
@@ -28,7 +41,7 @@
 
   .category{
     font-size: 1.2vw;
-    font-weight: 500;
+    font-weight: 700;
     font-family: 'roboto', serif;
     // font-style: italic;
     text-align: left;
@@ -69,4 +82,9 @@
   .special-button{
     background-color: $text-color;
   }
+}
+
+.data_section{
+  background: $grey;
+  height: 500px;
 }

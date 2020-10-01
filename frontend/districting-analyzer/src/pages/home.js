@@ -1,7 +1,13 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Map, TileLayer, GeoJSON } from 'react-leaflet'
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown'
+import RangeSlider from 'react-bootstrap-range-slider';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Slider from '@material-ui/core/Slider';
+import Input from '@material-ui/core/Input';
 // import statesData from '../assets/geojson/us-states'
 
 type State = {
@@ -10,17 +16,30 @@ type State = {
   zoom: number,
 }
 
+// function stateDetails (e){
+//   var layer = e.target;
+// }
+
 function onEachFeature (component, feature, layer) {
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlight.bind(null, component),
-    // click: zoomToFeature.bind(this)
+    click: zoomToFeature.bind(null, component)
   });
+
+  // console.log(layer.feature)
 }
 
 function highlightFeature (e) {
   var layer = e.target;
+  console.log(e.target.feature.properties)
+  const stateName= e.target.feature.properties.name + ' ' + e.target.feature.properties.density
+  const stateDensity=e.target.feature.properties.density
+  layer.bindPopup(stateName)
 
+
+  // var name = e.target.feature.properties.name
+  // $('#name').innerHTML = "Name: " + feature.properties.name;
   layer.setStyle({
     weight: 5,
     color: '#3B2B59',
@@ -28,6 +47,7 @@ function highlightFeature (e) {
     fillColor: 'white',
     fillOpacity: 0.2
   });
+  // info.update(layer.feature.properties);
 }
 
 function resetHighlight (component, e) {
@@ -40,26 +60,69 @@ function resetHighlight (component, e) {
     fillOpacity: 0.5,
     dashArray: '3'
   });
+
+  // info.update();
 }
 
-  function zoomToFeature(e) {
-    var layer = e.target;
-    map.fitBounds(layer.getBounds());
+  function zoomToFeature(component, e) {
+     // this.fitBounds(e.target.getBounds());
   }
+
+  function updateText(e){
+    var layer = e.target;
+    // name = e.target.feature.properties.name;
+    // console.log('clicked', name)
+    // return name;
+  }
+
+  const useStyles = makeStyles({
+  root: {
+    width: 250,
+  },
+  input: {
+    width: 42,
+  },
+});
 
 export default class Home extends Component<{}, State> {
-
-  state = {
-    lat: 37.090240,
-    lng: -95.712891,
-    zoom: 5,
+  constructor(props) {
+    super(props);
+    this.state = {
+      lat: 37.090240,
+      lng: -95.712891,
+      zoom: 5,
+      name: null
+    };
   }
-
-
 
   render() {
     const position = [this.state.lat, this.state.lng]
+    const stateName = [this.state.name]
     const mapboxAccessToken = 'pk.eyJ1IjoiZG9scGhpbi1wYXJ0eSIsImEiOiJja2ZwcmpoemwwbW8zMnJuNTVha2I3aHV0In0.Y1agteWswtHBaLViI2UWig';
+    const useStyles = makeStyles({
+      root: {
+        width: 250,
+      },
+      input: {
+        width: 42,
+      },
+    });
+    const [value, setValue] = [30,30]
+    const handleSliderChange = (event, newValue) => {
+      setValue(newValue);
+    };
+    const handleInputChange = (event) => {
+      setValue(event.target.value === '' ? '' : Number(event.target.value));
+    };
+    const handleBlur = () => {
+    if (value < 0) {
+      setValue(0);
+    } else if (value > 100) {
+      setValue(100);
+    }
+  };
+
+
     return (
       <div>
         <div className="map_filter">
@@ -90,7 +153,7 @@ export default class Home extends Component<{}, State> {
         </Dropdown>
         <Dropdown className="button-space" >
           <Dropdown.Toggle variant="button" className="button" id="dropdown-basic">
-            Main-In Voting?
+            Mail-In Voting?
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item href="#/action-1">Precincts That Allow</Dropdown.Item>
@@ -110,19 +173,39 @@ export default class Home extends Component<{}, State> {
 
 
         <div className='map_information'>
-          <p className='title'>Information & Data</p>
-          <p className='category'> State Name: </p>
-          <p className='category'> Population Number: </p>
-          <p className='category'> Amount of Districts:</p>
-          <p className='category'> Red/Blue/Swing State: </p>
-          <p className='category'> -----------------------------------------------------------</p>
-          <p className='category'> Selected (District/Precinct) </p>
-          <p className='category'> District Population </p>
+          <p className='title'>Generating Districtings</p>
+            <Button variant="slider-button" className="slider-button"># of Districtings
+            <RangeSlider
+                value={value}
+              />
+            </Button>{' '}
+            <Button variant="slider-button" className="slider-button">% of Compactness
+            <RangeSlider
+                value={value}
+              />
+            </Button>{' '}
+            <Button variant="slider-button" className="slider-button"># of Random Districting Plans
+            <RangeSlider
+                value={value}
+              />
+            </Button>{' '}
+            <Button variant="slider-button" className="slider-button">% of BVAP
+            <RangeSlider
+                value={value}
+              />
+            </Button>{' '}
+          <Button variant="slider-button" className="slider-button">Generate Randomized Districting Comparison
+          <RangeSlider
+              value={value}
+            />
+          </Button>{' '}
+          <Button variant="button" className="button">Generate Districting Comparisons</Button>{' '}
+
         </div>
 
 
         <div className='leaflet-container'>
-          <Map center={position} zoom={this.state.zoom} animate={true}>
+          <Map center={position} zoom={this.state.zoom} ref={this.mapRef}>
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
@@ -137,8 +220,13 @@ export default class Home extends Component<{}, State> {
             fillOpacity: 0.5,
             dashArray: '3',
             })}
+            state={() => ({
+              name: 'blorp'
+            })}
             onEachFeature={onEachFeature.bind(null, this)}
+            onClick={updateText}
             ></GeoJSON>
+          <p className='state-info'> State Name: {this.state.myText}</p>
           </Map>
         </div>
 
@@ -155,8 +243,12 @@ export default class Home extends Component<{}, State> {
           </Dropdown>
           <Button variant="primary" className="button">Precinct Comparison</Button>{' '}
           <Button variant="primary" className="button">State Comparison</Button>{' '}
-          <Button variant="primary" className="button">Generate Randomized Districting Comparison</Button>{' '}
           <Button variant="primary" className="button">Export Graphs & Data</Button>{' '}
+        </div>
+
+
+        <div className='data_section'>
+
         </div>
       </div>
     )

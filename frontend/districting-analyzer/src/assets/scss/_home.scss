@@ -12,7 +12,7 @@
   width: 20%;
   height: 40%;
   // top: 60%;
-  margin: 1% 1% 0% 0%;
+  margin: 1% 1% 1% 1%;
   padding: 1% 1% 1% 1%;
   left: 80%;
   position:relative;
@@ -20,8 +20,23 @@
   color: white;
   font-family: 'roboto', serif;
   border-radius: 10px;
-
   z-index:1000;
+}
+
+.reset-button{
+  width: 10%;
+  height: 5%;
+  left: -20%;
+  top: 90%;
+  position:relative;
+  padding: 0.2%;
+  z-index: 1000;
+  font-size: 1vw;
+  text-align: center;
+  color: white;
+  border-radius: 10px;
+  background-color: #3B2B59;
+  cursor: pointer;
 }
 
 .seawulf-client-control{

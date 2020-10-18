@@ -5,6 +5,23 @@
   overflow:hidden;
   display: flex;
   float:left;
+  z-index:2;
+}
+
+.map-information{
+  width: 20%;
+  height: 40%;
+  // top: 60%;
+  margin: 1% 1% 0% 0%;
+  padding: 1% 1% 1% 1%;
+  left: 80%;
+  position:relative;
+  background-color: #3B2B59;
+  color: white;
+  font-family: 'roboto', serif;
+  border-radius: 10px;
+
+  z-index:1000;
 }
 
 .seawulf-client-control{
@@ -16,6 +33,7 @@
   align-content: center;
   // background: $grey;
   // border-radius: 25px; --> width: 18%
+
 
   .slider-button{
     margin: 5% 2% 2% 2%;

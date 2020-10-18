@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Map, TileLayer, GeoJSON } from 'react-leaflet'
+import { Map, TileLayer, GeoJSON, LayersControl} from 'react-leaflet'
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown'
 import RangeSlider from 'react-bootstrap-range-slider';
@@ -20,69 +20,52 @@ type State = {
 //   var layer = e.target;
 // }
 
-function onEachFeature (component, feature, layer) {
-  layer.on({
-    mouseover: highlightFeature,
-    mouseout: resetHighlight.bind(null, component),
-    click: zoomToFeature.bind(null, component)
-  });
+// function onEachFeature (component, feature, layer) {
+//   layer.on({
+//     mouseover: highlightFeature,
+//     mouseout: resetHighlight.bind(null, component),
+//     click: zoomToFeature.bind(null, component)
+//   });
+//
+//   // console.log(layer.feature)
+// }
 
-  // console.log(layer.feature)
-}
+// function highlightFeature (e) {
+//   var layer = e.target;
+//   const stateName= e.target.feature.properties.name
+//   const stateDensity=e.target.feature.properties.density
+//   this.setState({myText: "New title" });
+//   layer.bindPopup(stateName)
+//
+//   layer.setStyle({
+//     weight: 5,
+//     color: '#3B2B59',
+//     dashArray: '',
+//     fillColor: 'white',
+//     fillOpacity: 0.2
+//   });
+//   // info.update(layer.feature.properties);
+// }
 
-function highlightFeature (e) {
-  var layer = e.target;
-  console.log(e.target.feature.properties)
-  const stateName= e.target.feature.properties.name + ' ' + e.target.feature.properties.density
-  const stateDensity=e.target.feature.properties.density
-  layer.bindPopup(stateName)
 
-
-  // var name = e.target.feature.properties.name
-  // $('#name').innerHTML = "Name: " + feature.properties.name;
-  layer.setStyle({
-    weight: 5,
-    color: '#3B2B59',
-    dashArray: '',
-    fillColor: 'white',
-    fillOpacity: 0.2
-  });
-  // info.update(layer.feature.properties);
-}
-
-function resetHighlight (component, e) {
-  var layer = e.target;
-
-  layer.setStyle({
-    color: '#3B2B59',
-    weight: 2,
-    fillColor: "#3B2B59",
-    fillOpacity: 0.5,
-    dashArray: '3'
-  });
 
   // info.update();
-}
+// }
 
-  function zoomToFeature(component, e) {
-     // this.fitBounds(e.target.getBounds());
-  }
+// function zoomToFeature(component, e) {
+//      // this.fitBounds(e.target.getBounds());
+//   }
 
-  function updateText(e){
-    var layer = e.target;
-    // name = e.target.feature.properties.name;
-    // console.log('clicked', name)
-    // return name;
-  }
 
-  const useStyles = makeStyles({
-  root: {
-    width: 250,
-  },
-  input: {
-    width: 42,
-  },
-});
+
+//   const useStyles = makeStyles({
+//   root: {
+//     width: 250,
+//   },
+//   input: {
+//     width: 42,
+//   },
+// });
 
 export default class LeafletMap extends Component<{}, State> {
   constructor(props) {
@@ -91,9 +74,52 @@ export default class LeafletMap extends Component<{}, State> {
       lat: 37.090240,
       lng: -95.712891,
       zoom: 5,
-      name: null
+      name: null,
+      stateName: " ",
+      stateDensity: " ",
     };
   }
+
+  onEachFeature = (component, feature, layer) => {
+    layer.on({
+      mouseover: this.highlightFeature,
+      mouseout: this.resetHighlight.bind(null, component),
+      click: this.zoomToFeature.bind(null, component)
+    });
+  }
+
+  highlightFeature = (e) => {
+    var layer = e.target;
+    const stateName= e.target.feature.properties.name
+    const stateDensity=e.target.feature.properties.density
+    this.setState({stateName: stateName, stateDensity: stateDensity});
+
+    // layer.bindPopup(stateName)
+
+    layer.setStyle({
+      weight: 5,
+      color: '#3B2B59',
+      dashArray: '',
+      fillColor: 'white',
+      fillOpacity: 0.2
+    });
+  }
+
+  resetHighlight = (component, e) => {
+    var layer = e.target;
+
+    layer.setStyle({
+      color: '#3B2B59',
+      weight: 2,
+      fillColor: "#3B2B59",
+      fillOpacity: 0.5,
+      dashArray: '3'
+    });
+  }
+
+  zoomToFeature = (component, e) => {
+    }
+
 
   render() {
     const position = [this.state.lat, this.state.lng]
@@ -111,11 +137,16 @@ export default class LeafletMap extends Component<{}, State> {
     return (
       <div className='leaflet-container'>
         <Map center={position} zoom={this.state.zoom} ref={this.mapRef}>
-          <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
-            id='mapbox/light-v9'
-          ></TileLayer>
+
+          <div className='map-information'>
+            <p className='state-info'> State Name: {this.state.stateName}</p>
+            <p className='state-info'> State Density: {this.state.stateDensity}</p>
+          </div>
+        <TileLayer
+          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
+          id='mapbox/light-v9'
+        ></TileLayer>
         <GeoJSON
           data={getGeoJson()}
           style={() => ({
@@ -128,10 +159,8 @@ export default class LeafletMap extends Component<{}, State> {
           state={() => ({
             name: 'blorp'
           })}
-          onEachFeature={onEachFeature.bind(null, this)}
-          onClick={updateText}
+          onEachFeature={this.onEachFeature.bind(null, this)}
           ></GeoJSON>
-        <p className='state-info'> State Name: {this.state.myText}</p>
         </Map>
       </div>
     )

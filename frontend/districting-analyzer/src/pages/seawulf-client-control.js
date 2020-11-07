@@ -9,6 +9,10 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 
+import Tabs from "../components/job_tabs";
+import RequestJobTab from "../components/job_tabs/request_job"
+import JobHistoryTab from "../components/job_tabs/job_history"
+
 
 export default class SeawulfClientControl extends Component<{}, State> {
   render() {
@@ -32,34 +36,14 @@ export default class SeawulfClientControl extends Component<{}, State> {
     return (
       <div>
       <div className='seawulf-client-control'>
-        <p className='title'>Generating Districtings</p>
-          <Button variant="slider-button" className="slider-button"># of Districtings
-          <RangeSlider
-              value={value}
-            />
-          </Button>{' '}
-          <Button variant="slider-button" className="slider-button">% of Compactness
-          <RangeSlider
-              value={value}
-            />
-          </Button>{' '}
-          <Button variant="slider-button" className="slider-button"># of Random Districting Plans
-          <RangeSlider
-              value={value}
-            />
-          </Button>{' '}
-          <Button variant="slider-button" className="slider-button">% of BVAP
-          <RangeSlider
-              value={value}
-            />
-          </Button>{' '}
-        <Button variant="slider-button" className="slider-button">Generate Randomized Districting Comparison
-        <RangeSlider
-            value={value}
-          />
-        </Button>{' '}
-        <Button variant="button" className="button">Generate Districting Comparisons</Button>{' '}
-
+        <Tabs>
+          <div label="Request Job">
+            <RequestJobTab></RequestJobTab>
+          </div>
+          <div label="Job History">
+            <JobHistoryTab></JobHistoryTab>
+          </div>
+        </Tabs>
       </div>
         </div>
       )

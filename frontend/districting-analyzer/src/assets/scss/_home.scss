@@ -39,6 +39,38 @@
   cursor: pointer;
 }
 
+.tab-list {  border-bottom: 1px solid #ccc;
+  padding-left: 0;
+}
+
+.tab-list-item {
+  display: inline-block;
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0.5rem 0.75rem;
+}
+
+.tab-list-active {
+  background-color: white;
+  border: solid #ccc;
+  border-width: 1px 1px 0 1px;
+}
+
+.jobs-list{
+  overflow-y: scroll;
+  height: 540px;
+}
+
+.job-info{
+  // padding: 2% 2% 2% 2%;
+  border: solid #3B2B59;
+  border-radius: 5px;
+  line-height: 1;
+  overflow: auto;
+  // width: auto;
+  margin-bottom:5%;
+}
+
 .seawulf-client-control{
   // margin: 1% 1% 1% 1%;
   // padding: 0% 1% 1% 1%;
@@ -48,6 +80,7 @@
   align-content: center;
   // background: $grey;
   // border-radius: 25px; --> width: 18%
+
 
 
   .slider-button{

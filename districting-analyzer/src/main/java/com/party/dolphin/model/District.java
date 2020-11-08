@@ -1,6 +1,7 @@
 package com.party.dolphin.model;
 
 import com.party.dolphin.dto.*;
+import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.List;
 
@@ -8,7 +9,7 @@ import javax.persistence.Id;
 
 public class District {
     /* Fields */
-    private @Id String districtId;
+    private @Id String districtId; // TODO: uuid, any uuid types?
     private List<Precinct> precincts;
     private int numberCounties;
     private DemographicType targetDemographic;

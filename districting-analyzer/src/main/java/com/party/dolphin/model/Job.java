@@ -1,6 +1,7 @@
 package com.party.dolphin.model;
 
 import com.party.dolphin.dto.*;
+import com.party.dolphin.model.enums.*;
 
 import java.util.List;
 
@@ -8,11 +9,12 @@ import javax.persistence.Id;
 
 public class Job {
     /* Fields */
-    private @Id String jobId;
+    private @Id String jobId; // TODO: uuid, any uuid types?
     private JobStatus status;
     private State state;
     private int numberDistrictings;
-    private String compactnessAmoung; // TODO
+    private String compactnessAmount; // TODO: enum, int, or String?
+    private DemographicType targetDemographic;
     private boolean isSeawulf;
     private List<Districting> districtings;
     private List<List<Double>> boxWhiskerData;
@@ -36,8 +38,12 @@ public class Job {
         return this.numberDistrictings;
     }
 
-    public String getCompactnessAmoung() {
-        return this.compactnessAmoung;
+    public String getCompactnessAmount() {
+        return this.compactnessAmount;
+    }
+
+    public DemographicType getTargetDemographic() {
+        return this.targetDemographic;
     }
 
     public boolean getIsSeawulf() {
@@ -77,8 +83,8 @@ public class Job {
     public void setNumberDistrictings(int numberDistrictings) {
         this.numberDistrictings = numberDistrictings;
     }
-    public void setCompactnessAmoung(String compactnessAmoung) {
-        this.compactnessAmoung = compactnessAmoung;
+    public void setCompactnessAmount(String compactnessAmount) {
+        this.compactnessAmount = compactnessAmount;
     }
     public void setIsSeawulf(boolean isSeawulf) {
         this.isSeawulf = isSeawulf;

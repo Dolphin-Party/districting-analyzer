@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.Id;
 
+@Entity
 public class State {
     private @Id int stateId;
     private String name;

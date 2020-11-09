@@ -1,49 +1,72 @@
-package com.party.dolphin.controller;
+packagepping("/districting/{districtingId}")
+com.party.dolphin.controller;
 
 @Controller
-@RequestMapping(value = "/backend")
+@RequestMapping("/backend")
 public class BackendController {
     private DatabaseService dbService;
 
     public BackendController(DatabaseService dbService) {
         this.dbService = dbService;
     }
-ls
-    public StateRender getState(int stateId) {
+
+    @GetMapping("/state/{stateId}")
+    public StateRender getState(@PathVariable int stateId) {
         return dbService.findStateById(stateId);
     }
-    public StateRender getStateByName(String stateName) {
+
+    @GetMapping("/state/{stateName}")
+    public StateRender getStateByName(@PathVariable String stateName) {
         return dbService.findStateByName(stateName);
     }
-    public StateInfo getStateInfoByName(String stateName) {
+
+    @GetMapping("/state/{stateName}/info")
+    public StateInfo getStateInfoByName(@PathVariable String stateName) {
         return dbService.findStateByName(stateName);
-    }
-    public CountyRender getCounty(int countyId) {
+    }g
+
+    @GetMapping("/county/{countyId}")
+    public CountyRender getCounty(@PathVariable int countyId) {
         return dbService.findCountyById(countyId);
     }
-    public PrecinctRender getPrecinct(int precinctId) {
+
+    @GetMapping("/precinct/{precinctId}")
+    public PrecinctRender getPrecinct(@PathVariable int precinctId) {
         return dbService.findPrecinctById(precinctId);
     }
-    public List<CountyRender> getStateCounties(int stateId) {
+
+    @GetMapping("/state/{stateId}/counties")
+    public List<CountyRender> getStateCounties(@PathVariable int stateId) {
         return dbService.findAllCounties(stateId);
     }
-    public List<PrecinctRender> getStatePrecincts(int stateId) {
+
+    @GetMapping("/state/{stateId}/precincts")
+    public List<PrecinctRender> getStatePrecincts(@PathVariable int stateId) {
         return dbService.findAllStatePrecincts(countyId);
     }
-    public List<PrecinctRender> getCountyPrecincts(int countyId) {
+
+    @GetMapping("/county/{countyId}/precincts")
+    public List<PrecinctRender> getCountyPrecincts(@PathVariable int countyId) {
         return dbService.findAllCountyPrecincts(countyId);
     }
-    public JobRender getJob(int jobId) {
+
+    @GetMapping("/job/{jobId}")
+    public JobRender getJob(@PathVariable int jobId) {
         return dbService.findJobById(jobId);
     }
-    public DistrictingRender getDistricting(int districtingId) {
+
+    @GetMapping("/districting/{districtingId}")
+    public DistrictingRender getDistricting(@PathVariable int districtingId) {
         return dbService.findDistrictingById(districtingId);
     }
-    public DistrictRender getDistrict(int districtId) {
+
+    @GetMapping("/district/{districtId}")
+    public DistrictRender getDistrict(@PathVariable int districtId) {
         return dbService.findDistrictById(districtId);
     }
-    public List<DistrictRender> getAllDistricts(int districtingId)
-    {
+
+    @GetMapping("/districting/{districtingId}/districts")
+    public List<DistrictRender> getAllDistricts(@PathVariable int districtingId) {
         return dbService.findAllDistricts(districtingId);
     }
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Id;
 
+@Entity
 public class State {
     /* Fields */
     private @Id int stateId;

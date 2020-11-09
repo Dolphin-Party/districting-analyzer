@@ -1,4 +1,4 @@
-package com.party.dolphin.districtinganalyzer;
+package com.party.dolphin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

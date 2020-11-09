@@ -28,5 +28,21 @@ public class State {
 
     public Districting getCanonicalDistricting() {
         return this.canonicalDistricting;
-    }    
+    }
+
+    /* Setters */
+    /* TODO: Add constructor and delete setters */
+	public void setStateId(int stateId) {
+        this.stateId = stateId;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setCounties(Set<County> counties) {
+        this.counties = counties;
+    }
+    public void setCanonicalDistricting(Districting canonicalDistricting) {
+        this.canonicalDistricting = canonicalDistricting;
+    }
+
 }

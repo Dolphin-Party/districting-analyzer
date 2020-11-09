@@ -25,12 +25,24 @@ public class DatabaseService {
     }
 
     /* Other Methods */
+    // TODO: Replace once EntityManager is hooked up
     public static State findStateById(int id) {
-        return new State();
+        State state = new State();
+        state.setStateId(id);
+        state.setName("Virginia");
+        state.setCounties(new HashSet<County>());
+        state.setCanonicalDistricting(new Districting());
+        return state;
     }
 
+    // TODO: Replace once EntityManager is hooked up
     public static State findStateByName(String name) {
-        return new State();
+        State state = new State();
+        state.setStateId(2020);
+        state.setName(name);
+        state.setCounties(new HashSet<County>());
+        state.setCanonicalDistricting(new Districting());
+        return state;
     }
 
     public static County findCountyById(int id) {

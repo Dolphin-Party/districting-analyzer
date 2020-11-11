@@ -96,6 +96,10 @@
   }
 }
 
+.job-request{
+  padding-left:5%;
+}
+
   .title{
     font-size: 1.3vw;
     font-weight: 700;
@@ -150,7 +154,8 @@
   }
 }
 
-.data_section{
-  background: $grey;
-  height: 500px;
+.box-whisker-plot-section{
+  // background: blue;
+  // height: 500px;
+  margin: 2% 2% 2% 2%;
 }

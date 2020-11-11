@@ -19,9 +19,8 @@ export default class Home extends Component<{}, State> {
   render() {
     return (
       <div>
-      <MapViewFilter/>
-      <SeawulfClientControl/>
       <LeafletMap/>
+      <SeawulfClientControl/>
       <DataControl/>
       </div>
     )

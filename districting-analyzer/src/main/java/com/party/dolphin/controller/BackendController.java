@@ -1,5 +1,4 @@
-packagepping("/districting/{districtingId}")
-com.party.dolphin.controller;
+package com.party.dolphin.controller;
 
 @Controller
 @RequestMapping("/backend")
@@ -23,7 +22,7 @@ public class BackendController {
     @GetMapping("/state/{stateName}/info")
     public StateInfo getStateInfoByName(@PathVariable String stateName) {
         return dbService.findStateByName(stateName);
-    }g
+    }
 
     @GetMapping("/county/{countyId}")
     public CountyRender getCounty(@PathVariable int countyId) {

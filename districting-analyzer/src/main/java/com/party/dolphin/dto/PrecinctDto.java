@@ -4,11 +4,9 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.*;
 
-import javax.persistence.Id;
-
-public class PrecinctRender {
+public class PrecinctDto {
     /* Fields */
-    private @Id int precinctId;
+    private int precinctId;
     private int countyId;
     private String shape; // TODO: GEOJSON
     private Set<Integer> neighbors;

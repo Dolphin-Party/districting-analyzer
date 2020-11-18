@@ -4,11 +4,9 @@ import com.party.dolphin.model.enums.*;
 
 import java.util.List;
 
-import javax.persistence.Id;
-
-public class JobRender {
+public class JobDto {
     /* Fields */
-    private @Id String jobId;
+    private String jobId;
     private JobStatus status;
     private int stateId;
     private int numberDistrictings;

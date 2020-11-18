@@ -4,19 +4,22 @@ import com.party.dolphin.dto.*;
 
 import java.util.Set;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
+@Table(name="county")
 public class County {
     /* Fields */
-    private @Id int countyId;
+    private int countyId;
     private String name;
     private String shape; // TODO: GEOJSON
     private State state;
     private Set<Precinct> precincts;
 
     /* Getters */
+    @Id
     public int getCountyId() {
-        return this.countyId;
+        return countyId;
     }
 
     public String getName() {
@@ -27,10 +30,12 @@ public class County {
         return this.shape;
     }
 
+    @ManyToOne
     public State getState() {
         return this.state;
     }
 
+    @OneToMany(mappedBy="county")
     public Set<Precinct> getPrecincts() {
         return this.precincts;
     }

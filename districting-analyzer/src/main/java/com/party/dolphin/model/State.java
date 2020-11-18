@@ -4,17 +4,19 @@ import com.party.dolphin.dto.*;
 
 import java.util.Set;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Table(name="state")
 public class State {
     /* Fields */
-    private @Id int stateId;
+    private int stateId;
     private String name;
     private Set<County> counties;
     private Districting canonicalDistricting;
 
     /* Getters */
+    @Id
     public int getStateId() {
         return this.stateId;
     }
@@ -23,10 +25,12 @@ public class State {
         return this.name;
     }
 
+    @OneToMany(mappedBy="state")
     public Set<County> getCounties() {
         return this.counties;
     }
 
+    @OneToOne
     public Districting getCanonicalDistricting() {
         return this.canonicalDistricting;
     }

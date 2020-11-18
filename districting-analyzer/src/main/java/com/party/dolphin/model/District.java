@@ -5,22 +5,25 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.List;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
 public class District {
     /* Fields */
-    private @Id String districtId; // TODO: uuid, any uuid types?
+    private String districtId; // TODO: uuid, any uuid types?
     private List<Precinct> precincts;
     private int numberCounties;
-    private DemographicType targetDemographic;
+    private DemographicType targetDemographic; // TODO: annotations for enum
     private double targetDemographicPercentVAP;
     private int order;
 
     /* Getters */
+    @Id
     public String getDistrictId() {
         return this.districtId;
     }
 
+    @ManyToMany
     public List<Precinct> getPrecincts() {
         return this.precincts;
     }

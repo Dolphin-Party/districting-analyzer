@@ -5,16 +5,17 @@ import com.party.dolphin.model.enums.*;
 
 import java.util.List;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
 public class Job {
     /* Fields */
-    private @Id String jobId; // TODO: uuid, any uuid types?
-    private JobStatus status;
+    private String jobId; // TODO: uuid, any uuid types?
+    private JobStatus status; // TODO: annotations for enum
     private State state;
     private int numberDistrictings;
     private String compactnessAmount; // TODO: enum, int, or String?
-    private DemographicType targetDemographic;
+    private DemographicType targetDemographic; // TODO: annotations for enum
     private boolean isSeawulf;
     private List<Districting> districtings;
     private List<List<Double>> boxWhiskerData;
@@ -22,6 +23,7 @@ public class Job {
     private int extremeDistricting;
     
     /* Getters */
+    @Id
     public String getJobId() {
         return this.jobId;
     }
@@ -30,6 +32,7 @@ public class Job {
         return this.status;
     }
 
+    @ManyToOne
     public State getState() {
         return this.state;
     }
@@ -54,6 +57,7 @@ public class Job {
         return this.isSeawulf;
     }
 
+    @OneToMany
     public List<Districting> getDistrictings() {
         return this.districtings;
     }

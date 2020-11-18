@@ -5,21 +5,24 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.List;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
 public class Districting {
     /* Fields */
-    private @Id String districtingId; // TODO: uuid, any uuid types?
+    private String districtingId; // TODO: uuid, any uuid types?
     private Job job;
-    private DemographicType targetDemographic;
+    private DemographicType targetDemographic; // TODO: annotations for enum
     private int districtingIndex;
     private List<District> districts;
 
     /* Getters */
+    @Id
     public String getDistrictingId() {
         return this.districtingId;
     }
 
+    @ManyToOne
     public Job getJob() {
         return this.job;
     }
@@ -32,6 +35,7 @@ public class Districting {
         return this.districtingIndex;
     }
 
+    @OneToMany
     public List<District> getDistricts() {
         return this.districts;
     }

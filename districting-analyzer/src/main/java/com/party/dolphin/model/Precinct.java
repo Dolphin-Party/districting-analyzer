@@ -5,11 +5,13 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.*;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
+@Table(name="precinct")
 public class Precinct {
     /* Fields */
-    private @Id int precinctId;
+    private int precinctId;
     private County county;
     private String shape; // TODO: GEOJSON
     private Set<Precinct> neighbors;
@@ -17,10 +19,12 @@ public class Precinct {
     private EnumMap<DemographicType, Integer> demographics;
 
     /* Getters */
+    @Id
     public int getPrecinctId() {
         return this.precinctId;
     }
 
+    @ManyToOne
     public County getCounty() {
         return this.county;
     }
@@ -29,6 +33,7 @@ public class Precinct {
         return this.shape;
     }
 
+    @ManyToMany
     public Set<Precinct> getNeighbors() {
         return this.neighbors;
     }

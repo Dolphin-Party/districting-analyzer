@@ -14,6 +14,7 @@ import RequestJobTab from "../components/job_tabs/request_job"
 import JobHistoryTab from "../components/job_tabs/job_history"
 
 
+
 export default class SeawulfClientControl extends Component<{}, State> {
   render() {
 
@@ -31,8 +32,6 @@ export default class SeawulfClientControl extends Component<{}, State> {
       setValue(100);
     }
   };
-
-
     return (
       <div>
       <div className='seawulf-client-control'>

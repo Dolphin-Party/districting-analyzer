@@ -29,6 +29,14 @@ export default class JobHistoryTab extends Component<{}, State> {
       this.state = { jobs };
   }
 
+    jobButton = (status) => {
+      if(this.status == 'In Queue' | this.status=='Processing'){
+        return 'Cancel Job'
+      }else if(this.status == 'Done'){
+        return 'Delete Job'
+      }
+    }
+
     render() {
     return (
       <div className='jobs-list'>
@@ -65,6 +73,10 @@ export default class JobHistoryTab extends Component<{}, State> {
                 <tr>
                   <td>% of voting age population:</td>
                   <td> {job.pvap}</td>
+                </tr>
+                <tr>
+                  <td><Button variant="button" className="button">Delete Job</Button>{' '}</td>
+                  <td> <Button variant="button" className="button">Show Data Plot</Button>{' '}</td>
                 </tr>
               </tbody>
             </Table>

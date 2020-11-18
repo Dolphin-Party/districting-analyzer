@@ -9,6 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 
+import BoxWhiskerPlot from '../components/boxwhiskerplot'
+
 
 export default class DataControl extends Component<{}, State> {
   render() {
@@ -20,23 +22,10 @@ export default class DataControl extends Component<{}, State> {
       <div>
       <div className="map_filter">
         <Button variant="primary" className="button">View Current Districting</Button>{' '}
-          <Dropdown className="button-space" >
-            <Dropdown.Toggle variant="button" className="button" id="dropdown-basic">
-              View Past Districtings
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">2018</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">2017</Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown>
-        <Button variant="primary" className="button">Precinct Comparison</Button>{' '}
-        <Button variant="primary" className="button">State Comparison</Button>{' '}
         <Button variant="primary" className="button">Export Graphs & Data</Button>{' '}
       </div>
-
-
-      <div className='data_section'>
-
+      <div className='box-whisker-plot-section'>
+        <BoxWhiskerPlot></BoxWhiskerPlot>
       </div>
         </div>
       )

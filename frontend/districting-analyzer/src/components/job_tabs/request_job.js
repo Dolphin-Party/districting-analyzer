@@ -9,6 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 
+import InputSlider from '../slider'
+import CompactnessSlider from '../compactness_slider'
+
 
 export default class RequestJobTab extends Component<{}, State> {
   render() {
@@ -30,33 +33,14 @@ export default class RequestJobTab extends Component<{}, State> {
 
 
     return (
-      <div>
+      <div className='job-request'>
       <p className='title'>Generating Districtings</p>
-        <Button variant="slider-button" className="slider-button"># of Districtings
-        <RangeSlider
-            value={value}
-          />
-        </Button>{' '}
-        <Button variant="slider-button" className="slider-button">% of Compactness
-        <RangeSlider
-            value={value}
-          />
-        </Button>{' '}
-        <Button variant="slider-button" className="slider-button"># of Random Districting Plans
-        <RangeSlider
-            value={value}
-          />
-        </Button>{' '}
-        <Button variant="slider-button" className="slider-button">% of BVAP
-        <RangeSlider
-            value={value}
-          />
-        </Button>{' '}
-      <Button variant="slider-button" className="slider-button">Generate Randomized Districting Comparison
-      <RangeSlider
-          value={value}
-        />
-      </Button>{' '}
+      <p># of Random Districtings</p>
+      <InputSlider></InputSlider>
+      <p>Compactness %</p>
+      <CompactnessSlider></CompactnessSlider>
+      <p>Target Demographic VAP %</p>
+      <InputSlider></InputSlider>
       <Button variant="button" className="button">Generate Districting Comparisons</Button>{' '}
       </div>
 

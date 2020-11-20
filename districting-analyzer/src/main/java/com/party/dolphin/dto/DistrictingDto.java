@@ -4,11 +4,9 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.List;
 
-import javax.persistence.Id;
-
-public class DistrictingRender {
+public class DistrictingDto {
     /* Fields */
-    private @Id String districtingId;
+    private String districtingId;
     private String jobId;
     private DemographicType targetDemographic;
     private int districtingIndex;

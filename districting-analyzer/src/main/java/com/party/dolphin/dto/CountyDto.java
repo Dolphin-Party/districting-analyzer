@@ -2,11 +2,9 @@ package com.party.dolphin.dto;
 
 import java.util.Set;
 
-import javax.persistence.Id;
-
-public class CountyRender {
+public class CountyDto {
     /* Fields */
-    private @Id int countyId;
+    private int countyId;
     private String name;
     private String shape; // TODO: GEOJSON
     private int stateId;

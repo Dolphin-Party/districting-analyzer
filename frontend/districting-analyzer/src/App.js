@@ -1,8 +1,11 @@
 import React from 'react';
 import Nav from './components/navigation'
 import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
-
 import PageRenderer from './page-renderer'
+// const React = require('react');
+// const ReactDOM = require('react-dom');
+// const client = require('./client');
+
 function App() {
   return (
     <Router>

@@ -11,7 +11,7 @@
 .map-information{
   width: 20%;
   height: 40%;
-  // top: 60%;
+  top: 60%;
   margin: 1% 1% 1% 1%;
   padding: 1% 1% 1% 1%;
   left: 80%;
@@ -145,6 +145,8 @@
     border-radius: 5px;
     color: white;
   }
+
+
   .button:hover{
     background-color: #ADD8E6;
   }
@@ -152,6 +154,14 @@
   .special-button{
     background-color: $text-color;
   }
+}
+
+.leaflet-touch .leaflet-control-layers {
+  border: none;
+  background-color: #3B2B59;
+  color: white;
+  font-size: .8vw;
+  visibility: hidden;
 }
 
 .box-whisker-plot-section{

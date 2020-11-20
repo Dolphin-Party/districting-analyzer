@@ -4,11 +4,9 @@ import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.List;
 
-import javax.persistence.Id;
-
-public class DistrictRender {
+public class DistrictDto {
     /* Fields */
-    private @Id String districtId;
+    private String districtId;
     private List<Integer> precincts;
     private int numberCounties;
     private DemographicType targetDemographic; // TODO: String or enum?

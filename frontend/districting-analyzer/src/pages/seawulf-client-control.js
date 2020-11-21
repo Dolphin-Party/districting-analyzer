@@ -23,8 +23,21 @@ export default class SeawulfClientControl extends Component<{}, State> {
       currentDem: this.props.currDem,
       nextId: 1,
       jobs: {},
+      noJobsText:{visibility: 'visible',},
+      submitAvailability: this.props.submitAvailability,
     };
     this.onJobAdded = this.onJobAdded.bind(this);
+    this.handleLoad = this.handleLoad.bind(this)
+  }
+
+  componentDidMount() {
+   window.addEventListener('load', this.handleLoad);
+}
+  componentWillUnmount() {
+    window.removeEventListener('load', this.handleLoad)
+  }
+
+  handleLoad() {
   }
 
   onJobAdded = (newJob) => {
@@ -37,26 +50,28 @@ export default class SeawulfClientControl extends Component<{}, State> {
     jobDict[this.state.nextId] = newJob;
     this.setState({nextId:this.state.nextId+1});
     this.setState({jobs: jobDict});
-    // noJobsText[0].style.visibility = 'hidden';
-    console.log('newJob ', newJob)
+    this.setState({noJobsText:{visibility: 'hidden'}});
   }
 
   onJobCancelDelete= (jobId) => {
     var jobDict = this.state.jobs;
     // Send REST data to backend, wait for confirmation, and then:
-    if (jobDict[jobId].buttonOption == 'Delete'){ //Delete
+    if (jobDict[jobId].buttonOption == 'Delete'){
       delete jobDict[jobId];
       if( jobDict.length == 0){
-        // noJobsText[0].style.visibility = 'visible';
       }
       // Delete from backend
-    }else{ //Cancel & give button option as 'delete'
+    }else{
       jobDict[jobId].status = 'Cancelled';
       jobDict[jobId].buttonOption = 'Delete';
-      console.log(jobDict)
     }
     this.setState({jobs: jobDict});
-    console.log(this.state.jobs)
+    if(Object.keys(this.state.jobs).length == 0){
+      this.setState({noJobsText:{visibility: 'visible'}});
+    }else{
+      this.setState({noJobsText:{visibility: 'hidden'}});
+    }
+
   }
 
   onJobUpdate = (jobId) => {
@@ -70,16 +85,18 @@ export default class SeawulfClientControl extends Component<{}, State> {
     }
   }
 
+
   render() {
+        console.log('props ---', this.props.submitAvailability);
     return (
-      <div>
+      <div className='rightside'>
       <div className='seawulf-client-control'>
         <Tabs>
           <div label="Request Job">
-            <RequestJobTab state={this.props.currState} dem={this.props.currDem} data={this.state.jobs} onJobAdd={this.onJobAdded}></RequestJobTab>
+            <RequestJobTab state={this.props.currState} dem={this.props.currDem} data={this.state.jobs} submitAvailability={this.props.submitAvailability} warnText={this.props.warnText} onJobAdd={this.onJobAdded}></RequestJobTab>
           </div>
           <div label="Job History">
-            <JobHistoryTab jobs={this.state.jobs} onCancelDelete={this.onJobCancelDelete}></JobHistoryTab>
+            <JobHistoryTab jobs={this.state.jobs} noJobsText={this.state.noJobsText} onCancelDelete={this.onJobCancelDelete}></JobHistoryTab>
           </div>
         </Tabs>
       </div>

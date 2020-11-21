@@ -12,10 +12,9 @@ import Input from '@material-ui/core/Input';
 import InputSlider from '../slider'
 import CompactnessSlider from '../compactness_slider'
 
-
 const [ value, setValue ] = useState(0);
 const submitButton= document.getElementsByClassName('submitButton');
-
+const warnText= document.getElementsByClassName('warnText');
 
 export default class RequestJobTab extends Component<{}, State> {
   constructor(props) {
@@ -27,14 +26,51 @@ export default class RequestJobTab extends Component<{}, State> {
       comp: null,
       dem: null,
       pvap: null,
-      buttonOption: 'Cancel'
+      buttonOption: 'Cancel',
     };
+    this.handleLoad = this.handleLoad.bind(this)
+    this.handleJobAdd = this.handleJobAdd.bind(this)
+    this.submitAvailability = this.submitAvailability.bind(this)
+  }
+  componentDidMount() {
+   window.addEventListener('load', this.handleLoad);
+}
+  componentWillUnmount() {
+    window.removeEventListener('load', this.handleLoad)
+  }
+  componentDidUpdate(prevProps) {
+    console.log("hLELO")
+    // this.submitAvailability();
+    if (prevProps.state != this.props.state || prevProps.dem != this.props.dem ) {
+      // this.submitAvailability();
+    }
   }
 
+  submitAvailability(){
+    if(submitButton[0]){
+      if(this.props.state != null && this.props.dem != null){
+        submitButton[0].disabled = false;
+        warnText[0].innerHTML = '';
+      }else{
+        if(this.props.state == null && this.props.dem == null){
+          warnText[0].innerHTML = 'Please select State and Demographic';
+        }else if(this.props.state == null){
+          warnText[0].innerHTML = 'Please select State';
+        }else if(this.props.dem == null){
+          warnText[0].innerHTML = 'Please select Demographic';
+      }
+      submitButton[0].disabled = true;
+    }
+  }
+}
+  handleLoad() {
+    // this.submitAvailability();
+  }
   handleJobAdd = () =>{
-    this.props.onJobAdd(this.state);
+    if(this.props.submitAvailability.opacity == 1){
+      this.props.onJobAdd(this.state);
+    }
   }
-
   setNumRandomDistrictings = (newValue) => {
     this.setState({randDist: newValue});
   }
@@ -47,19 +83,11 @@ export default class RequestJobTab extends Component<{}, State> {
   setVAP = (newValue) => {
     this.setState({pvap: newValue});
   }
-
   render() {
     const randDistBound = {min: 0, max: 5000};
     const vapBound = {min:0, max:100}
-    // if(this.props.state != null && this.props.dem != null){
-    //   console.log("Ready!");
-    //   submitButton[0].disabled = false;
-    // }else if(this.props.state == null && this.props.dem != null){
-    //   console.log("disab");
-    //   submitButton[0].disabled = true;
-    // }
-
-
+    // this.submitAvailability();
+    console.log('props ---', this.props.submitAvailability);
     return (
       <div className='job-request'>
       <p className='title'>Generating Districtings</p>
@@ -69,7 +97,8 @@ export default class RequestJobTab extends Component<{}, State> {
       <CompactnessSlider onNewNumber={this.setCompactness}></CompactnessSlider>
       <p>Target Demographic VAP %</p>
       <InputSlider data={vapBound} onNewNumber={this.setVAP}></InputSlider>
-      <Button variant="button" className="submitButton" onClick={this.handleJobAdd}>Generate Districting Comparisons</Button>{' '}
+      <Button variant="button" className="submitButton" onClick={this.handleJobAdd} style={this.props.submitAvailability}>Generate Districting Comparisons</Button>{' '}
+      <p className='warnText'>{this.props.warnText}</p>
       </div>
 
     )

@@ -11,36 +11,45 @@ import Input from '@material-ui/core/Input';
 import Table from 'react-bootstrap/Table'
 
 
-
 export default class JobHistoryTab extends Component<{}, State> {
   constructor(props) {
       super(props);
-      this.state = { jobs:this.props.jobs};
-
+      this.state = { jobs:this.props.jobs,
+        noJobsText: this.props.noJobsText};
+      this.handleLoad = this.handleLoad.bind(this)
+      this.jobsAvailability = this.jobsAvailability.bind(this)
   }
 
-    jobButton = (status) => {
-      if(this.status == 'In Queue' | this.status=='Processing'){
-        return 'Cancel Job'
-      }else if(this.status == 'Done'){
-        return 'Delete Job'
-      }
-    }
 
-    handleJobCancelDelete(e,jobId){
-      console.log('Cancelling ', jobId);
-      this.props.onCancelDelete(jobId);
-      // document.getElementsByClassName('button').disabled = true;
-    }
+  componentDidMount() {
+   window.addEventListener('load', this.handleLoad);
+}
 
-    render() {
-      if(this.props.state != null && this.props.dem != null){
-        console.log("Ready!");
-        // cancelButton[0].value = 'Delete';
+  componentWillUnmount() {
+    window.removeEventListener('load', this.handleLoad)
+  }
+
+  handleLoad = () => {
+    this.jobsAvailability();
+  }
+
+  jobsAvailability(){
+      if(this.props.jobs.length == 0){
+        this.setState({noJobsText:{visibility: 'visible'}});
+      }else{
+        this.setState({noJobsText:{visibility: 'hidden'}});
       }
-      const cancelButton= document.getElementsByClassName('cancelButton');
+  }
+
+  handleJobCancelDelete(e,jobId){
+    this.props.onCancelDelete(jobId);
+  }
+
+  render() {
+    const cancelButton= document.getElementsByClassName('cancelButton');
     return (
       <div className='jobs-list'>
+        <p className='noJobsText' style={this.props.noJobsText}>You currently have no jobs.</p>
         {Object.entries(this.state.jobs).map( ([key, job]) => (
           <div key={key} className='job-info'>
             <Table striped bordered hover>

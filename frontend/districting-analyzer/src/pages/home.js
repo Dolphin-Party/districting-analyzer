@@ -19,23 +19,57 @@ export default class Home extends Component<{}, State> {
   constructor(props) {
     super(props);
     this.state = {
-      currentState: null,
-      currentDemographic: null,
+      currState: null,
+      currDem: null,
+      submitAvailability: {opacity: '0.2'},
+      warnText:'Please select State & Demographic',
     };
   }
     handleStateSelect = (state) => {
-      this.setState({currentState:state})
+      this.setState({currState:state})
+      console.log('state ', this.state.currState, state, ' dem ', this.state.currDem)
+      if(state != null && this.state.currDem != null){
+        console.log('not null', state)
+        this.setState({submitAvailability: {opacity: '1'}})
+        this.setState({warnText: ''})
+      }else{
+        console.log('null', state)
+        this.setState({submitAvailability: {opacity: '0.2'}})
+        if(state == null && this.state.currDem == null){
+          this.setState({warnText: 'Please select State & Demographic'})
+        }else if(state == null){
+          this.setState({warnText: 'Please select State'})
+        }else{
+          this.setState({warnText: 'Please select Demographic'})
+        }
+      }
+      console.log('submitAvailability: ', this.state.submitAvailability)
     }
 
-    handleDemographicSelect= (dem) => {
-      this.setState({currentDemographic: dem})
+    handleDemSelect= (dem) => {
+      this.setState({currDem:dem});
+      console.log('state ', this.state.currState, ' dem ', this.state.currDem)
+      if(dem != null && this.state.currState != null){
+        this.setState({submitAvailability: {opacity: '1'}})
+        this.setState({warnText: ''})
+      }else{
+        this.setState({submitAvailability: {opacity: '0.2'}})
+        if(dem== null && this.state.currState == null){
+          this.setState({warnText: 'Please select State & Demographic'})
+        }else if(dem == null){
+          this.setState({warnText: 'Please select State'})
+        }else{
+          this.setState({warnText: 'Please select Demographic'})
+        }
+      }
+      console.log('submitAvailability: ', this.state.submitAvailability)
     }
 
   render() {
     return (
       <div>
-      <LeafletMap currState={this.state.currentState} currDem={this.state.currentDemographic} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemographicSelect}/>
-      <SeawulfClientControl currState={this.state.currentState} currDem={this.state.currentDemographic}/>
+      <LeafletMap currState={this.state.currState} currDem={this.state.currDem} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect}/>
+      <SeawulfClientControl currState={this.state.currState} currDem={this.state.currDem} submitAvailability={this.state.submitAvailability} warnText={this.state.warnText}/>
       <DataControl/>
       </div>
     )

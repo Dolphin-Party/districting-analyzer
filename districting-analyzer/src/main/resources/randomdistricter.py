@@ -49,4 +49,3 @@ while precinct_graph.num_districts > params.num_districts:
 
 #  precinct_graph now contains our seed districting
 #  Rebalance for X iterations
-

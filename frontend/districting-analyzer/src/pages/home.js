@@ -16,11 +16,26 @@ import DataControl from './data-control'
 
 
 export default class Home extends Component<{}, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentState: null,
+      currentDemographic: null,
+    };
+  }
+    handleStateSelect = (state) => {
+      this.setState({currentState:state})
+    }
+
+    handleDemographicSelect= (dem) => {
+      this.setState({currentDemographic: dem})
+    }
+
   render() {
     return (
       <div>
-      <LeafletMap/>
-      <SeawulfClientControl/>
+      <LeafletMap currState={this.state.currentState} currDem={this.state.currentDemographic} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemographicSelect}/>
+      <SeawulfClientControl currState={this.state.currentState} currDem={this.state.currentDemographic}/>
       <DataControl/>
       </div>
     )

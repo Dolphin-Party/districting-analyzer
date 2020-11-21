@@ -13,35 +13,63 @@ import InputSlider from '../slider'
 import CompactnessSlider from '../compactness_slider'
 
 
-export default class RequestJobTab extends Component<{}, State> {
-  render() {
+const [ value, setValue ] = useState(0);
+const submitButton= document.getElementsByClassName('submitButton');
 
-    const [value, setValue] = [30,30]
-    const handleSliderChange = (event, newValue) => {
-      setValue(newValue);
+
+export default class RequestJobTab extends Component<{}, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: null,
+      state: null,
+      randDist: null,
+      comp: null,
+      dem: null,
+      pvap: null,
+      buttonOption: 'Cancel'
     };
-    const handleInputChange = (event) => {
-      setValue(event.target.value === '' ? '' : Number(event.target.value));
-    };
-    const handleBlur = () => {
-    if (value < 0) {
-      setValue(0);
-    } else if (value > 100) {
-      setValue(100);
-    }
-  };
+  }
+
+  handleJobAdd = () =>{
+    this.props.onJobAdd(this.state);
+  }
+
+  setNumRandomDistrictings = (newValue) => {
+    this.setState({randDist: newValue});
+  }
+  setCompactness = (newValue) => {
+    this.setState({comp: newValue});
+  }
+  setTargetDemographic = (newValue) => {
+    this.setState({dem: newValue});
+  }
+  setVAP = (newValue) => {
+    this.setState({pvap: newValue});
+  }
+
+  render() {
+    const randDistBound = {min: 0, max: 5000};
+    const vapBound = {min:0, max:100}
+    // if(this.props.state != null && this.props.dem != null){
+    //   console.log("Ready!");
+    //   submitButton[0].disabled = false;
+    // }else if(this.props.state == null && this.props.dem != null){
+    //   console.log("disab");
+    //   submitButton[0].disabled = true;
+    // }
 
 
     return (
       <div className='job-request'>
       <p className='title'>Generating Districtings</p>
       <p># of Random Districtings</p>
-      <InputSlider></InputSlider>
+      <InputSlider data={randDistBound} onNewNumber={this.setNumRandomDistrictings}></InputSlider>
       <p>Compactness %</p>
-      <CompactnessSlider></CompactnessSlider>
+      <CompactnessSlider onNewNumber={this.setCompactness}></CompactnessSlider>
       <p>Target Demographic VAP %</p>
-      <InputSlider></InputSlider>
-      <Button variant="button" className="button">Generate Districting Comparisons</Button>{' '}
+      <InputSlider data={vapBound} onNewNumber={this.setVAP}></InputSlider>
+      <Button variant="button" className="submitButton" onClick={this.handleJobAdd}>Generate Districting Comparisons</Button>{' '}
       </div>
 
     )

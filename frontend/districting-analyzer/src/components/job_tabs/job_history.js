@@ -11,22 +11,12 @@ import Input from '@material-ui/core/Input';
 import Table from 'react-bootstrap/Table'
 
 
+
 export default class JobHistoryTab extends Component<{}, State> {
   constructor(props) {
       super(props);
+      this.state = { jobs:this.props.jobs};
 
-      const jobs = [
-      {num:'1', state:'North Carolina', status: 'Done', numDist: '5000', comp: 'Average', dem:'Black or African American', pvap: '20%'},
-      {num:'2', state:'Virginia', status: 'Processing', numDist: '3000', comp: 'Very Compact', dem:'Black or African American', pvap: '30%'}];
-
-      // for (let i = 0; i < 10; i++) {
-      //     people.push({
-      //         name: chance.first(),
-      //         country: chance.country({ full: true })
-      //     });
-      // }
-
-      this.state = { jobs };
   }
 
     jobButton = (status) => {
@@ -37,16 +27,27 @@ export default class JobHistoryTab extends Component<{}, State> {
       }
     }
 
+    handleJobCancelDelete(e,jobId){
+      console.log('Cancelling ', jobId);
+      this.props.onCancelDelete(jobId);
+      // document.getElementsByClassName('button').disabled = true;
+    }
+
     render() {
+      if(this.props.state != null && this.props.dem != null){
+        console.log("Ready!");
+        // cancelButton[0].value = 'Delete';
+      }
+      const cancelButton= document.getElementsByClassName('cancelButton');
     return (
       <div className='jobs-list'>
-        {this.state.jobs.map((job, index) => (
-          <div key={index} className='job-info'>
+        {Object.entries(this.state.jobs).map( ([key, job]) => (
+          <div key={key} className='job-info'>
             <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>Job #</th>
-                  <th>{job.num}</th>
+                  <th >{key}</th>
                 </tr>
               </thead>
               <tbody>
@@ -60,7 +61,7 @@ export default class JobHistoryTab extends Component<{}, State> {
                 </tr>
                 <tr>
                   <td>Number of Districtings:</td>
-                  <td>{job.numDist}</td>
+                  <td>{job.randDist}</td>
                 </tr>
                 <tr>
                   <td>% of Compactness:</td>
@@ -75,8 +76,8 @@ export default class JobHistoryTab extends Component<{}, State> {
                   <td> {job.pvap}</td>
                 </tr>
                 <tr>
-                  <td><Button variant="button" className="button">Delete Job</Button>{' '}</td>
-                  <td> <Button variant="button" className="button">Show Data Plot</Button>{' '}</td>
+                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,key)}>{job.buttonOption}</Button>{' '}</td>
+                  <td> <Button variant="button" className="button" disabled>Show Data Plot</Button>{' '}</td>
                 </tr>
               </tbody>
             </Table>

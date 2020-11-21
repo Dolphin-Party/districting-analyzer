@@ -71,6 +71,11 @@
   margin-bottom:5%;
 }
 
+.currMap-Info{
+  margin: 20px 10px 0px 10px;
+  font-size: 0.8vw;
+}
+
 .seawulf-client-control{
   // margin: 1% 1% 1% 1%;
   // padding: 0% 1% 1% 1%;
@@ -89,6 +94,21 @@
   }
 
   .button{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
+
+  .submitButton{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
+
+
+  .cancelButton{
     margin: 5% 2% 2% 2%;
     display: block;
     background: #3B2B59;
@@ -163,6 +183,11 @@
   font-size: .8vw;
   visibility: hidden;
 }
+
+.noJobsText{
+  visibility: visible;
+}
+
 
 .box-whisker-plot-section{
   // background: blue;

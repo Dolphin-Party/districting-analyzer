@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
 import './assets/scss/base.scss'
 

@@ -58,6 +58,15 @@ export default class LeafletMap extends Component<{}, State> {
         },
     precinctDisplay: false,
     districts: {},
+    demographics: {
+      0:'Black or African American',
+      1:'Non-Hispanic White',
+      2:'Hispanic and Latino',
+      3:'Asian',
+      4:'Native Americans and Alaska Natives',
+      5:'Native Hawaiians and Other Pacific Islanders',
+      6:'Two or more races'
+    }
     };
     this.resetMap = this.resetMap.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
@@ -121,13 +130,14 @@ export default class LeafletMap extends Component<{}, State> {
     const statePopulation = e.properties.population
     const stateNumDistricts = e.properties.numDistricts
     layerControl[0].style.visibility = 'visible';
-    console.log(statePopulation, stateNumDistricts)
+    this.props.onStateSelect(stateName);
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     }
 
 
   resetMap(){
     layerControl[0].style.visibility = 'hidden';
+    this.props.onStateSelect(null);
     this.setState(state => ({originalState: "True", stateSelected: false, lat: 37.090240, lng: -95.712891, zoom: 5, stateName: "", stateDensity: " "}));
   }
 
@@ -141,43 +151,15 @@ export default class LeafletMap extends Component<{}, State> {
     const stateLng = e.properties.lng
     const statePopulation = e.properties.population
     const stateNumDistricts = e.properties.numDistricts
-    console.log(stateName, stateDensity, stateLat, stateLng)
+    layerControl[0].style.visibility = 'visible';
+    this.props.onStateSelect(stateName);
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
   }
 
-  displayPrecintBorders(ev, stateID){
-    console.log("Precinct Borders OFF")
-    var geoJSON = this.state.precincts
-    var e = geoJSON['features'][stateID]
-    var layer = e.target;
-    // layer.setStyle({
-    //   weight: 5,
-    //   color: '#0000ff',
-    //   dashArray: '',
-    //   fillColor: 'white',
-    //   fillOpacity: 0.2
-    // });
+  dropdownDemographicSelect(ev, demId){
+    this.props.onDemSelect(this.state.demographics[demId]);
+    console.log("demographic select");
   }
-
-  dontDisplayPrecintBorders(ev, stateID){
-    console.log("Precinct Borders OFF")
-    var geoJSON = this.state.precincts
-    var e = geoJSON['features'][stateID]
-    console.log(e)
-    var layer = e.target;
-    console.log(e.target);
-    // console.log(e.target.style);
-    // layer.setStyle({
-    //   weight: 5,
-    //   color: 'transparent',
-    //   dashArray: '',
-    //   fillColor: 'white',
-    //   fillOpacity: 0.2
-    // });
-  }
-
-
-
 
   render() {
     const states = this.state.states;
@@ -210,19 +192,20 @@ export default class LeafletMap extends Component<{}, State> {
 
             <Dropdown className="button-space" >
               <Dropdown.Toggle variant="button" className="button" id="dropdown-basic">
-                Demographic Heat Map
+                Select Demographic
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item href="#/action-1">Black or African American</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Non-Hispanic White</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Hispanic and Latino</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Asian</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Native Americans and Alaska Natives</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Native Hawaiians and Other Pacific Islanders</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Two or more races</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Disable Demographic Heat Map</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,0)}>Black or African American</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,1)}>Non-Hispanic White</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,2)}>Hispanic and Latino</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,3)}>Asian</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,4)}>Native Americans and Alaska Natives</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,5)}>Native Hawaiians and Other Pacific Islanders</Dropdown.Item>
+                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,6)}>Two or more races</Dropdown.Item>
               </Dropdown.Menu>
           </Dropdown>
+          <p className='currMap-Info'> Selected State: {this.props.currState}</p>
+          <p className='currMap-Info'> Selected Demographic: {this.props.currDem}</p>
         </div>
 
       <div className='leaflet-container'>

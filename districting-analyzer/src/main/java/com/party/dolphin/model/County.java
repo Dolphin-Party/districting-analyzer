@@ -12,13 +12,13 @@ public class County {
     /* Fields */
     private int countyId;
     private String name;
-    private String shape; // TODO: GEOJSON
     private State state;
+    private String shape; // TODO: GEOJSON
     private Set<Precinct> precincts;
 
     /* Getters */
     @Id
-    public int getCountyId() {
+    public int getId() {
         return countyId;
     }
 

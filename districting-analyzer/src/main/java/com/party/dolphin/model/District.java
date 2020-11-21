@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Entity
 public class District {
     /* Fields */
-    private String districtId; // TODO: uuid, any uuid types?
+    private int id;
+    private Districting districting;
     private List<Precinct> precincts;
     private int numberCounties;
     private DemographicType targetDemographic; // TODO: annotations for enum
@@ -19,13 +20,19 @@ public class District {
 
     /* Getters */
     @Id
-    public String getDistrictId() {
-        return this.districtId;
+    @GeneratedValue
+    public int getId() {
+        return this.id;
     }
 
     @ManyToMany
     public List<Precinct> getPrecincts() {
         return this.precincts;
+    }
+
+    @ManyToOne
+    public Districting getDistricting() {
+        return this.districting;
     }
 
     public int getNumberCounties() {

@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name="precinct")
 public class Precinct {
     /* Fields */
-    private int precinctId;
+    private int id;
     private County county;
     private String shape; // TODO: GEOJSON
     private Set<Precinct> neighbors;
@@ -20,8 +20,8 @@ public class Precinct {
 
     /* Getters */
     @Id
-    public int getPrecinctId() {
-        return this.precinctId;
+    public int getId() {
+        return this.id;
     }
 
     @ManyToOne

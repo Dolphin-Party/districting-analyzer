@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 public class Job {
     /* Fields */
-    private String jobId; // TODO: uuid, any uuid types?
+    private int id;
     private JobStatus status; // TODO: annotations for enum
     private State state;
     private int numberDistrictings;
@@ -24,8 +24,9 @@ public class Job {
     
     /* Getters */
     @Id
-    public String getJobId() {
-        return this.jobId;
+    @GeneratedValue
+    public int getId() {
+        return this.id;
     }
 
     public JobStatus getStatus() {
@@ -75,8 +76,8 @@ public class Job {
     }
 
     /* Setters */
-	public void setJobId(String jobId) {
-        this.jobId = jobId;
+	public void setJobId(int id) {
+        this.id = id;
     }
     public void setStatus(JobStatus status) {
         this.status = status;

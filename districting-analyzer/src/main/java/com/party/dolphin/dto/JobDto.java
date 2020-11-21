@@ -6,20 +6,20 @@ import java.util.List;
 
 public class JobDto {
     /* Fields */
-    private String jobId;
+    private int jobId;
     private JobStatus status;
     private int stateId;
     private int numberDistrictings;
     private String compactnessAmount; // TODO: See Job.java
     private DemographicType targetDemographic; // TODO: enum or String?
     private boolean isSeawulf;
-    private List<String> districtings;
+    private List<Integer> districtings;
     private List<List<Double>> boxWhiskerData;
     private int averageDistricting;
     private int extremeDistricting;
 
     /* Getters */
-    public String getJobId() {
+    public int getJobId() {
         return this.jobId;
     }
 
@@ -51,7 +51,7 @@ public class JobDto {
         return this.isSeawulf;
     }
 
-    public List<String> getDistrictings() {
+    public List<Integer> getDistrictings() {
         return this.districtings;
     }
 

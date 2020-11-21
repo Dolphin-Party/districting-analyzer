@@ -6,18 +6,18 @@ import java.util.List;
 
 public class DistrictingDto {
     /* Fields */
-    private String districtingId;
-    private String jobId;
+    private int districtingId;
+    private int jobId;
     private DemographicType targetDemographic;
     private int districtingIndex;
-    private List<String> districts;
+    private List<Integer> districts;
 
     /* Getters */
-    public String getDistrictingId() {
+    public int getDistrictingId() {
         return this.districtingId;
     }
 
-    public String getJobId() {
+    public int getJobId() {
         return this.jobId;
     }
 
@@ -29,7 +29,7 @@ public class DistrictingDto {
         return this.districtingIndex;
     }
 
-    public List<String> getDistricts() {
+    public List<Integer> getDistricts() {
         return this.districts;
     }
     

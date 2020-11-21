@@ -10,15 +10,15 @@ import javax.persistence.*;
 @Table(name="state")
 public class State {
     /* Fields */
-    private int stateId;
+    private int id;
     private String name;
     private Set<County> counties;
     private Districting canonicalDistricting;
 
     /* Getters */
     @Id
-    public int getStateId() {
-        return this.stateId;
+    public int getId() {
+        return this.id;
     }
 
     public String getName() {
@@ -37,8 +37,8 @@ public class State {
 
     /* Setters */
     /* TODO: Add constructor and delete setters */
-	public void setStateId(int stateId) {
-        this.stateId = stateId;
+	public void setId(int id) {
+        this.id = id;
     }
     public void setName(String name) {
         this.name = name;

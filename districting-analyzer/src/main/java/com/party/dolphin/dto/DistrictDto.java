@@ -6,7 +6,8 @@ import java.util.List;
 
 public class DistrictDto {
     /* Fields */
-    private String districtId;
+    private int districtId;
+    private int districtingId;
     private List<Integer> precincts;
     private int numberCounties;
     private DemographicType targetDemographic; // TODO: String or enum?
@@ -14,8 +15,12 @@ public class DistrictDto {
     private int order;
 
     /* Getters */
-    public String getDistrictId() {
+    public int getDistrictId() {
         return this.districtId;
+    }
+
+    public int getDistrictingId() {
+        return this.districtingId;
     }
 
     public List<Integer> getPrecincts() {

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: Return DTO instead of model objects
-@Controller
+@RestController
 @RequestMapping(path="/backend")
 public class JobController {
 

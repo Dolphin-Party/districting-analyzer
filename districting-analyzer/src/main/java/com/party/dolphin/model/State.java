@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name="state")
+@Table(name="States")
 public class State {
     /* Fields */
     private int id;
@@ -17,6 +17,7 @@ public class State {
 
     /* Properties */
     @Id
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -24,6 +25,7 @@ public class State {
         this.id = id;
     }
 
+    @Column(name="name")
     public String getName() {
         return this.name;
     }
@@ -40,6 +42,7 @@ public class State {
     }
 
     @OneToOne
+    @JoinColumn(name="canonicalDistrictingID")
     public Districting getCanonicalDistricting() {
         return this.canonicalDistricting;
     }

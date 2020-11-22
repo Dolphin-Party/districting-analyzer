@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name="county")
+@Table(name="Counties")
 public class County {
     /* Fields */
     private int id;
@@ -18,6 +18,7 @@ public class County {
 
     /* Properties */
     @Id
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -25,6 +26,7 @@ public class County {
         this.id = id;
     }
 
+    @Column(name="name")
     public String getName() {
         return this.name;
     }
@@ -33,6 +35,7 @@ public class County {
     }
 
     @ManyToOne
+    @JoinColumn(name="stateID")
     public State getState() {
         return this.state;
     }
@@ -40,6 +43,7 @@ public class County {
         this.state = state;
     }
 
+    @Column(name="shape")
     public String getShape() {
         return this.shape;
     }

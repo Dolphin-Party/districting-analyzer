@@ -8,19 +8,21 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name="Districts")
 public class District {
     /* Fields */
     private int id;
     private Districting districting;
     private List<Precinct> precincts;
     private int numberCounties;
-    private DemographicType targetDemographic; // TODO: annotations for enum
-    private double targetDemographicPercentVAP;
+    private DemographicType targetDemographic;
+    private double targetDemographicPercentVap;
     private int order;
 
     /* Properties */
     @Id
     @GeneratedValue
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -29,6 +31,7 @@ public class District {
     }
 
     @ManyToOne
+    @JoinColumn(name="districtingID")
     public Districting getDistricting() {
         return this.districting;
     }
@@ -37,6 +40,7 @@ public class District {
     }
 
     @ManyToMany
+    @JoinTable(name="DistrictPrecincts")
     public List<Precinct> getPrecincts() {
         return this.precincts;
     }
@@ -44,6 +48,7 @@ public class District {
         this.precincts = precincts;
     }
 
+    @Column(name="numberCounties")
     public int getNumberCounties() {
         return this.numberCounties;
     }
@@ -51,6 +56,8 @@ public class District {
         this.numberCounties = numberCounties;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="targetDemographic")
     public DemographicType getTargetDemographic() {
         return this.targetDemographic;
     }
@@ -58,13 +65,15 @@ public class District {
         this.targetDemographic = targetDemographic;
     }
 
-    public double getTargetDemographicPercentVAP() {
-        return this.targetDemographicPercentVAP;
+    @Column(name="targetDemographicPercentVap")
+    public double getTargetDemographicPercentVap() {
+        return this.targetDemographicPercentVap;
     }
-    public void setTargetDemographicPercentVAP(double targetDemographicPercentVAP) {
-        this.targetDemographicPercentVAP = targetDemographicPercentVAP;
+    public void setTargetDemographicPercentVap(double targetDemographicPercentVap) {
+        this.targetDemographicPercentVap = targetDemographicPercentVap;
     }
 
+    @Column(name="`order`")
     public int getOrder() {
         return this.order;
     }

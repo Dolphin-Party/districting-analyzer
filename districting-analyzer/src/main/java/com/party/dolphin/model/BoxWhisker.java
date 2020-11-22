@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name="BoxWhiskers")
 public class BoxWhisker {
     /* Fields */
     private int id;
@@ -19,7 +20,7 @@ public class BoxWhisker {
 
     /* Properties */
     @Id
-    @Column(updatable=false)
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -28,6 +29,7 @@ public class BoxWhisker {
     }
 
     @ManyToOne
+    @JoinColumn(name="jobID")
     public Job getJob() {
         return this.job;
     }
@@ -35,6 +37,7 @@ public class BoxWhisker {
         this.job = job;
     }
 
+    @Column(name="`order`")
     public int getOrder() {
         return this.order;
     }
@@ -42,6 +45,7 @@ public class BoxWhisker {
         this.order = order;
     }
 
+    @Column(name="average")
     public double getAverage() {
         return this.average;
     }
@@ -49,6 +53,7 @@ public class BoxWhisker {
         this.average = average;
     }
 
+    @Column(name="min")
     public double getMin() {
         return this.min;
     }
@@ -56,6 +61,7 @@ public class BoxWhisker {
         this.min = min;
     }
 
+    @Column(name="q1")
     public double getQ1() {
         return this.q1;
     }
@@ -63,6 +69,7 @@ public class BoxWhisker {
         this.q1 = q1;
     }
 
+    @Column(name="median")
     public double getMedian() {
         return this.median;
     }
@@ -70,6 +77,7 @@ public class BoxWhisker {
         this.median = median;
     }
 
+    @Column(name="q3")
     public double getQ3() {
         return this.q3;
     }
@@ -77,6 +85,7 @@ public class BoxWhisker {
         this.q3 = q3;
     }
 
+    @Column(name="max")
     public double getMax() {
         return this.max;
     }

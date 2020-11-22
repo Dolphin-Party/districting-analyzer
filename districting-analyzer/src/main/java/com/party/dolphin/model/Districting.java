@@ -8,17 +8,19 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name="Districtings")
 public class Districting {
     /* Fields */
     private int id;
     private Job job;
-    private DemographicType targetDemographic; // TODO: annotations for enum
+    private DemographicType targetDemographic;
     private int districtingIndex;
     private List<District> districts;
 
     /* Properties */
     @Id
     @GeneratedValue
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -27,6 +29,7 @@ public class Districting {
     }
 
     @ManyToOne
+    @JoinColumn(name="jobID")
     public Job getJob() {
         return this.job;
     }
@@ -34,6 +37,8 @@ public class Districting {
         this.job = job;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="targetDemographic")
     public DemographicType getTargetDemographic() {
         return this.targetDemographic;
     }
@@ -41,6 +46,7 @@ public class Districting {
         this.targetDemographic = targetDemographic;
     }
 
+    @Column(name="districtingIndex")
     public int getDistrictingIndex() {
         return this.districtingIndex;
     }

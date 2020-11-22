@@ -8,7 +8,7 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name="precinct")
+@Table(name="Precincts")
 public class Precinct {
     /* Fields */
     private int id;
@@ -20,6 +20,7 @@ public class Precinct {
 
     /* Properties */
     @Id
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -28,6 +29,7 @@ public class Precinct {
     }
 
     @ManyToOne
+    @JoinColumn(name="countyID")
     public County getCounty() {
         return this.county;
     }
@@ -35,6 +37,7 @@ public class Precinct {
         this.county = county;
     }
 
+    @Column(name="shape")
     public String getShape() {
         return this.shape;
     }
@@ -43,6 +46,7 @@ public class Precinct {
     }
 
     @ManyToMany
+    @JoinTable(name="PrecinctNeighbors")
     public Set<Precinct> getNeighbors() {
         return this.neighbors;
     }
@@ -50,6 +54,7 @@ public class Precinct {
         this.neighbors = neighbors;
     }
 
+    @Column(name="population")
     public int getPopulation() {
         return this.population;
     }
@@ -57,7 +62,15 @@ public class Precinct {
         this.population = population;
     }
 
-    public EnumMap<DemographicType,Integer> getDemographics() {
+    @ElementCollection
+    @CollectionTable(
+        name="PrecinctDemographics",
+        joinColumns=@JoinColumn(name="precinctID")
+    )
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn(name="demographic")
+    @Column(name="population")
+    public Map<DemographicType,Integer> getDemographics() {
         return this.demographics;
     }
     public void setDemographics(EnumMap<DemographicType,Integer> demographics) {

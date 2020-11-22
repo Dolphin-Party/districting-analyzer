@@ -8,14 +8,15 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name="Jobs")
 public class Job {
     /* Fields */
     private int id;
-    private JobStatus status; // TODO: annotations for enum
+    private JobStatus status;
     private State state;
     private int numberDistrictings;
-    private String compactnessAmount; // TODO: enum, int, or String?
-    private DemographicType targetDemographic; // TODO: annotations for enum
+    private String compactnessAmount; // TODO: annotations for enum & enum itself
+    private DemographicType targetDemographic;
     private boolean isSeawulf;
     private List<Districting> districtings;
     private List<BoxWhisker> boxWhiskerData;
@@ -25,6 +26,7 @@ public class Job {
     /* Properties */
     @Id
     @GeneratedValue
+    @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;
     }
@@ -32,6 +34,8 @@ public class Job {
         this.id = id;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="status")
     public JobStatus getStatus() {
         return this.status;
     }
@@ -40,6 +44,7 @@ public class Job {
     }
 
     @ManyToOne
+    @JoinColumn(name="stateID")
     public State getState() {
         return this.state;
     }
@@ -47,6 +52,7 @@ public class Job {
         this.state = state;
     }
 
+    @Column(name="numberDistrictings")
     public int getNumberDistrictings() {
         return this.numberDistrictings;
     }
@@ -54,6 +60,7 @@ public class Job {
         this.numberDistrictings = numberDistrictings;
     }
 
+    @Column(name="compactnessAmount")
     public String getCompactnessAmount() {
         return this.compactnessAmount;
     }
@@ -61,6 +68,8 @@ public class Job {
         this.compactnessAmount = compactnessAmount;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="targetDemographic")
     public DemographicType getTargetDemographic() {
         return this.targetDemographic;
     }
@@ -68,6 +77,7 @@ public class Job {
         this.targetDemographic = targetDemographic;
     }
 
+    @Column(name="isSeawulf")
     public boolean getIsSeawulf() {
         return this.isSeawulf;
     }
@@ -75,7 +85,7 @@ public class Job {
         this.isSeawulf = isSeawulf;
     }
 
-    @OneToMany
+    @OneToMany(mappedBy="job")
     public List<Districting> getDistrictings() {
         return this.districtings;
     }
@@ -91,6 +101,7 @@ public class Job {
         this.boxWhiskerData = boxWhiskerData;
     }
 
+    @Column(name="averageDistricting")
     public int getAverageDistricting() {
         return this.averageDistricting;
     }
@@ -98,6 +109,7 @@ public class Job {
         this.averageDistricting = averageDistricting;
     }
 
+    @Column(name="extremeDistricting")
     public int getExtremeDistricting() {
         return this.extremeDistricting;
     }

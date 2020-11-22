@@ -1,12 +1,77 @@
+html, body {
+   height: 100%;
+    background-color: $grey;
+}
+
+.leftside{
+  width: 75%;
+  height: 100%;
+  // background-color: blue;
+}
+
 .leaflet-container {
   height: 600px;
-  width: 1300px;
+  width: 100%;
   background-color: $background;
-  overflow:hidden;
-  display: flex;
+  // background-color: red;
+  // overflow:hidden;
+  // display: flex;
   float:left;
-  z-index:2;
+  // z-index:2;
 }
+
+.seawulf-client-control{
+  // margin: 1% 1% 1% 1%;
+  // padding: 0% 1% 1% 1%;
+  width: 25%;
+  height: 600px;
+  float: right;
+  align-content: center;
+  // z-index: 1;
+  background-color: white;
+  // border-radius: 25px; --> width: 18%
+
+
+
+  .slider-button{
+    margin: 5% 2% 2% 2%;
+    display: block;
+  }
+
+  .button{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
+
+  .submitButton{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
+
+
+  .cancelButton{
+    margin: 5% 2% 2% 2%;
+    display: block;
+    background: #3B2B59;
+    color: white;
+  }
+
+}
+
+// .sliders{
+//   width: 400px;
+//   color: red;
+// }
+//
+// .slidersInput{
+//   width: 10%;
+// }
+
+
 
 .map-information{
   width: 20%;
@@ -26,8 +91,8 @@
 .reset-button{
   width: 10%;
   height: 5%;
-  left: -20%;
-  top: 90%;
+  left: 2%;
+  top: 50%;
   position:relative;
   padding: 0.2%;
   z-index: 1000;
@@ -37,6 +102,15 @@
   border-radius: 10px;
   background-color: #3B2B59;
   cursor: pointer;
+}
+
+.tab-content{
+    background-color: white;
+    padding: 0% 5% 0% 5%;
+    overflow-y: scroll;
+    height: 520px;
+    // height: 100%;
+    // overflow: hidden;
 }
 
 .tab-list {  border-bottom: 1px solid #ccc;
@@ -57,8 +131,12 @@
 }
 
 .jobs-list{
-  overflow-y: scroll;
-  height: 540px;
+  // overflow-y: scroll;
+  // overflow: hidden;
+  // background-color: white;
+  // height: 100%;
+
+  // margin: 0% 5% 1% 5%;
 }
 
 .job-info{
@@ -71,30 +149,11 @@
   margin-bottom:5%;
 }
 
-.seawulf-client-control{
-  // margin: 1% 1% 1% 1%;
-  // padding: 0% 1% 1% 1%;
-  width: 22%;
-  height: 550px;
-  float: right;
-  align-content: center;
-  // background: $grey;
-  // border-radius: 25px; --> width: 18%
-
-
-
-  .slider-button{
-    margin: 5% 2% 2% 2%;
-    display: block;
-  }
-
-  .button{
-    margin: 5% 2% 2% 2%;
-    display: block;
-    background: #3B2B59;
-    color: white;
-  }
+.currMap-Info{
+  margin: 20px 10px 0px 10px;
+  font-size: 0.8vw;
 }
+
 
 .job-request{
   padding-left:5%;
@@ -163,6 +222,11 @@
   font-size: .8vw;
   visibility: hidden;
 }
+
+.noJobsText{
+  visibility: visible;
+}
+
 
 .box-whisker-plot-section{
   // background: blue;

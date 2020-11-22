@@ -5,7 +5,8 @@ import Slider from '@material-ui/core/Slider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 300,
+    width: '80%',
+    marginLeft:'5%',
   },
   margin: {
     height: theme.spacing(3),
@@ -35,23 +36,34 @@ const marks = [
   },
 ];
 
-function valuetext(value) {
-  return `${value}`;
-}
 
-export default function CompactnessSlider() {
+
+const CompactnessSlider= ({onNewNumber}) => {
+  const [value, setValue] = React.useState(50);
   const classes = useStyles();
+
+  const valuetext = (value) => {
+    console.log('this', `${value}`)
+    return `${value}`;
+  }
+
+  const handleChange = (event, newValue) => {
+    onNewNumber(newValue);
+  }
 
   return (
     <div className={classes.root}>
       <Slider
         defaultValue={50}
-        getAriaValueText={valuetext}
         aria-labelledby="discrete-slider-custom"
         step={25}
         valueLabelDisplay="auto"
         marks={marks}
+        onChange={handleChange}
+
       />
     </div>
   );
 }
+
+export default CompactnessSlider;

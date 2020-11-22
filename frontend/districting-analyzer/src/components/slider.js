@@ -7,25 +7,26 @@ import Input from '@material-ui/core/Input';
 
 const useStyles = makeStyles({
   root: {
-    width: 300,
+    width: '90%',
   },
   input: {
-    width: 70,
+    width: '60px',
   },
 });
 
-export default function InputSlider() {
+const InputSlider = ({onNewNumber, data}) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(1000);
-
+  // const [value, setValue] = React.useState(100);
+  // const {min1, max1} = React.useState(0, 100);
+  const [value, setValue] = React.useState(data.min);
+  const {min1, max1} = React.useState(data.min, data.max);
   const handleSliderChange = (event, newValue) => {
     setValue(newValue);
+    onNewNumber(newValue);
   };
-
   const handleInputChange = (event) => {
     setValue(event.target.value === '' ? '' : Number(event.target.value));
   };
-
   const handleBlur = () => {
     if (value < 0) {
       setValue(0);
@@ -33,6 +34,7 @@ export default function InputSlider() {
       setValue(5000);
     }
   };
+
 
   return (
     <div className={classes.root}>
@@ -46,6 +48,8 @@ export default function InputSlider() {
             value={typeof value === 'number' ? value : 0}
             onChange={handleSliderChange}
             aria-labelledby="input-slider"
+            min={data.min}
+            max={data.max}
           />
         </Grid>
         <Grid item>
@@ -56,9 +60,9 @@ export default function InputSlider() {
             onChange={handleInputChange}
             onBlur={handleBlur}
             inputProps={{
-              step: 1000,
-              min: 0,
-              max: 5000,
+              step: 100,
+              min: {min1},
+              max: {max1},
               type: 'number',
               'aria-labelledby': 'input-slider',
             }}
@@ -68,3 +72,5 @@ export default function InputSlider() {
     </div>
   );
 }
+
+export default InputSlider;

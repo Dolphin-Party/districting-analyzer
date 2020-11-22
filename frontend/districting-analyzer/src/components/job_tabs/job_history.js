@@ -14,39 +14,81 @@ import Table from 'react-bootstrap/Table'
 export default class JobHistoryTab extends Component<{}, State> {
   constructor(props) {
       super(props);
-
-      const jobs = [
-      {num:'1', state:'North Carolina', status: 'Done', numDist: '5000', comp: 'Average', dem:'Black or African American', pvap: '20%'},
-      {num:'2', state:'Virginia', status: 'Processing', numDist: '3000', comp: 'Very Compact', dem:'Black or African American', pvap: '30%'}];
-
-      // for (let i = 0; i < 10; i++) {
-      //     people.push({
-      //         name: chance.first(),
-      //         country: chance.country({ full: true })
-      //     });
-      // }
-
-      this.state = { jobs };
+      this.state = {
+        jobs:this.props.jobs,
+        noJobsText: this.props.noJobsText
+      };
+      this.handleLoad = this.handleLoad.bind(this)
+      this.jobsAvailability = this.jobsAvailability.bind(this)
   }
 
-    jobButton = (status) => {
-      if(this.status == 'In Queue' | this.status=='Processing'){
-        return 'Cancel Job'
-      }else if(this.status == 'Done'){
-        return 'Delete Job'
-      }
-    }
 
-    render() {
+  componentDidMount() {
+   window.addEventListener('load', this.handleLoad);
+}
+
+  componentWillUnmount() {
+    window.removeEventListener('load', this.handleLoad)
+  }
+
+  handleLoad = () => {
+    this.jobsAvailability();
+  }
+
+  jobsAvailability(){
+      if(this.props.jobs.length == 0){
+        this.setState({noJobsText:{visibility: 'visible'}});
+      }else{
+        this.setState({noJobsText:{visibility: 'hidden'}});
+      }
+  }
+
+  handleJobCancelDelete(e,jobId){
+    this.props.onCancelDelete(jobId);
+  }
+
+  handleJobDataPlot=(e,key,job)=>{
+    if (job.boxWhiskerAvailability.opacity == '1'){
+      console.log("Job #", job, " has been selected for box whisker");
+      var data= {
+        jobId: key,
+        status: job.status,
+        state: job.state,
+        randDist: job.randDist,
+        comp: job.comp,
+        dem: job.dem,
+        pvap: job.pvap,
+        dataPoints: [
+  				{ label: "1",  y: [179, 256, 300, 418, 274] },
+  				{ label: "2",  y: [252, 346, 409, 437, 374.5] },
+  				{ label: "3",  y: [236, 281.5, 336.5, 428, 313] },
+  				{ label: "4",  y: [340, 382, 430, 452, 417] },
+  				{ label: "5",  y: [194, 224.5, 342, 384, 251] },
+  				{ label: "6",  y: [241, 255, 276.5, 294, 274.5] },
+  				{ label: "7",  y: [340, 382, 430, 452, 417] },
+  				{ label: "8",  y: [194, 224.5, 342, 384, 251] },
+  				{ label: "9",  y: [241, 255, 276.5, 294, 274.5] },
+  				{ label: "10",  y: [241, 255, 276.5, 294, 274.5] },
+  				{ label: "11",  y: [241, 255, 276.5, 294, 274.5] },
+  				{ label: "12",  y: [241, 255, 276.5, 294, 274.5] },
+  			],
+      }
+      this.props.requestJobData(data);
+    }
+  }
+
+  render() {
+    const cancelButton= document.getElementsByClassName('cancelButton');
     return (
       <div className='jobs-list'>
-        {this.state.jobs.map((job, index) => (
-          <div key={index} className='job-info'>
+        <p className='noJobsText' style={this.props.noJobsText}>You currently have no jobs.</p>
+        {Object.entries(this.state.jobs).map( ([key, job]) => (
+          <div key={key} className='job-info'>
             <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>Job #</th>
-                  <th>{job.num}</th>
+                  <th >{key}</th>
                 </tr>
               </thead>
               <tbody>
@@ -60,7 +102,7 @@ export default class JobHistoryTab extends Component<{}, State> {
                 </tr>
                 <tr>
                   <td>Number of Districtings:</td>
-                  <td>{job.numDist}</td>
+                  <td>{job.randDist}</td>
                 </tr>
                 <tr>
                   <td>% of Compactness:</td>
@@ -75,8 +117,8 @@ export default class JobHistoryTab extends Component<{}, State> {
                   <td> {job.pvap}</td>
                 </tr>
                 <tr>
-                  <td><Button variant="button" className="button">Delete Job</Button>{' '}</td>
-                  <td> <Button variant="button" className="button">Show Data Plot</Button>{' '}</td>
+                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,key)}>{job.buttonOption}</Button>{' '}</td>
+                  <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobDataPlot(e,key,job)}>Display Plot</Button>{' '}</td>
                 </tr>
               </tbody>
             </Table>

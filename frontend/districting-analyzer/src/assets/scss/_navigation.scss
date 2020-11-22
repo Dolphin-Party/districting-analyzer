@@ -62,65 +62,65 @@
 }
 
 //Mobile Friendly - Needs Further Development
-@media screen and (max-width: 900px){
-  .site-navigation{
-    .leftside-logos{
-      display: block;
-
-      .menu-logo {
-        width: 70%;
-        margin-left: 13%;
-        justify-content: center;
-        padding: 2% 2% 0% 0%;
-        display: block;
-      }
-
-      .menu-title {
-        font-family: 'Abhaya Libre', serif;
-        font-size: 5vw;
-        font-weight: 400;
-        text-align: center;
-        display: block;
-      }
-    }
-
-    .menu-content-container{
-      width: 70%;
-      height: calc(100% - 65px);
-      background: blue;
-      position: absolute;
-      top: 10%;
-      left: -300px;
-      transition: 300ms ease left;
-      flex-direction: column-reverse;
-      text-align: center;
-
-      &.active {
-        left: -50px;
-      }
-
-      ul {
-        flex-direction: column;
-        margin-left: -21%;
-        align-items: baseline;
-      }
-
-      li{
-        margin: 5% 0% 5% 0%;
-        text-align: left;
-      }
-
-      a{
-        font-size: 4.5vw;
-        text-align: left;
-      }
-
-    }
-
-    .ion-ios-menu{
-      display: flex;
-      visibility: visible;
-      background: red;
-    }
-  }
-}
+// @media screen and (max-width: 900px){
+//   .site-navigation{
+//     .leftside-logos{
+//       display: block;
+//
+//       .menu-logo {
+//         width: 70%;
+//         margin-left: 13%;
+//         justify-content: center;
+//         padding: 2% 2% 0% 0%;
+//         display: block;
+//       }
+//
+//       .menu-title {
+//         font-family: 'Abhaya Libre', serif;
+//         font-size: 5vw;
+//         font-weight: 400;
+//         text-align: center;
+//         display: block;
+//       }
+//     }
+//
+//     .menu-content-container{
+//       width: 70%;
+//       height: calc(100% - 65px);
+//       background: blue;
+//       position: absolute;
+//       top: 10%;
+//       left: -300px;
+//       transition: 300ms ease left;
+//       flex-direction: column-reverse;
+//       text-align: center;
+//
+//       &.active {
+//         left: -50px;
+//       }
+//
+//       ul {
+//         flex-direction: column;
+//         margin-left: -21%;
+//         align-items: baseline;
+//       }
+//
+//       li{
+//         margin: 5% 0% 5% 0%;
+//         text-align: left;
+//       }
+//
+//       a{
+//         font-size: 4.5vw;
+//         text-align: left;
+//       }
+//
+//     }
+//
+//     .ion-ios-menu{
+//       display: flex;
+//       visibility: visible;
+//       background: red;
+//     }
+//   }
+// }

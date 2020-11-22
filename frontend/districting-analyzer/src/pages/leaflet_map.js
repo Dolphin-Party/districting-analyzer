@@ -137,8 +137,8 @@ export default class LeafletMap extends Component<{}, State> {
 
   resetMap(){
     layerControl[0].style.visibility = 'hidden';
-    this.props.onStateSelect(null);
     this.setState(state => ({originalState: "True", stateSelected: false, lat: 37.090240, lng: -95.712891, zoom: 5, stateName: "", stateDensity: " "}));
+    this.props.onReset();
   }
 
   dropdownStateSelect(ev, stateNum){

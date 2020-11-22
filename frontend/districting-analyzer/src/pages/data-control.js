@@ -13,11 +13,11 @@ import BoxWhiskerPlot from '../components/boxwhiskerplot'
 
 
 export default class DataControl extends Component<{}, State> {
+
+  constructor(props) {
+    super(props);
+  }
   render() {
-
-
-
-
     return (
       <div>
       <div className="map_filter">
@@ -25,7 +25,7 @@ export default class DataControl extends Component<{}, State> {
         <Button variant="primary" className="button">Export Graphs & Data</Button>{' '}
       </div>
       <div className='box-whisker-plot-section'>
-        <BoxWhiskerPlot></BoxWhiskerPlot>
+        <BoxWhiskerPlot boxWhiskerData={this.props.boxWhiskerData}></BoxWhiskerPlot>
       </div>
         </div>
       )

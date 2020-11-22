@@ -4,6 +4,18 @@ var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class BoxWhiskerPlot extends Component {
+	constructor(props) {
+    super(props);
+    this.state = {
+			jobId: this.props.boxWhiskerData.jobId,
+			stateName: this.props.boxWhiskerData.state,
+			dataPoints: this.props.boxWhiskerData.dataPoints,
+    };
+		console.log("Hello from Box Whisker Plot", this.props.boxWhiskerData)
+		console.log(this.props.boxWhiskerData.jobId);
+  }
+
+
 	render() {
 		const options = {
 			theme: "light2",
@@ -11,7 +23,7 @@ class BoxWhiskerPlot extends Component {
 			width:1000,
 			height:300,
 			title:{
-				text: "Virginia Current Districting"
+				text: "Job #" + this.props.boxWhiskerData.jobId + " | State: " + this.props.boxWhiskerData.state +" | Districting Data"
 			},
 			axisY: {
 				title: "Target Demographic VAP%"
@@ -19,17 +31,7 @@ class BoxWhiskerPlot extends Component {
 			data: [{
 				type: "boxAndWhisker",
 				yValueFormatString: ""%"",
-				dataPoints: [
-					{ label: "1",  y: [179, 256, 300, 418, 274] },
-					{ label: "2",  y: [252, 346, 409, 437, 374.5] },
-					{ label: "3",  y: [236, 281.5, 336.5, 428, 313] },
-					{ label: "4",  y: [340, 382, 430, 452, 417] },
-					{ label: "5",  y: [194, 224.5, 342, 384, 251] },
-					{ label: "6",  y: [241, 255, 276.5, 294, 274.5] },
-					{ label: "7",  y: [340, 382, 430, 452, 417] },
-					{ label: "8",  y: [194, 224.5, 342, 384, 251] },
-					{ label: "9",  y: [241, 255, 276.5, 294, 274.5] }
-				]
+				dataPoints: this.props.boxWhiskerData.dataPoints
 			}]
 		}
 		return (

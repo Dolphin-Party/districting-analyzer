@@ -23,54 +23,63 @@ export default class Home extends Component<{}, State> {
       currDem: null,
       submitAvailability: {opacity: '0.2'},
       warnText:'Please select State & Demographic',
+      boxWhiskerJob: {
+        jobId: '',
+        status: '',
+        state: '',
+        randDist: '',
+        comp: '',
+        dem: '',
+        pvap: '',
+        dataPoints: [],
+      },
     };
   }
     handleStateSelect = (state) => {
       this.setState({currState:state})
-      console.log('state ', this.state.currState, state, ' dem ', this.state.currDem)
-      if(state != null && this.state.currDem != null){
-        console.log('not null', state)
-        this.setState({submitAvailability: {opacity: '1'}})
-        this.setState({warnText: ''})
-      }else{
-        console.log('null', state)
-        this.setState({submitAvailability: {opacity: '0.2'}})
-        if(state == null && this.state.currDem == null){
-          this.setState({warnText: 'Please select State & Demographic'})
-        }else if(state == null){
-          this.setState({warnText: 'Please select State'})
-        }else{
-          this.setState({warnText: 'Please select Demographic'})
-        }
-      }
-      console.log('submitAvailability: ', this.state.submitAvailability)
+      this.checkAvailability(state, this.state.currDem)
     }
 
     handleDemSelect= (dem) => {
       this.setState({currDem:dem});
-      console.log('state ', this.state.currState, ' dem ', this.state.currDem)
-      if(dem != null && this.state.currState != null){
+      this.checkAvailability(dem, this.state.currState)
+    }
+
+    handleReset=()=>{
+      this.setState({submitAvailability: {opacity: '0.2'}})
+      this.setState({currState:null});
+      this.setState({currDem:null});
+      this.setState({warnText: 'Please select State & Demographic'})
+    }
+
+    checkAvailability = (option1, option2) =>{
+      if(option1 != null && option2 != null){
         this.setState({submitAvailability: {opacity: '1'}})
         this.setState({warnText: ''})
       }else{
         this.setState({submitAvailability: {opacity: '0.2'}})
-        if(dem== null && this.state.currState == null){
+        if(option1 == null && option2 == null){
           this.setState({warnText: 'Please select State & Demographic'})
-        }else if(dem == null){
+        }else if(option1 == null){
           this.setState({warnText: 'Please select State'})
         }else{
           this.setState({warnText: 'Please select Demographic'})
         }
       }
-      console.log('submitAvailability: ', this.state.submitAvailability)
+    }
+
+    handleBoxWhiskerSelect = (data) => {
+      console.log("in home ", data)
+      this.setState({boxWhiskerJob: data});
+      console.log(this.state.boxWhiskerJob)
     }
 
   render() {
     return (
       <div>
-      <LeafletMap currState={this.state.currState} currDem={this.state.currDem} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect}/>
-      <SeawulfClientControl currState={this.state.currState} currDem={this.state.currDem} submitAvailability={this.state.submitAvailability} warnText={this.state.warnText}/>
-      <DataControl/>
+      <LeafletMap currState={this.state.currState} currDem={this.state.currDem} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect} onReset={this.handleReset}/>
+      <SeawulfClientControl currState={this.state.currState} currDem={this.state.currDem} submitAvailability={this.state.submitAvailability} warnText={this.state.warnText} onBoxWhiskerSelect={this.handleBoxWhiskerSelect}/>
+      <DataControl boxWhiskerData={this.state.boxWhiskerJob}/>
       </div>
     )
   }

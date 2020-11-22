@@ -27,45 +27,11 @@ export default class RequestJobTab extends Component<{}, State> {
       dem: null,
       pvap: null,
       buttonOption: 'Cancel',
+      boxWhiskerAvailability: {opacity: '0.2'},
     };
-    this.handleLoad = this.handleLoad.bind(this)
     this.handleJobAdd = this.handleJobAdd.bind(this)
-    this.submitAvailability = this.submitAvailability.bind(this)
-  }
-  componentDidMount() {
-   window.addEventListener('load', this.handleLoad);
-}
-  componentWillUnmount() {
-    window.removeEventListener('load', this.handleLoad)
-  }
-  componentDidUpdate(prevProps) {
-    console.log("hLELO")
-    // this.submitAvailability();
-    if (prevProps.state != this.props.state || prevProps.dem != this.props.dem ) {
-      // this.submitAvailability();
-    }
   }
 
-  submitAvailability(){
-    if(submitButton[0]){
-      if(this.props.state != null && this.props.dem != null){
-        submitButton[0].disabled = false;
-        warnText[0].innerHTML = '';
-      }else{
-        if(this.props.state == null && this.props.dem == null){
-          warnText[0].innerHTML = 'Please select State and Demographic';
-        }else if(this.props.state == null){
-          warnText[0].innerHTML = 'Please select State';
-        }else if(this.props.dem == null){
-          warnText[0].innerHTML = 'Please select Demographic';
-      }
-      submitButton[0].disabled = true;
-    }
-  }
-}
-  handleLoad() {
-    // this.submitAvailability();
-  }
   handleJobAdd = () =>{
     if(this.props.submitAvailability.opacity == 1){
       this.props.onJobAdd(this.state);
@@ -86,7 +52,6 @@ export default class RequestJobTab extends Component<{}, State> {
   render() {
     const randDistBound = {min: 0, max: 5000};
     const vapBound = {min:0, max:100}
-    // this.submitAvailability();
     console.log('props ---', this.props.submitAvailability);
     return (
       <div className='job-request'>

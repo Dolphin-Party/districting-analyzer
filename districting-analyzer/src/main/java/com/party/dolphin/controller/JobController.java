@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 // TODO: Return DTO instead of model objects
 @Controller
+@RequestMapping(path="/backend")
 public class JobController {
 
     @Autowired

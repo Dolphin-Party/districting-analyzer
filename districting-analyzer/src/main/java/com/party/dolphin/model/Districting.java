@@ -16,42 +16,44 @@ public class Districting {
     private int districtingIndex;
     private List<District> districts;
 
-    /* Getters */
+    /* Properties */
     @Id
     @GeneratedValue
     public int getId() {
         return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     @ManyToOne
     public Job getJob() {
         return this.job;
     }
+    public void setJob(Job job) {
+        this.job = job;
+    }
 
     public DemographicType getTargetDemographic() {
         return this.targetDemographic;
     }
+    public void setTargetDemographic(DemographicType targetDemographic) {
+        this.targetDemographic = targetDemographic;
+    }
 
     public int getDistrictingIndex() {
         return this.districtingIndex;
+    }
+    public void setDistrictingIndex(int districtingIndex) {
+        this.districtingIndex = districtingIndex;
     }
 
     @OneToMany(mappedBy="districting")
     public List<District> getDistricts() {
         return this.districts;
     }
-
-    /* Setters */
-    // TODO: setTargetDemographic needed?
-	public void setTargetDemographic(DemographicType targetDemographic) {
-        this.targetDemographic = targetDemographic;
-    }
-    public void setDistrictingIndex(int districtingIndex) {
-        this.districtingIndex = districtingIndex;
-    }
     public void setDistricts(List<District> districts) {
         this.districts = districts;
     }
-
 
 }

@@ -18,31 +18,50 @@ public class Precinct {
     private int population;
     private EnumMap<DemographicType, Integer> demographics;
 
-    /* Getters */
+    /* Properties */
     @Id
     public int getId() {
         return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     @ManyToOne
     public County getCounty() {
         return this.county;
     }
+    public void setCounty(County county) {
+        this.county = county;
+    }
 
     public String getShape() {
         return this.shape;
+    }
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 
     @ManyToMany
     public Set<Precinct> getNeighbors() {
         return this.neighbors;
     }
+    public void setNeighbors(Set<Precinct> neighbors) {
+        this.neighbors = neighbors;
+    }
 
     public int getPopulation() {
         return this.population;
+    }
+    public void setPopulation(int population) {
+        this.population = population;
     }
 
     public EnumMap<DemographicType,Integer> getDemographics() {
         return this.demographics;
     }
+    public void setDemographics(EnumMap<DemographicType,Integer> demographics) {
+        this.demographics = demographics;
+    }
+
 }

@@ -18,52 +18,55 @@ public class District {
     private double targetDemographicPercentVAP;
     private int order;
 
-    /* Getters */
+    /* Properties */
     @Id
     @GeneratedValue
     public int getId() {
         return this.id;
     }
-
-    @ManyToMany
-    public List<Precinct> getPrecincts() {
-        return this.precincts;
+    public void setId(int id) {
+        this.id = id;
     }
 
     @ManyToOne
     public Districting getDistricting() {
         return this.districting;
     }
+    public void setDistricting(Districting districting) {
+        this.districting = districting;
+    }
+
+    @ManyToMany
+    public List<Precinct> getPrecincts() {
+        return this.precincts;
+    }
+    public void setPrecincts(List<Precinct> precincts) {
+        this.precincts = precincts;
+    }
 
     public int getNumberCounties() {
         return this.numberCounties;
+    }
+    public void setNumberCounties(int numberCounties) {
+        this.numberCounties = numberCounties;
     }
 
     public DemographicType getTargetDemographic() {
         return this.targetDemographic;
     }
+    public void setTargetDemographic(DemographicType targetDemographic) {
+        this.targetDemographic = targetDemographic;
+    }
 
     public double getTargetDemographicPercentVAP() {
         return this.targetDemographicPercentVAP;
     }
+    public void setTargetDemographicPercentVAP(double targetDemographicPercentVAP) {
+        this.targetDemographicPercentVAP = targetDemographicPercentVAP;
+    }
 
     public int getOrder() {
         return this.order;
-    }
-
-    /* Setters*/
-    // TODO: setPrecincts needed?
-	public void setPrecincts(List<Precinct> precincts) {
-        this.precincts = precincts;
-    }
-    public void setNumberCounties(int numberCounties) {
-        this.numberCounties = numberCounties;
-    }
-    public void setTargetDemographic(DemographicType targetDemographic) {
-        this.targetDemographic = targetDemographic;
-    }
-    public void setTargetDemographicPercentVAP(double targetDemographicPercentVAP) {
-        this.targetDemographicPercentVAP = targetDemographicPercentVAP;
     }
     public void setOrder(int order) {
         this.order = order;

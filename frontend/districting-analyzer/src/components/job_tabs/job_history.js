@@ -49,31 +49,7 @@ export default class JobHistoryTab extends Component<{}, State> {
 
   handleJobDataPlot=(e,key,job)=>{
     if (job.boxWhiskerAvailability.opacity == '1'){
-      console.log("Job #", job, " has been selected for box whisker");
-      var data= {
-        jobId: key,
-        status: job.status,
-        state: job.state,
-        randDist: job.randDist,
-        comp: job.comp,
-        dem: job.dem,
-        pvap: job.pvap,
-        dataPoints: [
-  				{ label: "1",  y: [179, 256, 300, 418, 274] },
-  				{ label: "2",  y: [252, 346, 409, 437, 374.5] },
-  				{ label: "3",  y: [236, 281.5, 336.5, 428, 313] },
-  				{ label: "4",  y: [340, 382, 430, 452, 417] },
-  				{ label: "5",  y: [194, 224.5, 342, 384, 251] },
-  				{ label: "6",  y: [241, 255, 276.5, 294, 274.5] },
-  				{ label: "7",  y: [340, 382, 430, 452, 417] },
-  				{ label: "8",  y: [194, 224.5, 342, 384, 251] },
-  				{ label: "9",  y: [241, 255, 276.5, 294, 274.5] },
-  				{ label: "10",  y: [241, 255, 276.5, 294, 274.5] },
-  				{ label: "11",  y: [241, 255, 276.5, 294, 274.5] },
-  				{ label: "12",  y: [241, 255, 276.5, 294, 274.5] },
-  			],
-      }
-      this.props.requestJobData(data);
+      this.props.requestJobData(key);
     }
   }
 

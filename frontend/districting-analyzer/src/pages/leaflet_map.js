@@ -1,4 +1,5 @@
 import React, { Component, useState, useRef} from 'react'
+import axios from 'axios';
 import { Link } from "react-router-dom";
 import L from "leaflet";
 
@@ -32,6 +33,7 @@ const layerControl= document.getElementsByClassName('leaflet-control-layers');
 export default class LeafletMap extends Component<{}, State> {
   constructor(props) {
     super(props);
+
     this.state = {
       originalState: "True",
       lat: 37.090240,
@@ -70,12 +72,23 @@ export default class LeafletMap extends Component<{}, State> {
     };
     this.resetMap = this.resetMap.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
+    this.mapClick= this.mapClick.bind(this);
   }
 
   componentDidMount() {
-    fetch('api/states')
-      .then(response => response.json())
-      .then(data => this.setState({states:data}));
+    console.log("leaflet component did mount")
+    // axios.get("/backend/state/all/info").then(
+    //       result => {
+    //         this.setState({
+    //           states: result.data,
+    //         });
+    //       },
+    //       error => {
+    //         this.setState({
+    //           error
+    //         });
+    //       }
+    //       );
   }
 
   onEachFeature = (component, feature, layer) => {
@@ -133,6 +146,12 @@ export default class LeafletMap extends Component<{}, State> {
     this.props.onStateSelect(stateName);
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     }
+
+  mapClick(){
+    if(this.state.stateName == ''){
+    console.log("clicked map");
+  }
+  }
 
 
   resetMap(){
@@ -211,7 +230,7 @@ export default class LeafletMap extends Component<{}, State> {
 
       <div className='leaflet-container'>
 
-        <Map center={position} zoom={this.state.zoom} ref={this.mapRef}>
+        <Map center={position} zoom={this.state.zoom} ref={this.mapRef} onClick={this.mapClick}>
         <div className='map-information'>
           <p className='state-info'> State Name: {this.state.stateName}</p>
           <p className='state-info'> State Density: {this.state.stateDensity}</p>

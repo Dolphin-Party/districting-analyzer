@@ -14,6 +14,8 @@ import MapViewFilter from './map-view-filter'
 import SeawulfClientControl from './seawulf-client-control'
 import DataControl from './data-control'
 
+const ReactDOM = require('react-dom');
+// const client = require('./client');
 
 export default class Home extends Component<{}, State> {
   constructor(props) {
@@ -69,9 +71,7 @@ export default class Home extends Component<{}, State> {
     }
 
     handleBoxWhiskerSelect = (data) => {
-      console.log("in home ", data)
       this.setState({boxWhiskerJob: data});
-      console.log(this.state.boxWhiskerJob)
     }
 
   render() {

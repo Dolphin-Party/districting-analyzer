@@ -6,7 +6,7 @@ USE dolphins;
 CREATE TABLE IF NOT EXISTS States (
 	ID int PRIMARY KEY AUTO_INCREMENT,
     `name` varchar(255),
-    canonicalDistrictingID int NOT NULL
+    canonicalDistrictingID int
 );
 
 CREATE TABLE IF NOT EXISTS Counties (

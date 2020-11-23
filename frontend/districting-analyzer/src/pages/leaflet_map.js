@@ -2,16 +2,13 @@ import React, { Component, useState, useRef} from 'react'
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import L from "leaflet";
-
 import { Map, TileLayer, GeoJSON, LayersControl, LayerGroup, Marker} from 'react-leaflet'
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown'
-import RangeSlider from 'react-bootstrap-range-slider';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
+import data from '../assets/geojson/VirginiaPrecincts2016.geojson'
+// import test from '../assets/geojson/test.json'
+
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
@@ -53,30 +50,30 @@ export default class LeafletMap extends Component<{}, State> {
         {"type":"Feature","id":"05","properties":{"name":"Arkansas","density":56.43,  "lat": 34.799999, "lng": -92.199997, "population":"710,231", "numDistricts":"4"},"geometry":{"type":"Polygon","coordinates":[[[-94.473842,36.501861],[-90.152536,36.496384],[-90.064905,36.304691],[-90.218259,36.184199],[-90.377091,35.997983],[-89.730812,35.997983],[-89.763673,35.811767],[-89.911551,35.756997],[-89.944412,35.603643],[-90.130628,35.439335],[-90.114197,35.198349],[-90.212782,35.023087],[-90.311367,34.995703],[-90.251121,34.908072],[-90.409952,34.831394],[-90.481152,34.661609],[-90.585214,34.617794],[-90.568783,34.420624],[-90.749522,34.365854],[-90.744046,34.300131],[-90.952169,34.135823],[-90.891923,34.026284],[-91.072662,33.867453],[-91.231493,33.560744],[-91.056231,33.429298],[-91.143862,33.347144],[-91.089093,33.13902],[-91.16577,33.002096],[-93.608485,33.018527],[-94.041164,33.018527],[-94.041164,33.54979],[-94.183564,33.593606],[-94.380734,33.544313],[-94.484796,33.637421],[-94.430026,35.395519],[-94.616242,36.501861],[-94.473842,36.501861]]]}}
         ]
       },
-    precincts: {"type":"Precincts","features":
-          [
-            {"type":"Feature","id":"01","properties":{"name":"Alabama","density":94.65},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}}
-          ]
-        },
+    precincts: null,
     precinctDisplay: false,
     districts: {},
     demographics: {
-      0:'Black or African American',
-      1:'Non-Hispanic White',
-      2:'Hispanic and Latino',
-      3:'Asian',
-      4:'Native Americans and Alaska Natives',
-      5:'Native Hawaiians and Other Pacific Islanders',
-      6:'Two or more races'
+      0:'black',
+      1:'whiteNonHispanic',
+      2:'hispanic',
+      3:'asian',
+      4:'americanIndian',
+      5:'pacific',
+      6:'twoOrMoreRaces'
     }
     };
+    this.setPrecincts = this.setPrecincts.bind(this);
     this.resetMap = this.resetMap.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
     this.mapClick= this.mapClick.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+    this.getPrecincts = this.getPrecincts.bind(this);
   }
 
   componentDidMount() {
     console.log("leaflet component did mount")
+    // this.setPrecincts()
     // axios.get("/backend/state/all/info").then(
     //       result => {
     //         this.setState({
@@ -90,6 +87,64 @@ export default class LeafletMap extends Component<{}, State> {
     //       }
     //       );
   }
+
+
+//   fetchData() {
+//   // Get the current 'global' time from an API using Promise
+//   return new Promise((resolve, reject) => {
+//     var temp;
+//     setTimeout(function() {
+//       fetch(data).then(function(response){
+//           console.log('response ', response)
+//           return response.json();
+//         })
+//         .then(function(myJson) {
+//           console.log('myJson ', myJson)
+//           temp = myJson
+//           return myJson
+//         })
+//     }, 5000)
+//   })
+// }
+
+helper(item1, item2){
+  this.setState({item1: item2});
+  console.log("Success...I think")
+}
+
+  setPrecincts(){
+    console.log("before call")
+    var temp;
+    const res = new Promise(function (resolve, reject) {
+      fetch(data).then(function(response){
+          console.log('response ', response)
+          return response.json();
+        })
+        .then(function(myJson) {
+          console.log('myJson ', myJson)
+          temp = myJson
+          resolve(myJson)
+        })
+    });
+    res.then(function(promiseResolutionValue){
+      console.log("checking", promiseResolutionValue)
+      return promiseResolutionValue
+    }).then((promiseResolutionValue) => this.setState({precincts:promiseResolutionValue})).then(() => console.log(this.state.precincts))
+
+    // .then(() =>
+    //   this.setState({precincts:promiseResolutionValue});
+    //   console.log("um ", this.state.precincts))
+  }
+
+  getPrecincts(){
+    // print("Getting PRecincts", this.state.precincts)
+    return {"type":"Precincts","features":
+          [
+            {"type":"Feature","id":"01","properties":{"name":"Alabama","density":94.65},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}}
+          ]
+        }
+  }
+
 
   onEachFeature = (component, feature, layer) => {
     layer.on({
@@ -144,6 +199,7 @@ export default class LeafletMap extends Component<{}, State> {
     const stateNumDistricts = e.properties.numDistricts
     layerControl[0].style.visibility = 'visible';
     this.props.onStateSelect(stateName);
+    console.log("PRecincts ", this.state.precincts)
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     }
 
@@ -258,7 +314,7 @@ export default class LeafletMap extends Component<{}, State> {
           })}
           onEachFeature={this.onEachFeature.bind(null, this)}
           ></GeoJSON>
-          <Overlay name="Precinct Borders">
+        <Overlay name="Precinct Borders">
               <LayerGroup id="lg1" ref={firstOverlayRef}>
             <GeoJSON key="precinctLayer"
               data={this.state.precincts}

@@ -1,5 +1,4 @@
-from typing import List
-from helpers import PrecinctSubgraph
+from precinct_graph import PrecinctSubgraph
 from shapely.ops import unary_union
 
 

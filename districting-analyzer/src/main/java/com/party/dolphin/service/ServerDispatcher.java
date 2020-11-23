@@ -1,12 +1,23 @@
 package com.party.dolphin.service;
 
 import com.party.dolphin.model.*;
+import com.party.dolphin.model.enums.JobStatus;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServerDispatcher {
-    public boolean runJob(Job job) {
-        return true;
+    public Job runJob(Job job) {
+        job.setStatus(JobStatus.running);
+        return job;
+    }
+
+    public Job getJobStatus(Job job) {
+        return job;
+    }
+
+    public Job cancelJob(Job job) {
+        job.setStatus(JobStatus.stopped);
+        return job;
     }
 }

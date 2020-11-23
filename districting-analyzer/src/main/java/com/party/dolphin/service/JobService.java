@@ -33,10 +33,7 @@ public class JobService {
         job.setState(state);
         job = jobRepository.save(job);
 
-        if (serverDispatcher.runJob(job))
-            job.setStatus(JobStatus.running);
-        else
-            job.setStatus(JobStatus.error);
+        job = serverDispatcher.runJob(job);
         job = jobRepository.save(job);
         return job.getId();
     }
@@ -47,6 +44,21 @@ public class JobService {
 
     public List<Job> getJobsByState(int stateId) {
         return jobRepository.findAllByStateId(stateId);
+    }
+
+    public Job getJobStatus(int jobId) {
+        Job job = getJob(jobId);
+        job = serverDispatcher.getJobStatus(job);
+        job = jobRepository.save(job);
+        return job;
+    }
+
+    public boolean deleteJob(int jobId) {
+        Job job = getJobStatus(jobId);
+        if (job.getStatus() == JobStatus.running)
+            job = serverDispatcher.cancelJob(job);
+        jobRepository.delete(job);
+        return true;
     }
 
     public Districting getDistricting(int id) {

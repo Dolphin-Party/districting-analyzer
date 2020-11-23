@@ -20,7 +20,16 @@ public class JobController {
 
     @RequestMapping(method=RequestMethod.POST, value="/job/init")
     public int addJob(@RequestBody JobDto job) {
-        System.out.println(job);
         return jobService.addJob(job);
+    }
+
+    @RequestMapping(method=RequestMethod.GET, value="/job/{jobId}/status")
+    public Job checkStatus(@PathVariable int jobId) {
+        return jobService.getJobStatus(jobId);
+    }
+
+    @RequestMapping(method=RequestMethod.POST, value="/job/{jobId}/delete")
+    public boolean deleteJob(@PathVariable int jobId) {
+        return jobService.deleteJob(jobId);
     }
 }

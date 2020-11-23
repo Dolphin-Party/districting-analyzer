@@ -32,7 +32,7 @@ public class Job {
     @SequenceGenerator(
         name="jobIdSequence",
         sequenceName="JobIdSequence",
-        allocationSize=10
+        allocationSize=5
     )
     @Column(name="ID", updatable=false)
     public int getId() {

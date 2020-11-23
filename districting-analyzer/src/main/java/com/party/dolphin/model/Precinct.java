@@ -77,4 +77,8 @@ public class Precinct {
         this.demographics = demographics;
     }
 
+    /* Other Methods */
+    public int getVAP(DemographicType demographic) {
+        return this.demographics.get(demographic);
+    }
 }

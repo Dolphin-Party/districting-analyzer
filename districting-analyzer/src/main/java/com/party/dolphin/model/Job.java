@@ -140,7 +140,9 @@ public class Job {
     }
 
     private void genOrderedDistricts() {
-        return;
+        for (Districting d : this.districtings) {
+            d.genOrderedDistricts(this.targetDemographic);
+        }
     }
 
     private void genBoxWhiskerData() {

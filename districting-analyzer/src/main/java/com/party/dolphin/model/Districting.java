@@ -3,6 +3,7 @@ package com.party.dolphin.model;
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -74,4 +75,33 @@ public class Districting {
         }
     }
 
+    protected void genOrderedDistricts(DemographicType demographic) {
+        List<District> orderedList = new ArrayList<District>(districts.size());
+        double percentVap;
+        for (District di : this.districts) {
+            percentVap = di.getPercentVAP(demographic);
+            di.setTargetDemographic(demographic);
+            di.setTargetDemographicPercentVap(percentVap);
+            orderedList = insertOrderedDistrict(orderedList, di);
+        }
+        this.setDistrictsOrder(orderedList);
+        return;
+    }
+
+    private List<District> insertOrderedDistrict(List<District> list, District di) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getTargetDemographicPercentVap() > di.getTargetDemographicPercentVap()) {
+                list.add(i, di);
+                return list;
+            }
+        }
+        list.add(di);
+        return list;
+    }
+
+    private void setDistrictsOrder(List<District> orderedList) {
+        for (int i = 0; i < orderedList.size(); i++) {
+            orderedList.get(i).setOrder(i+i);
+        }
+    }
 }

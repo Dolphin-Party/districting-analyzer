@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS PrecinctNeighbors (
 );
 
 CREATE TABLE IF NOT EXISTS Jobs (
-	ID int PRIMARY KEY AUTO_INCREMENT,
+	ID int PRIMARY KEY,
     stateID int NOT NULL,
     FOREIGN KEY (stateID) REFERENCES States(ID),
     `status` varchar(255),
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
 );
 
 CREATE TABLE IF NOT EXISTS Districtings (
-	ID int PRIMARY KEY AUTO_INCREMENT,
+	ID int PRIMARY KEY,
     jobID int,
     FOREIGN KEY (jobID) REFERENCES Jobs(ID),
     targetDemographic varchar(255),
@@ -64,7 +64,7 @@ ADD CONSTRAINT FK_CanonicalDistricting
 FOREIGN KEY (canonicalDistrictingID) REFERENCES Districtings(ID);
 
 CREATE TABLE IF NOT EXISTS Districts (
-	ID int PRIMARY KEY AUTO_INCREMENT,
+	ID int PRIMARY KEY,
     districtingID int,
     FOREIGN KEY (districtingID) REFERENCES Districtings(ID),
     numberCounties int,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS DistrictPrecincts (
 );
 
 CREATE TABLE IF NOT EXISTS BoxWhiskers (
-	ID int PRIMARY KEY AUTO_INCREMENT,
+	ID int PRIMARY KEY,
     jobID int,
     FOREIGN KEY (jobID) REFERENCES Jobs(ID),
     `order` int,
@@ -91,3 +91,22 @@ CREATE TABLE IF NOT EXISTS BoxWhiskers (
     q3 double,
     max double
 );
+
+-- tables for hibernate sequence generation
+CREATE TABLE IF NOT EXISTS JobIdSequence (
+  `next_val` bigint(20) DEFAULT NULL
+);
+CREATE TABLE IF NOT EXISTS DistrictingIdSequence (
+  `next_val` bigint(20) DEFAULT NULL
+);
+CREATE TABLE IF NOT EXISTS DistrictIdSequence (
+  `next_val` bigint(20) DEFAULT NULL
+);
+CREATE TABLE IF NOT EXISTS BoxWhiskerIdSequence (
+  `next_val` bigint(20) DEFAULT NULL
+);
+
+INSERT INTO JobIdSequence VALUE (1);
+INSERT INTO DistrictingIdSequence VALUE (1);
+INSERT INTO DistrictIdSequence VALUE (1);
+INSERT INTO BoxWhiskerIdSequence VALUE (1);

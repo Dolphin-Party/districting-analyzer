@@ -1,3 +1,5 @@
+USE dolphins;
+
 INSERT INTO States (`name`)
 VALUES ('Arkansas');
 

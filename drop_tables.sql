@@ -1,3 +1,5 @@
+USE dolphins;
+
 DROP TABLE IF EXISTS PrecinctNeighbors;
 DROP TABLE IF EXISTS PrecinctDemographics;
 DROP TABLE IF EXISTS DistrictPrecincts;
@@ -10,3 +12,8 @@ DROP TABLE IF EXISTS BoxWhiskers;
 DROP TABLE IF EXISTS Jobs;
 DROP TABLE IF EXISTS Counties;
 DROP TABLE IF EXISTS States;
+
+DROP TABLE IF EXISTS JobIdSequence;
+DROP TABLE IF EXISTS DistrictingIdSequence;
+DROP TABLE IF EXISTS DistrictIdSequence;
+DROP TABLE IF EXISTS BoxWhiskerIdSequence;

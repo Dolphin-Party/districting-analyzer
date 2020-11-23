@@ -22,10 +22,18 @@ public class Job {
     private List<BoxWhisker> boxWhiskerData;
     private int averageDistricting;
     private int extremeDistricting;
+
+    /* Constructor */
+    public Job() { }
     
     /* Properties */
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator="jobIdSequence", strategy=GenerationType.SEQUENCE)
+    @SequenceGenerator(
+        name="jobIdSequence",
+        sequenceName="JobIdSequence",
+        allocationSize=10
+    )
     @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;

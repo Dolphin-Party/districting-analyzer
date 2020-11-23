@@ -21,7 +21,12 @@ public class District {
 
     /* Properties */
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator="districtIdSequence", strategy=GenerationType.SEQUENCE)
+    @SequenceGenerator(
+        name="districtIdSequence",
+        sequenceName="DistrictIdSequence",
+        allocationSize=50
+    )
     @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;

@@ -20,6 +20,12 @@ public class BoxWhisker {
 
     /* Properties */
     @Id
+    @GeneratedValue(generator="boxWhiskerIdSequence", strategy=GenerationType.SEQUENCE)
+    @SequenceGenerator(
+        name="boxWhiskerIdSequence",
+        sequenceName="BoxWhiskerIdSequence",
+        allocationSize=10
+    )
     @Column(name="ID", updatable=false)
     public int getId() {
         return this.id;

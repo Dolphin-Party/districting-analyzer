@@ -97,7 +97,7 @@ public class District {
         this.setNumberCounties(countySet.size());
     }
 
-    protected double getPercentVAP(DemographicType demographic) {
+    protected double computePercentVAP(DemographicType demographic) {
         int totalVAP = 0;
         int totalPopulation = 0;
         for (Precinct p : this.precincts) {

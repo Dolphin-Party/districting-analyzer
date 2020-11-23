@@ -3,6 +3,7 @@ package com.party.dolphin.model;
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.*;
@@ -84,6 +85,16 @@ public class District {
     }
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    /* Other Methods */
+    protected void calcNumberCounties() {
+        HashSet<County> countySet = new HashSet<County>();
+        for (Precinct p : this.precincts) {
+            County c = p.getCounty();
+            countySet.add(c);
+        }
+        this.setNumberCounties(countySet.size());
     }
 
 }

@@ -19,27 +19,8 @@ public class JobController {
     private JobService jobService;
 
     @RequestMapping(method=RequestMethod.POST, value="/job/init")
-    public String addJob(@RequestBody JobDto job) {
-        return "Hello";
-    }
-    
-    @GetMapping("/job/{jobId}")
-    public Job getJob(@PathVariable int jobId) {
-        return jobService.getJob(jobId);
-    }
-
-    @GetMapping("/districting/{districtingId}")
-    public Districting getDistricting(@PathVariable int districtingId) {
-        return jobService.getDistricting(districtingId);
-    }
-
-    @GetMapping("/district/{districtId}")
-    public District getDistrict(@PathVariable int districtId) {
-        return jobService.getDistrict(districtId);
-    }
-
-    @GetMapping("/districting/{districtingId}/districts")
-    public List<District> getDistrictingDistricts(@PathVariable int districtingId) {
-        return jobService.getAllDistrictsByDistrictingId(districtingId);
+    public int addJob(@RequestBody JobDto job) {
+        System.out.println(job);
+        return jobService.addJob(job);
     }
 }

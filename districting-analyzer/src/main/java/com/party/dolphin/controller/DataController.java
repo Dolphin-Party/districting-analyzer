@@ -2,7 +2,7 @@ package com.party.dolphin.controller;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.*;
-import com.party.dolphin.service.DataService;
+import com.party.dolphin.service.*;
 
 import java.util.List;
 
@@ -17,6 +17,8 @@ public class DataController {
 
     @Autowired
     private DataService dataService;
+    @Autowired
+    private JobService jobService;
 
     @GetMapping("/state/{stateId}")
     public State getState(@PathVariable int stateId) {
@@ -57,5 +59,25 @@ public class DataController {
     @GetMapping("/county/{countyId}/precincts")
     public List<Precinct> getCountyPrecincts(@PathVariable int countyId) {
         return dataService.getPrecinctsByCounty(countyId);
+    }
+
+    @GetMapping("/job/{jobId}")
+    public Job getJob(@PathVariable int jobId) {
+        return jobService.getJob(jobId);
+    }
+
+    @GetMapping("/districting/{districtingId}")
+    public Districting getDistricting(@PathVariable int districtingId) {
+        return jobService.getDistricting(districtingId);
+    }
+
+    @GetMapping("/district/{districtId}")
+    public District getDistrict(@PathVariable int districtId) {
+        return jobService.getDistrict(districtId);
+    }
+
+    @GetMapping("/districting/{districtingId}/districts")
+    public List<District> getDistrictingDistricts(@PathVariable int districtingId) {
+        return jobService.getAllDistrictsByDistrictingId(districtingId);
     }
 }

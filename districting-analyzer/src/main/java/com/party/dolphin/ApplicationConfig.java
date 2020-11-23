@@ -1,4 +1,4 @@
-// package com.party.dolphin.configurations;
+// package com.party.dolphin;
 
 // import javax.sql.DataSource;
 

@@ -125,7 +125,8 @@ public class Job {
         this.extremeDistricting = extremeDistricting;
     }    
 
-    /* Other Methods */
+    /* Server Processing */
+    // TODO: Test these methods
     public void analyzeJobResults() {
         this.calcNumberCounties();
         this.genOrderedDistricts();

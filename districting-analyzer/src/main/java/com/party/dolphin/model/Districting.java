@@ -68,7 +68,7 @@ public class Districting {
         this.districts = districts;
     }
 
-    /* Other Methods */
+    /* Server Processing */
     protected void calcNumberCounties() {
         for (District di : this.districts) {
             di.calcNumberCounties();

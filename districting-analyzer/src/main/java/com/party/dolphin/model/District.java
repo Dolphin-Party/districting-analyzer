@@ -87,7 +87,7 @@ public class District {
         this.order = order;
     }
 
-    /* Other Methods */
+    /* Server Processing */
     protected void calcNumberCounties() {
         HashSet<County> countySet = new HashSet<County>();
         for (Precinct p : this.precincts) {

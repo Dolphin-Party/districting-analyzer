@@ -68,6 +68,19 @@ export default class LeafletMap extends Component<{}, State> {
       6:'twoOrMoreRaces'
     },
     mapRef: mapRef,
+    heatMapStyles: {
+      0:{backgroundColor: '#FFEDA0'},
+      1:{backgroundColor: '#FED976'},
+      2:{backgroundColor: '#FEB24C'},
+      3:{backgroundColor: '#FD8D3C'},
+      4:{backgroundColor: '#FC4E2A'},
+      5:{backgroundColor: '#E31A1C'},
+      6:{backgroundColor: '#BD0026'},
+      7:{backgroundColor: '#800026'},
+      8:{backgroundColor: '#5e001c'},
+      9:{backgroundColor: '#360010'},
+      10:{backgroundColor: 'blue'},
+    }
     };
     // this.setPrecincts = this.setPrecincts.bind(this);
     this.resetMap = this.resetMap.bind(this);
@@ -224,6 +237,18 @@ helper(item1, item2){
   }
   }
 
+  getColor(){
+    return "backgroundColor:blue"
+    // return d > 1000 ? '#800026' :
+    //    d > 60  ? '#BD0026' :
+    //    d > 50  ? '#E31A1C' :
+    //    d > 40  ? '#FC4E2A' :
+    //    d > 30  ? '#FD8D3C' :
+    //    d > 20  ? '#FEB24C' :
+    //    d > 10  ? '#FED976' :
+    //             '#FFEDA0';
+  }
+
   resetMap(){
     layerControl[0].style.visibility = 'hidden';
     layerControl[1].style.visibility = 'hidden';
@@ -269,7 +294,6 @@ helper(item1, item2){
     const states = this.state.states;
     const position = [this.state.lat, this.state.lng]
     const stateName = [this.state.name]
-    // const firstOverlayRef = useRef();
     const mapboxAccessToken = 'pk.eyJ1IjoiZG9scGhpbi1wYXJ0eSIsImEiOiJja2ZwcmpoemwwbW8zMnJuNTVha2I3aHV0In0.Y1agteWswtHBaLViI2UWig';
     const useStyles = makeStyles({
       root: {
@@ -279,6 +303,7 @@ helper(item1, item2){
         width: 42,
       },
     });
+    const heatMapGrades = [0,20,30,40,50,60,70,80,90]
 
     return (
       <div className='leftside'>
@@ -320,6 +345,14 @@ helper(item1, item2){
           <p className='state-info'> State Density: {this.state.stateDensity}</p>
           <p className='state-info'> Population: {this.state.statePopulation}</p>
           <p className='state-info'> Number of Districts: {this.state.stateNumDistricts}</p>
+        </div>
+        <div className='heatMapLegend'>
+          {heatMapGrades.map((grade, i, array) =>
+            <div className='text'>
+              <i style={this.state.heatMapStyles[i]}></i>
+              <p key={i}>{grade} - {heatMapGrades[i+1]}</p>
+            </div>
+          )}
         </div>
         <button className="reset-button" onClick={this.resetMap}>Reset Map</button>{' '}
         <TileLayer

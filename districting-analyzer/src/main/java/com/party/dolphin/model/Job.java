@@ -125,4 +125,33 @@ public class Job {
         this.extremeDistricting = extremeDistricting;
     }    
 
+    /* Server Processing */
+    // TODO: Test these methods
+    public void analyzeJobResults() {
+        this.calcNumberCounties();
+        this.genOrderedDistricts();
+        this.genBoxWhiskerData();
+        this.findRepresentativeDistrictings();
+    }
+
+    private void calcNumberCounties() {
+        for (Districting d : this.districtings) {
+            d.calcNumberCounties();
+        }
+    }
+
+    private void genOrderedDistricts() {
+        for (Districting d : this.districtings) {
+            d.genOrderedDistricts(this.targetDemographic);
+        }
+    }
+
+    private void genBoxWhiskerData() {
+        return;
+    }
+
+    private void findRepresentativeDistrictings() {
+        return;
+    }
+
 }

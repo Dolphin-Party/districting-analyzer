@@ -3,6 +3,7 @@ package com.party.dolphin.model;
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.*;
@@ -86,4 +87,23 @@ public class District {
         this.order = order;
     }
 
+    /* Server Processing */
+    protected void calcNumberCounties() {
+        HashSet<County> countySet = new HashSet<County>();
+        for (Precinct p : this.precincts) {
+            County c = p.getCounty();
+            countySet.add(c);
+        }
+        this.setNumberCounties(countySet.size());
+    }
+
+    protected double getPercentVAP(DemographicType demographic) {
+        int totalVAP = 0;
+        int totalPopulation = 0;
+        for (Precinct p : this.precincts) {
+            totalVAP += p.getVAP(demographic);
+            totalPopulation += p.getPopulation();
+        }
+        return totalVAP / ((double)totalPopulation);
+    }
 }

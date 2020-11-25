@@ -13,6 +13,8 @@ public class ServerDispatcher {
     }
 
     public Job getJobStatus(Job job) {
+        if (job.getStatus() == JobStatus.finishDistricting)
+            job.analyzeJobResults();
         return job;
     }
 

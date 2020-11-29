@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 import L from "leaflet";
 import { Map, TileLayer, GeoJSON, LayersControl, LayerGroup, Marker} from 'react-leaflet'
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { makeStyles } from '@material-ui/core/styles';
-import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts2016.json'
+// import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts2016.json'
+import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
 import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts.json'
 import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
 // import data from '../assets/geojson/test.json'
@@ -28,7 +31,8 @@ const icon = L.icon({
 });
 
 const layerControl= document.getElementsByClassName('leaflet-control-layers');
-
+const heatMapLegend= document.getElementsByClassName('heatMapLegend');
+const virginiaPrecinctLayer= document.getElementsByClassName('virginiaPrecinctLayer');
 
 export default class LeafletMap extends Component<{}, State> {
   constructor(props) {
@@ -76,17 +80,22 @@ export default class LeafletMap extends Component<{}, State> {
       4:{backgroundColor: '#FC4E2A'},
       5:{backgroundColor: '#E31A1C'},
       6:{backgroundColor: '#BD0026'},
-      7:{backgroundColor: '#800026'},
-      8:{backgroundColor: '#5e001c'},
-      9:{backgroundColor: '#360010'},
-      10:{backgroundColor: 'blue'},
-    }
+      7:{backgroundColor: '#a30021'},
+      8:{backgroundColor: '#85001b'},
+      9:{backgroundColor: '#6e0016'},
+    },
+    heatMapOn: false,
+    heatMapButton: {backgroundColor: '#3B2B59'},
+    heatMapLegendStyle: {visibility: 'hidden'},
+    precinctColor: '#3B2B59',
     };
     // this.setPrecincts = this.setPrecincts.bind(this);
     this.resetMap = this.resetMap.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
     this.mapClick= this.mapClick.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.heatMapOn = this.heatMapOn.bind(this);
+    this.getPrecinctColor = this.getPrecinctColor.bind(this)
     // this.getPrecincts = this.getPrecincts.bind(this);
   }
 
@@ -136,11 +145,12 @@ helper(item1, item2){
     layer.on({
       mouseover: this.highlightFeature,
       mouseout: this.resetHighlight.bind(null, component),
-      click: this.clickSelectState.bind(null, component)
+      click: this.clickSelectState.bind(null, component),
     });
   }
 
   onEachPrecinct = (component, feature, layer) => {
+    // console.log("in OnEachPrecint: ", component, feature, layer)
     layer.on({
       mouseover: this.highlightPrecinct,
       mouseout: this.resetPrecinct.bind(null, component),
@@ -187,17 +197,28 @@ helper(item1, item2){
       fillColor: "white",
       fillOpacity: 0.5,
     });
+    const totalPop = e.target.feature.properties.demographicData.totalPop
+    const blackPop = e.target.feature.properties.demographicData.blackPop
+    // const color = this.getPrecinctColor(blackPop/totalPop)
+
+    // layer.setStyle({
+    //   color: color,
+    //   weight: 1,
+    //   fillColor: color,
+    //   fillOpacity: 1,
+    // });
+    // this.setState({precinctColor: color})
   }
 
   resetPrecinct = (component, e) => {
     var layer = e.target;
 
-    layer.setStyle({
-      color: '#3B2B59',
-      weight: 1,
-      fillColor: "transparent",
-      fillOpacity: 0.5,
-    });
+    // layer.setStyle({
+    //   color: '#3B2B59',
+    //   weight: 1,
+    //   fillColor: "transparent",
+    //   fillOpacity: 0.5,
+    // });
   }
 
   clickSelectState = (component, e) => {
@@ -232,21 +253,66 @@ helper(item1, item2){
     }
 
   mapClick(){
-    if(this.state.stateName == ''){
-    console.log("clicked map");
-  }
+      if(this.state.stateName == ''){
+      console.log("clicked map");
+    }
   }
 
-  getColor(){
-    return "backgroundColor:blue"
-    // return d > 1000 ? '#800026' :
-    //    d > 60  ? '#BD0026' :
-    //    d > 50  ? '#E31A1C' :
-    //    d > 40  ? '#FC4E2A' :
-    //    d > 30  ? '#FD8D3C' :
-    //    d > 20  ? '#FEB24C' :
-    //    d > 10  ? '#FED976' :
-    //             '#FFEDA0';
+  getPrecinctColor = (component, feature, layer) => {
+    if(this.state.heatMapOn){
+      const totalPop = feature.properties.demographicData.totalPop
+      const targetDem = this.props.currDem
+      var targetPop = feature.properties.demographicData
+      switch(targetDem){
+        case 'black':
+          targetPop = targetPop.blackPop
+          break;
+        case 'whiteNonHispanic':
+          targetPop = targetPop.whitePop
+          break;
+        case 'hispanic':
+          targetPop = targetPop.hispaPop
+          break;
+        case 'asian':
+          targetPop = targetPop.asianPop
+          break;
+        case 'americanIndian':
+          targetPop = targetPop.nativPop
+          break;
+        case 'pacific':
+          targetPop = targetPop.hawaiPop
+          break;
+        case 'twoOrMoreRaces':
+          targetPop = targetPop.otherPop
+          break;
+      }
+      const d = (targetPop/totalPop)
+      var color = d > .90 ? '#6e0016' :
+         d > .80  ? '#85001b' :
+         d > .70  ? '#a30021' :
+         d > .60  ? '#BD0026' :
+         d > .50  ? '#E31A1C' :
+         d > .40  ? '#FC4E2A' :
+         d > .30  ? '#FD8D3C' :
+         d > .20  ? '#FEB24C' :
+         d > .10  ? '#FED976' :
+                  '#FFEDA0';
+
+    return {
+      weight: 2,
+      color: color,
+      dashArray: '',
+      fillColor: color,
+      fillOpacity: 1.0,
+    }
+    }else{
+      return {
+        color: '#3B2B59',
+        weight: 1,
+        fillColor: "transparent",
+        fillOpacity: 0.5,
+      }
+    }
   }
 
   resetMap(){
@@ -268,9 +334,9 @@ helper(item1, item2){
     const statePopulation = e.properties.population
     const stateNumDistricts = e.properties.numDistricts
     if(stateName=='Virginia'){
-        layerControl[0].style.visibility = 'visible';
-        layerControl[1].style.visibility = 'hidden';
-        layerControl[2].style.visibility = 'hidden';
+        layerControl[0].style.display = 'block';
+        layerControl[1].style.display = 'none';
+        layerControl[2].style.display = 'none';
     }else if(stateName=='North Carolina'){
         layerControl[1].style.visibility = 'visible';
         layerControl[0].style.visibility = 'hidden';
@@ -290,6 +356,19 @@ helper(item1, item2){
     console.log("DROPDOWN demographic select", this.state.demographics[demId]);
   }
 
+  heatMapOn(e){
+    if(this.state.heatMapOn){
+      console.log("turning off heat map")
+      this.setState({heatMapLegendStyle: {visibility: 'hidden'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
+    }else{
+      if(this.props.currDem != null){
+        this.setState({heatMapLegendStyle: {visibility: 'visible'}, heatMapOn: true, heatMapButton: {backgroundColor: '#3B2B59', borderColor: '#39ff14', borderWidth: 'thick'}})
+      }else{
+        alert("Please select target demographic for heat map")
+      }
+    }
+  }
+
   render() {
     const states = this.state.states;
     const position = [this.state.lat, this.state.lng]
@@ -303,7 +382,7 @@ helper(item1, item2){
         width: 42,
       },
     });
-    const heatMapGrades = [0,20,30,40,50,60,70,80,90]
+    const heatMapGrades = [0,10,20,30,40,50,60,70,80,90]
 
     return (
       <div className='leftside'>
@@ -333,6 +412,7 @@ helper(item1, item2){
                 <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,6)}>Two or more races</Dropdown.Item>
               </Dropdown.Menu>
           </Dropdown>
+          <Button className="button" style={this.state.heatMapButton} onClick={(e) => this.heatMapOn(e)}>Heat Map</Button>
           <p className='currMap-Info'> Selected State: {this.props.currState}</p>
           <p className='currMap-Info'> Selected Demographic: {this.props.currDem}</p>
         </div>
@@ -346,15 +426,18 @@ helper(item1, item2){
           <p className='state-info'> Population: {this.state.statePopulation}</p>
           <p className='state-info'> Number of Districts: {this.state.stateNumDistricts}</p>
         </div>
-        <div className='heatMapLegend'>
+        <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>
             <div className='text'>
               <i style={this.state.heatMapStyles[i]}></i>
-              <p key={i}>{grade} - {heatMapGrades[i+1]}</p>
+              {(heatMapGrades[i+1])
+                ? <p key={i}>{grade}% - {heatMapGrades[i+1]}% </p>
+                : <p key={i}>{grade}% +</p>
+              }
             </div>
           )}
         </div>
-        <button className="reset-button" onClick={this.resetMap}>Reset Map</button>{' '}
+        <button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
@@ -375,17 +458,13 @@ helper(item1, item2){
           onEachFeature={this.onEachFeature.bind(null, this)}
           ></GeoJSON>
         <LayersControl position="topright">
-        <Overlay name="Precinct Borders V">
+        <Overlay name="Precinct Borders">
               <LayerGroup id="lg1" ref={firstOverlayRef}>
             <GeoJSON key="precinctLayer"
-              id='precinctLayer'
+              id='virginiaPrecinctLayer'
+              className='virginiaPrecinctLayer'
               data={this.state.precincts.virginia}
-              style={() => ({
-              color: '#3B2B59',
-              weight: 1,
-              fillColor: "transparent",
-              fillOpacity: 0.5,
-              })}
+              style={this.getPrecinctColor.bind(null, this)}
               onEachFeature={this.onEachPrecinct.bind(null, this)}
             ></GeoJSON>
           </LayerGroup>
@@ -396,13 +475,13 @@ helper(item1, item2){
       </Overlay>
           </LayersControl>
           <LayersControl position="topright" id="northCarolinaLayers">
-          <Overlay name="Precinct Borders C">
+          <Overlay name="Precinct Borders">
                 <LayerGroup id="lg1" ref={firstOverlayRef}>
               <GeoJSON key="precinctLayer"
                 id='precinctLayer'
                 data={this.state.precincts.northCarolina}
                 style={() => ({
-                color: '#3B2B59',
+                color: this.state.precinctColor,
                 weight: 1,
                 fillColor: "transparent",
                 fillOpacity: 0.5,
@@ -417,13 +496,13 @@ helper(item1, item2){
         </Overlay>
             </LayersControl>
             <LayersControl position="topright" id="arkansasLayers">
-            <Overlay name="Precinct Borders Arkansas">
+            <Overlay name="Precinct Borders">
                   <LayerGroup id="lg1" ref={firstOverlayRef}>
                 <GeoJSON key="precinctLayer"
                   id='precinctLayer'
                   data={this.state.precincts.arkansas}
                   style={() => ({
-                  color: '#3B2B59',
+                  color: this.state.precinctColor,
                   weight: 1,
                   fillColor: "transparent",
                   fillOpacity: 0.5,

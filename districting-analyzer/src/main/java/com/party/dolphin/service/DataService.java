@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DataService {
+
     @Autowired
     private StateRepository stateRepository;
     @Autowired
@@ -22,7 +23,7 @@ public class DataService {
     private ModelConverter modelConverter;
 
     public StateDto getStateDto(int id) {
-        State state = this.getState(id);
+        State state = stateRepository.findById(id);
         return modelConverter.createStateDto(state);
     }
 
@@ -32,7 +33,7 @@ public class DataService {
     }
 
     public CountyDto getCountyDto(int id) {
-        County county = this.getCounty(id);
+        County county = countyRepository.findById(id);
         return modelConverter.createCountyDto(county);
     }
 
@@ -68,14 +69,5 @@ public class DataService {
     // TODO: Implement
     public Set<Precinct> getPrecinctGraph(int stateId) {
         return new HashSet<Precinct>();
-    }
-
-    /* Model accessors */
-    public State getState(int id) {
-        return stateRepository.findById(id);
-    }
-
-    public County getCounty(int id) {
-        return countyRepository.findById(id);
     }
 }

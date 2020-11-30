@@ -67,17 +67,17 @@ public class DataController {
     }
 
     @GetMapping("/districting/{districtingId}")
-    public Districting getDistricting(@PathVariable int districtingId) {
-        return jobService.getDistricting(districtingId);
+    public DistrictingDto getDistricting(@PathVariable int districtingId) {
+        return jobService.getDistrictingDto(districtingId);
     }
 
     @GetMapping("/district/{districtId}")
-    public District getDistrict(@PathVariable int districtId) {
-        return jobService.getDistrict(districtId);
+    public DistrictDto getDistrict(@PathVariable int districtId) {
+        return jobService.getDistrictDto(districtId);
     }
 
     @GetMapping("/districting/{districtingId}/districts")
-    public List<District> getDistrictingDistricts(@PathVariable int districtingId) {
+    public List<DistrictDto> getDistrictingDistricts(@PathVariable int districtingId) {
         return jobService.getAllDistrictsByDistrictingId(districtingId);
     }
 }

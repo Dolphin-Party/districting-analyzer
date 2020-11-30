@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JobService {
+
     @Autowired
     private DataService dataService;
     @Autowired
@@ -70,15 +71,20 @@ public class JobService {
         return true;
     }
 
-    public Districting getDistricting(int id) {
-        return districtingRepository.findById(id);
+    public DistrictingDto getDistrictingDto(int id) {
+        Districting districting = districtingRepository.findById(id);
+        return modelConverter.createDistrictingDto(districting);
     }
 
-    public District getDistrict(int id) {
-        return districtRepository.findById(id);
+    public DistrictDto getDistrictDto(int id) {
+        District district = districtRepository.findById(id);
+        return modelConverter.createDistrictDto(district);
     }
 
-    public List<District> getAllDistrictsByDistrictingId(int districtingId) {
-        return districtRepository.findAllByDistrictingId(districtingId);
+    public List<DistrictDto> getAllDistrictsByDistrictingId(int districtingId) {
+        List<District> districts = districtRepository.findAllByDistrictingId(districtingId);
+        return districts.stream()
+                        .map(d -> modelConverter.createDistrictDto(d))
+                        .collect(Collectors.toList());
     }
 }

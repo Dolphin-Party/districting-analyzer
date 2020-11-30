@@ -1,7 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
-
 import java.util.Set;
 
 import javax.persistence.*;
@@ -48,6 +46,14 @@ public class State {
     }
     public void setCanonicalDistricting(Districting canonicalDistricting) {
         this.canonicalDistricting = canonicalDistricting;
+    }
+
+    /* Other Methods */
+    @Transient
+    public int getPopulation() {
+        return counties.stream()
+                        .mapToInt(c -> c.getPopulation())
+                        .sum();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.ArrayList;

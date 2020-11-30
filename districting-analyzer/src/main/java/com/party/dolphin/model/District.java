@@ -1,10 +1,9 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -14,7 +13,7 @@ public class District {
     /* Fields */
     private int id;
     private Districting districting;
-    private List<Precinct> precincts;
+    private Set<Precinct> precincts;
     private int numberCounties;
     private DemographicType targetDemographic;
     private double targetDemographicPercentVap;
@@ -47,10 +46,10 @@ public class District {
 
     @ManyToMany
     @JoinTable(name="DistrictPrecincts")
-    public List<Precinct> getPrecincts() {
+    public Set<Precinct> getPrecincts() {
         return this.precincts;
     }
-    public void setPrecincts(List<Precinct> precincts) {
+    public void setPrecincts(Set<Precinct> precincts) {
         this.precincts = precincts;
     }
 

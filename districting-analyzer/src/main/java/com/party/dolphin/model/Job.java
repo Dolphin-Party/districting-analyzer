@@ -1,6 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.*;
 
 import java.util.List;

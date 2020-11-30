@@ -1,7 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
-
 import java.util.Set;
 
 import javax.persistence.*;
@@ -59,4 +57,11 @@ public class County {
         this.precincts = precincts;
     }
 
+    /* Other Methods */
+    @Transient
+    public int getPopulation() {
+        return this.precincts.stream()
+                            .mapToInt(p -> p.getPopulation())
+                            .sum();
+    }
 }

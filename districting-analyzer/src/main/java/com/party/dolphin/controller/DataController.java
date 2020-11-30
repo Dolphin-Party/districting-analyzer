@@ -1,13 +1,11 @@
 package com.party.dolphin.controller;
 
 import com.party.dolphin.dto.*;
-import com.party.dolphin.model.*;
 import com.party.dolphin.service.*;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: Return DTO instead of model objects

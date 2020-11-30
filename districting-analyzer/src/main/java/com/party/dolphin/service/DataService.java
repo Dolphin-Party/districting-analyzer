@@ -32,6 +32,13 @@ public class DataService {
         return modelConverter.createStateDto(state);
     }
 
+    public List<StateDto> getAllStateDtos() {
+        List<State> states = stateRepository.findAll();
+        return states.stream()
+                    .map(s -> modelConverter.createStateDto(s))
+                    .collect(Collectors.toList());
+    }
+
     public CountyDto getCountyDto(int id) {
         County county = countyRepository.findById(id);
         return modelConverter.createCountyDto(county);

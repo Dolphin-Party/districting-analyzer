@@ -28,6 +28,11 @@ public class DataController {
         return dataService.getStateDto(stateName);
     }
 
+    @GetMapping("/state/all/info")
+    public List<StateDto> getAllStates() {
+        return dataService.getAllStateDtos();
+    }
+
     // TODO: Redirect instead
     @GetMapping("/state/{stateName}/info")
     public StateDto getStateInfoByName(@PathVariable String stateName) {

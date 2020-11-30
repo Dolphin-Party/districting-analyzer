@@ -17,25 +17,31 @@ public class DataService {
     private CountyRepository countyRepository;
     @Autowired
     private PrecinctRepository precinctRepository;
+    @Autowired
+    private ModelConverter modelConverter;
 
-    public State getState(int id) {
-        return stateRepository.findById(id);
+    public StateDto getStateDto(int id) {
+        State state = this.getState(id);
+        return modelConverter.createStateDto(state);
     }
 
-    public State getState(String name) {
-        return stateRepository.findByName(name);
+    public StateDto getStateDto(String name) {
+        State state = stateRepository.findByName(name);
+        return modelConverter.createStateDto(state);
     }
 
-    public County getCounty(int id) {
-        return countyRepository.findById(id);
+    public CountyDto getCountyDto(int id) {
+        County county = this.getCounty(id);
+        return modelConverter.createCountyDto(county);
     }
 
     public List<County> getCountiesByState(int stateId) {
         return countyRepository.findAllByStateId(stateId);
     }
 
-    public Precinct getPrecinct(int id) {
-        return precinctRepository.findById(id);
+    public PrecinctDto getPrecinctDto(int id) {
+        Precinct precinct = precinctRepository.findById(id);
+        return modelConverter.createPrecinctDto(precinct);
     }
 
     public List<Precinct> getPrecinctsByState(int stateId) {
@@ -55,5 +61,14 @@ public class DataService {
     // TODO: Implement
     public Set<Precinct> getPrecinctGraph(int stateId) {
         return new HashSet<Precinct>();
+    }
+
+    /* Model accessors */
+    private State getState(int id) {
+        return stateRepository.findById(id);
+    }
+
+    private County getCounty(int id) {
+        return countyRepository.findById(id);
     }
 }

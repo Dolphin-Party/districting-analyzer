@@ -21,29 +21,29 @@ public class DataController {
     private JobService jobService;
 
     @GetMapping("/state/{stateId}")
-    public State getState(@PathVariable int stateId) {
-        return dataService.getState(stateId);
+    public StateDto getState(@PathVariable int stateId) {
+        return dataService.getStateDto(stateId);
     }
 
     @GetMapping("/state/{stateName}")
-    public State getStateByName(@PathVariable String stateName) {
-        return dataService.getState(stateName);
+    public StateDto getStateByName(@PathVariable String stateName) {
+        return dataService.getStateDto(stateName);
     }
 
     // TODO: Redirect instead
     @GetMapping("/state/{stateName}/info")
-    public State getStateInfoByName(@PathVariable String stateName) {
-        return dataService.getState(stateName);
+    public StateDto getStateInfoByName(@PathVariable String stateName) {
+        return dataService.getStateDto(stateName);
     }
 
     @GetMapping("/county/{countyId}")
-    public County getCounty(@PathVariable int countyId) {
-        return dataService.getCounty(countyId);
+    public CountyDto getCounty(@PathVariable int countyId) {
+        return dataService.getCountyDto(countyId);
     }
 
     @GetMapping("/precinct/{precinctId}")
-    public Precinct getPrecinct(@PathVariable int precinctId) {
-        return dataService.getPrecinct(precinctId);
+    public PrecinctDto getPrecinct(@PathVariable int precinctId) {
+        return dataService.getPrecinctDto(precinctId);
     }
 
     @GetMapping("/state/{stateId}/counties")
@@ -62,7 +62,7 @@ public class DataController {
     }
 
     @GetMapping("/job/{jobId}")
-    public Job getJob(@PathVariable int jobId) {
+    public JobDto getJob(@PathVariable int jobId) {
         return jobService.getJob(jobId);
     }
 

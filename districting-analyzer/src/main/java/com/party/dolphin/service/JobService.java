@@ -2,6 +2,8 @@ package com.party.dolphin.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.*;
@@ -24,6 +26,8 @@ public class JobService {
     private DistrictingRepository districtingRepository;
     @Autowired
     private DistrictRepository districtRepository;
+    @Autowired
+    private ModelConverter modelConverter;
 
     public int addJob(JobDto jobDto) {
         Job job = new Job();
@@ -38,23 +42,28 @@ public class JobService {
         return job.getId();
     }
 
-    public Job getJob(int id) {
-        return jobRepository.findById(id);
+    public JobDto getJob(int id) {
+        Job job = jobRepository.findById(id);
+        return modelConverter.createJobDto(job);
     }
 
-    public List<Job> getJobsByState(int stateId) {
-        return jobRepository.findAllByStateId(stateId);
+    public List<JobDto> getJobsByState(int stateId) {
+        List<Job> jobs = jobRepository.findAllByStateId(stateId);
+        return jobs.stream()
+            .map(j -> modelConverter.createJobDto(j))
+            .collect(Collectors.toList());
     }
 
-    public Job getJobStatus(int jobId) {
-        Job job = getJob(jobId);
+    public JobDto getJobStatus(int jobId) {
+        Job job = jobRepository.findById(jobId);
         job = serverDispatcher.getJobStatus(job);
         job = jobRepository.save(job);
-        return job;
+        return modelConverter.createJobDto(job);
     }
 
     public boolean deleteJob(int jobId) {
-        Job job = getJobStatus(jobId);
+        Job job = jobRepository.findById(jobId);
+        job = serverDispatcher.getJobStatus(job);
         if (job.getStatus() == JobStatus.running)
             job = serverDispatcher.cancelJob(job);
         jobRepository.delete(job);

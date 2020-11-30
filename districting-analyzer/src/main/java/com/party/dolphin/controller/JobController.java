@@ -24,7 +24,7 @@ public class JobController {
     }
 
     @RequestMapping(method=RequestMethod.GET, value="/job/{jobId}/status")
-    public Job checkStatus(@PathVariable int jobId) {
+    public JobDto checkStatus(@PathVariable int jobId) {
         return jobService.getJobStatus(jobId);
     }
 

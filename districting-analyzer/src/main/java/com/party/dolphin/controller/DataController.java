@@ -47,17 +47,17 @@ public class DataController {
     }
 
     @GetMapping("/state/{stateId}/counties")
-    public List<County> getStateCounties(@PathVariable int stateId) {
+    public List<CountyDto> getStateCounties(@PathVariable int stateId) {
         return dataService.getCountiesByState(stateId);
     }
 
     @GetMapping("/state/{stateId}/precincts")
-    public List<Precinct> getStatePrecincts(@PathVariable int stateId) {
+    public List<PrecinctDto> getStatePrecincts(@PathVariable int stateId) {
         return dataService.getPrecinctsByState(stateId);
     }
 
     @GetMapping("/county/{countyId}/precincts")
-    public List<Precinct> getCountyPrecincts(@PathVariable int countyId) {
+    public List<PrecinctDto> getCountyPrecincts(@PathVariable int countyId) {
         return dataService.getPrecinctsByCounty(countyId);
     }
 

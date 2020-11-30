@@ -1,6 +1,7 @@
 package com.party.dolphin.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.*;
@@ -35,8 +36,11 @@ public class DataService {
         return modelConverter.createCountyDto(county);
     }
 
-    public List<County> getCountiesByState(int stateId) {
-        return countyRepository.findAllByStateId(stateId);
+    public List<CountyDto> getCountiesByState(int stateId) {
+        List<County> counties = countyRepository.findAllByStateId(stateId);
+        return counties.stream()
+                        .map(c -> modelConverter.createCountyDto(c))
+                        .collect(Collectors.toList());
     }
 
     public PrecinctDto getPrecinctDto(int id) {
@@ -44,18 +48,21 @@ public class DataService {
         return modelConverter.createPrecinctDto(precinct);
     }
 
-    public List<Precinct> getPrecinctsByState(int stateId) {
+    public List<PrecinctDto> getPrecinctsByState(int stateId) {
         List<County> counties = countyRepository.findAllByStateId(stateId);
-        ArrayList<Precinct> statePrecincts = new ArrayList<Precinct>();
-        for (County c : counties) {
-            List<Precinct> countyPrecincts = precinctRepository.findAllByCountyId(c.getId());
-            statePrecincts.addAll(countyPrecincts);
-        }
-        return statePrecincts;
+        return counties.stream()
+                        .map(c -> c.getId())
+                        .map(id -> precinctRepository.findAllByCountyId(id))
+                        .flatMap(precincts -> precincts.stream())
+                        .map(p -> modelConverter.createPrecinctDto(p))
+                        .collect(Collectors.toList());
     }
 
-    public List<Precinct> getPrecinctsByCounty(int countyId) {
-        return precinctRepository.findAllByCountyId(countyId);
+    public List<PrecinctDto> getPrecinctsByCounty(int countyId) {
+        List<Precinct> precincts = precinctRepository.findAllByCountyId(countyId);
+        return precincts.stream()
+                        .map(p -> modelConverter.createPrecinctDto(p))
+                        .collect(Collectors.toList());
     }
 
     // TODO: Implement

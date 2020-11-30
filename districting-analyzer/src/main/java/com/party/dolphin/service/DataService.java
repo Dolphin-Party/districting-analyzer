@@ -64,11 +64,11 @@ public class DataService {
     }
 
     /* Model accessors */
-    private State getState(int id) {
+    public State getState(int id) {
         return stateRepository.findById(id);
     }
 
-    private County getCounty(int id) {
+    public County getCounty(int id) {
         return countyRepository.findById(id);
     }
 }

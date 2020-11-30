@@ -70,4 +70,9 @@ public class DataService {
     public Set<Precinct> getPrecinctGraph(int stateId) {
         return new HashSet<Precinct>();
     }
+
+    /* Model accessors */
+    public State getState(int id) {
+        return stateRepository.findById(id);
+    }
 }

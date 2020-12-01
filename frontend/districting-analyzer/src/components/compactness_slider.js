@@ -43,7 +43,6 @@ const CompactnessSlider= ({onNewNumber}) => {
   const classes = useStyles();
 
   const valuetext = (value) => {
-    console.log('this', `${value}`)
     return `${value}`;
   }
 

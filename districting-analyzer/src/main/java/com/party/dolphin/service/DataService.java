@@ -1,6 +1,7 @@
 package com.party.dolphin.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.*;
@@ -11,49 +12,74 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DataService {
+
     @Autowired
     private StateRepository stateRepository;
     @Autowired
     private CountyRepository countyRepository;
     @Autowired
     private PrecinctRepository precinctRepository;
+    @Autowired
+    private ModelConverter modelConverter;
 
-    public State getState(int id) {
-        return stateRepository.findById(id);
+    public StateDto getStateDto(int id) {
+        State state = stateRepository.findById(id);
+        return modelConverter.createStateDto(state);
     }
 
-    public State getState(String name) {
-        return stateRepository.findByName(name);
+    public StateDto getStateDto(String name) {
+        State state = stateRepository.findByName(name);
+        return modelConverter.createStateDto(state);
     }
 
-    public County getCounty(int id) {
-        return countyRepository.findById(id);
+    public List<StateDto> getAllStateDtos() {
+        List<State> states = stateRepository.findAll();
+        return states.stream()
+                    .map(s -> modelConverter.createStateDto(s))
+                    .collect(Collectors.toList());
     }
 
-    public List<County> getCountiesByState(int stateId) {
-        return countyRepository.findAllByStateId(stateId);
+    public CountyDto getCountyDto(int id) {
+        County county = countyRepository.findById(id);
+        return modelConverter.createCountyDto(county);
     }
 
-    public Precinct getPrecinct(int id) {
-        return precinctRepository.findById(id);
-    }
-
-    public List<Precinct> getPrecinctsByState(int stateId) {
+    public List<CountyDto> getCountiesByState(int stateId) {
         List<County> counties = countyRepository.findAllByStateId(stateId);
-        ArrayList<Precinct> statePrecincts = new ArrayList<Precinct>();
-        for (County c : counties) {
-            List<Precinct> countyPrecincts = precinctRepository.findAllByCountyId(c.getId());
-            statePrecincts.addAll(countyPrecincts);
-        }
-        return statePrecincts;
+        return counties.stream()
+                        .map(c -> modelConverter.createCountyDto(c))
+                        .collect(Collectors.toList());
     }
 
-    public List<Precinct> getPrecinctsByCounty(int countyId) {
-        return precinctRepository.findAllByCountyId(countyId);
+    public PrecinctDto getPrecinctDto(int id) {
+        Precinct precinct = precinctRepository.findById(id);
+        return modelConverter.createPrecinctDto(precinct);
+    }
+
+    public List<PrecinctDto> getPrecinctsByState(int stateId) {
+        List<County> counties = countyRepository.findAllByStateId(stateId);
+        return counties.stream()
+                        .map(c -> c.getId())
+                        .map(id -> precinctRepository.findAllByCountyId(id))
+                        .flatMap(precincts -> precincts.stream())
+                        .map(p -> modelConverter.createPrecinctDto(p))
+                        .collect(Collectors.toList());
+    }
+
+    public List<PrecinctDto> getPrecinctsByCounty(int countyId) {
+        List<Precinct> precincts = precinctRepository.findAllByCountyId(countyId);
+        return precincts.stream()
+                        .map(p -> modelConverter.createPrecinctDto(p))
+                        .collect(Collectors.toList());
     }
 
     // TODO: Implement
     public Set<Precinct> getPrecinctGraph(int stateId) {
         return new HashSet<Precinct>();
+    }
+
+    /* Model accessors */
+    public State getState(int id) {
+        return stateRepository.findById(id);
     }
 }

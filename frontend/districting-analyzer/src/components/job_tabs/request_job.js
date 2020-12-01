@@ -20,6 +20,7 @@ export default class RequestJobTab extends Component<{}, State> {
   constructor(props) {
     super(props);
     this.state = {
+      stateId : null,
       status: null,
       state: null,
       randDist: null,
@@ -28,6 +29,7 @@ export default class RequestJobTab extends Component<{}, State> {
       pvap: null,
       buttonOption: 'Cancel',
       boxWhiskerAvailability: {opacity: '0.2'},
+      compDict: {0: 'Least', 25:'Less', 50:'Average', 75:'Very', 100:'Extremely'}
     };
     this.handleJobAdd = this.handleJobAdd.bind(this)
   }
@@ -41,7 +43,9 @@ export default class RequestJobTab extends Component<{}, State> {
     this.setState({randDist: newValue});
   }
   setCompactness = (newValue) => {
-    this.setState({comp: newValue});
+    var compDict=this.state.compDict
+    var temp=compDict[newValue]
+    this.setState({comp: temp});
   }
   setTargetDemographic = (newValue) => {
     this.setState({dem: newValue});
@@ -52,7 +56,6 @@ export default class RequestJobTab extends Component<{}, State> {
   render() {
     const randDistBound = {min: 0, max: 5000};
     const vapBound = {min:0, max:100}
-    console.log('props ---', this.props.submitAvailability);
     return (
       <div className='job-request'>
       <p className='title'>Generating Districtings</p>

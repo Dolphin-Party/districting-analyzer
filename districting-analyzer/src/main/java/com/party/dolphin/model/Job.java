@@ -1,6 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.*;
 
 import java.util.List;
@@ -124,5 +123,34 @@ public class Job {
     public void setExtremeDistricting(int extremeDistricting) {
         this.extremeDistricting = extremeDistricting;
     }    
+
+    /* Server Processing */
+    // TODO: Test these methods
+    public void analyzeJobResults() {
+        this.calcNumberCounties();
+        this.genOrderedDistricts();
+        this.genBoxWhiskerData();
+        this.findRepresentativeDistrictings();
+    }
+
+    private void calcNumberCounties() {
+        for (Districting d : this.districtings) {
+            d.calcNumberCounties();
+        }
+    }
+
+    private void genOrderedDistricts() {
+        for (Districting d : this.districtings) {
+            d.genOrderedDistricts(this.targetDemographic);
+        }
+    }
+
+    private void genBoxWhiskerData() {
+        return;
+    }
+
+    private void findRepresentativeDistrictings() {
+        return;
+    }
 
 }

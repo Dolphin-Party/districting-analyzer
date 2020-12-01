@@ -1,7 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
-
 import java.util.Set;
 
 import javax.persistence.*;
@@ -13,7 +11,7 @@ public class County {
     private int id;
     private String name;
     private State state;
-    private String shape; // TODO: GEOJSON
+    private String shape;
     private Set<Precinct> precincts;
 
     /* Properties */
@@ -43,7 +41,7 @@ public class County {
         this.state = state;
     }
 
-    @Column(name="shape")
+    @Column(name="shape", columnDefinition="JSON")
     public String getShape() {
         return this.shape;
     }
@@ -59,4 +57,11 @@ public class County {
         this.precincts = precincts;
     }
 
+    /* Other Methods */
+    @Transient
+    public int getPopulation() {
+        return this.precincts.stream()
+                            .mapToInt(p -> p.getPopulation())
+                            .sum();
+    }
 }

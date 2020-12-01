@@ -1,7 +1,5 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
-
 import java.util.Set;
 
 import javax.persistence.*;
@@ -12,6 +10,7 @@ public class State {
     /* Fields */
     private int id;
     private String name;
+    private String shape;
     private Set<County> counties;
     private Districting canonicalDistricting;
 
@@ -41,6 +40,14 @@ public class State {
         this.counties = counties;
     }
 
+    @Column(name="shape", columnDefinition="JSON")
+    public String getShape() {
+        return this.shape;
+    }
+    public void setShape(String shape) {
+        this.shape = shape;
+    }
+
     @OneToOne
     @JoinColumn(name="canonicalDistrictingID")
     public Districting getCanonicalDistricting() {
@@ -48,6 +55,14 @@ public class State {
     }
     public void setCanonicalDistricting(Districting canonicalDistricting) {
         this.canonicalDistricting = canonicalDistricting;
+    }
+
+    /* Other Methods */
+    @Transient
+    public int getPopulation() {
+        return counties.stream()
+                        .mapToInt(c -> c.getPopulation())
+                        .sum();
     }
 
 }

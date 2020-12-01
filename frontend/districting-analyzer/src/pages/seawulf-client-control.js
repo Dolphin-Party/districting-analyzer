@@ -1,5 +1,6 @@
 import React, { Component, useState } from 'react'
 import { Map, TileLayer, GeoJSON } from 'react-leaflet'
+import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import Tabs from "../components/job_tabs";
 import RequestJobTab from "../components/job_tabs/request_job"
@@ -17,24 +18,9 @@ export default class SeawulfClientControl extends Component<{}, State> {
       jobs: {},
       noJobsText:{visibility: 'visible',},
       submitAvailability: this.props.submitAvailability,
+      jobIdDict: {"Arkansas":1, "North Carolina":2, "Virginia":3},
     };
     this.onJobAdded = this.onJobAdded.bind(this);
-  }
-
-  componentDidMount() {
-    console.log("seawulf client component did mount")
-    // axios.get("/job/all").then(
-    //       result => {
-    //         this.setState({
-    //           states: result.data,
-    //         });
-    //       },
-    //       error => {
-    //         this.setState({
-    //           error
-    //         });
-    //       }
-    //       );
   }
 
   onJobAdded = (newJob) => {
@@ -44,22 +30,25 @@ export default class SeawulfClientControl extends Component<{}, State> {
     newJob.state = this.props.currState;
     newJob.dem= this.props.currDem;
     newJob.status = 'Submitted';
+    var jobIdDict = this.state.jobIdDict
+    newJob.stateId = jobIdDict[newJob.state]
     jobDict[this.state.nextId] = newJob;
     this.setState({nextId:this.state.nextId+1});
     this.setState({jobs: jobDict});
     this.setState({noJobsText:{visibility: 'hidden'}});
-    // axios.get("/job/init").then(
-    //       result => {
-    //         this.setState({
-    //           states: result.data,
-    //         });
-    //       },
-    //       error => {
-    //         this.setState({
-    //           error
-    //         });
-    //       }
-    //       );
+
+    axios.post("/backend/job/init", {
+      stateId: newJob.stateId,
+      numberDistrictings: newJob.randDist,
+      compactnessAmount: newJob.comp,
+      targetDemographic: newJob.dem,
+    }).then(function(response){
+      if(!response){
+        console.log("Error:", response);
+      }else{
+        console.log("Successful!");
+      }
+    })
   }
 
   onJobCancelDelete= (jobId) => {
@@ -85,7 +74,6 @@ export default class SeawulfClientControl extends Component<{}, State> {
       jobDict[jobId].buttonOption = 'Delete';
     }
     this.setState({jobs: jobDict});
-    //will we set state in the backend, or should I send update state from frontend again?
     if(Object.keys(this.state.jobs).length == 0){
       this.setState({noJobsText:{visibility: 'visible'}});
     }else{

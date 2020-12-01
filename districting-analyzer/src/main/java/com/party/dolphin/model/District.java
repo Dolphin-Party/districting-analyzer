@@ -1,9 +1,9 @@
 package com.party.dolphin.model;
 
-import com.party.dolphin.dto.*;
 import com.party.dolphin.model.enums.DemographicType;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ public class District {
     /* Fields */
     private int id;
     private Districting districting;
-    private List<Precinct> precincts;
+    private Set<Precinct> precincts;
     private int numberCounties;
     private DemographicType targetDemographic;
     private double targetDemographicPercentVap;
@@ -46,10 +46,10 @@ public class District {
 
     @ManyToMany
     @JoinTable(name="DistrictPrecincts")
-    public List<Precinct> getPrecincts() {
+    public Set<Precinct> getPrecincts() {
         return this.precincts;
     }
-    public void setPrecincts(List<Precinct> precincts) {
+    public void setPrecincts(Set<Precinct> precincts) {
         this.precincts = precincts;
     }
 
@@ -86,4 +86,23 @@ public class District {
         this.order = order;
     }
 
+    /* Server Processing */
+    protected void calcNumberCounties() {
+        HashSet<County> countySet = new HashSet<County>();
+        for (Precinct p : this.precincts) {
+            County c = p.getCounty();
+            countySet.add(c);
+        }
+        this.setNumberCounties(countySet.size());
+    }
+
+    protected double computePercentVAP(DemographicType demographic) {
+        int totalVAP = 0;
+        int totalPopulation = 0;
+        for (Precinct p : this.precincts) {
+            totalVAP += p.getVAP(demographic);
+            totalPopulation += p.getPopulation();
+        }
+        return totalVAP / ((double)totalPopulation);
+    }
 }

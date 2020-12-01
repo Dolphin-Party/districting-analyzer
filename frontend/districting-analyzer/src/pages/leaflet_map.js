@@ -1,23 +1,28 @@
 import React, { Component, useState, useRef} from 'react'
 import axios from 'axios';
+import hash from 'object-hash'
 import { Link } from "react-router-dom";
 import L from "leaflet";
-
 import { Map, TileLayer, GeoJSON, LayersControl, LayerGroup, Marker} from 'react-leaflet'
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
-import RangeSlider from 'react-bootstrap-range-slider';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
+import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
+import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
+import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
+import teamStates from '../assets/geojson/teamstates.json'
+import congressional from '../assets/geojson/us_congressional.json'
+
+
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
 const center = [51, 0];
 const mapRef = useRef();
 const firstOverlayRef = useRef();
+const stateRef = useRef();
 const secondOverlayRef = useRef();
 const icon = L.icon({
   iconSize: [25, 41],
@@ -28,7 +33,8 @@ const icon = L.icon({
 });
 
 const layerControl= document.getElementsByClassName('leaflet-control-layers');
-
+const heatMapLegend= document.getElementsByClassName('heatMapLegend');
+const virginiaPrecinctLayer= document.getElementsByClassName('virginiaPrecinctLayer');
 
 export default class LeafletMap extends Component<{}, State> {
   constructor(props) {
@@ -44,97 +50,103 @@ export default class LeafletMap extends Component<{}, State> {
       statePopulation: " ",
       stateNumDistricts: " ",
       stateSelected: false,
-      states: {"type":"States","features":
-        [
-          {"type":"Feature","id":"51","properties":{"name":"Virginia","density":204.5, "lat": 37.4316, "lng": -78.024902, "population":204.5, "numDistricts":"11"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-75.397659,38.013497],[-75.244304,38.029928],[-75.375751,37.860142],[-75.512674,37.799896],[-75.594828,37.569865],[-75.802952,37.197433],[-75.972737,37.120755],[-76.027507,37.257679],[-75.939876,37.564388],[-75.671506,37.95325],[-75.397659,38.013497]]],[[[-76.016553,37.95325],[-75.994645,37.95325],[-76.043938,37.95325],[-76.016553,37.95325]]],[[[-78.349729,39.464886],[-77.82942,39.130793],[-77.719881,39.322485],[-77.566527,39.306055],[-77.456988,39.223901],[-77.456988,39.076023],[-77.248864,39.026731],[-77.117418,38.933623],[-77.040741,38.791222],[-77.128372,38.632391],[-77.248864,38.588575],[-77.325542,38.446175],[-77.281726,38.342113],[-77.013356,38.374975],[-76.964064,38.216144],[-76.613539,38.15042],[-76.514954,38.024451],[-76.235631,37.887527],[-76.3616,37.608203],[-76.246584,37.389126],[-76.383508,37.285064],[-76.399939,37.159094],[-76.273969,37.082417],[-76.410893,36.961924],[-76.619016,37.120755],[-76.668309,37.065986],[-76.48757,36.95097],[-75.994645,36.923586],[-75.868676,36.551154],[-79.510841,36.5402],[-80.294043,36.545677],[-80.978661,36.562108],[-81.679709,36.589492],[-83.673316,36.600446],[-83.136575,36.742847],[-83.070852,36.852385],[-82.879159,36.890724],[-82.868205,36.978355],[-82.720328,37.044078],[-82.720328,37.120755],[-82.353373,37.268633],[-81.969987,37.537003],[-81.986418,37.454849],[-81.849494,37.285064],[-81.679709,37.20291],[-81.55374,37.208387],[-81.362047,37.339833],[-81.225123,37.235771],[-80.967707,37.290541],[-80.513121,37.482234],[-80.474782,37.421987],[-80.29952,37.509618],[-80.294043,37.690357],[-80.184505,37.849189],[-79.998289,37.997066],[-79.921611,38.177805],[-79.724442,38.364021],[-79.647764,38.594052],[-79.477979,38.457129],[-79.313671,38.413313],[-79.209609,38.495467],[-78.996008,38.851469],[-78.870039,38.763838],[-78.404499,39.169131],[-78.349729,39.464886]]]]}},
-
-        {"type":"Feature","id":"37","properties":{"name":"North Carolina","density":198.2,"lat": 35.782169, "lng":-80.793457, "population":"9,535,483", "numDistricts":"13"},"geometry":{"type":"Polygon","coordinates":[[[-80.978661,36.562108],[-80.294043,36.545677],[-79.510841,36.5402],[-75.868676,36.551154],[-75.75366,36.151337],[-76.032984,36.189676],[-76.071322,36.140383],[-76.410893,36.080137],[-76.460185,36.025367],[-76.68474,36.008937],[-76.673786,35.937736],[-76.399939,35.987029],[-76.3616,35.943213],[-76.060368,35.992506],[-75.961783,35.899398],[-75.781044,35.937736],[-75.715321,35.696751],[-75.775568,35.581735],[-75.89606,35.570781],[-76.147999,35.324319],[-76.482093,35.313365],[-76.536862,35.14358],[-76.394462,34.973795],[-76.279446,34.940933],[-76.493047,34.661609],[-76.673786,34.694471],[-76.991448,34.667086],[-77.210526,34.60684],[-77.555573,34.415147],[-77.82942,34.163208],[-77.971821,33.845545],[-78.179944,33.916745],[-78.541422,33.851022],[-79.675149,34.80401],[-80.797922,34.820441],[-80.781491,34.935456],[-80.934845,35.105241],[-81.038907,35.044995],[-81.044384,35.149057],[-82.276696,35.198349],[-82.550543,35.160011],[-82.764143,35.066903],[-83.109191,35.00118],[-83.618546,34.984749],[-84.319594,34.990226],[-84.29221,35.225734],[-84.09504,35.247642],[-84.018363,35.41195],[-83.7719,35.559827],[-83.498053,35.565304],[-83.251591,35.718659],[-82.994175,35.773428],[-82.775097,35.997983],[-82.638174,36.063706],[-82.610789,35.965121],[-82.216449,36.156814],[-82.03571,36.118475],[-81.909741,36.304691],[-81.723525,36.353984],[-81.679709,36.589492],[-80.978661,36.562108]]]}},
-
-        {"type":"Feature","id":"05","properties":{"name":"Arkansas","density":56.43,  "lat": 34.799999, "lng": -92.199997, "population":"710,231", "numDistricts":"4"},"geometry":{"type":"Polygon","coordinates":[[[-94.473842,36.501861],[-90.152536,36.496384],[-90.064905,36.304691],[-90.218259,36.184199],[-90.377091,35.997983],[-89.730812,35.997983],[-89.763673,35.811767],[-89.911551,35.756997],[-89.944412,35.603643],[-90.130628,35.439335],[-90.114197,35.198349],[-90.212782,35.023087],[-90.311367,34.995703],[-90.251121,34.908072],[-90.409952,34.831394],[-90.481152,34.661609],[-90.585214,34.617794],[-90.568783,34.420624],[-90.749522,34.365854],[-90.744046,34.300131],[-90.952169,34.135823],[-90.891923,34.026284],[-91.072662,33.867453],[-91.231493,33.560744],[-91.056231,33.429298],[-91.143862,33.347144],[-91.089093,33.13902],[-91.16577,33.002096],[-93.608485,33.018527],[-94.041164,33.018527],[-94.041164,33.54979],[-94.183564,33.593606],[-94.380734,33.544313],[-94.484796,33.637421],[-94.430026,35.395519],[-94.616242,36.501861],[-94.473842,36.501861]]]}}
-        ]
+      states: teamStates,
+      isLoading: true,
+      precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
+      precinctDisplay: false,
+      congressional: congressional,
+      districts: {},
+      demographics: {
+        0:'black',
+        1:'whiteNonHispanic',
+        2:'hispanic',
+        3:'asian',
+        4:'americanIndian',
+        5:'pacific',
+        6:'twoOrMoreRaces'
       },
-    precincts: {"type":"Precincts","features":
-          [
-            {"type":"Feature","id":"01","properties":{"name":"Alabama","density":94.65},"geometry":{"type":"Polygon","coordinates":[[[-87.359296,35.00118],[-85.606675,34.984749],[-85.431413,34.124869],[-85.184951,32.859696],[-85.069935,32.580372],[-84.960397,32.421541],[-85.004212,32.322956],[-84.889196,32.262709],[-85.058981,32.13674],[-85.053504,32.01077],[-85.141136,31.840985],[-85.042551,31.539753],[-85.113751,31.27686],[-85.004212,31.003013],[-85.497137,30.997536],[-87.600282,30.997536],[-87.633143,30.86609],[-87.408589,30.674397],[-87.446927,30.510088],[-87.37025,30.427934],[-87.518128,30.280057],[-87.655051,30.247195],[-87.90699,30.411504],[-87.934375,30.657966],[-88.011052,30.685351],[-88.10416,30.499135],[-88.137022,30.318396],[-88.394438,30.367688],[-88.471115,31.895754],[-88.241084,33.796253],[-88.098683,34.891641],[-88.202745,34.995703],[-87.359296,35.00118]]]}}
-          ]
-        },
-    precinctDisplay: false,
-    districts: {},
-    demographics: {
-      0:'Black or African American',
-      1:'Non-Hispanic White',
-      2:'Hispanic and Latino',
-      3:'Asian',
-      4:'Native Americans and Alaska Natives',
-      5:'Native Hawaiians and Other Pacific Islanders',
-      6:'Two or more races'
-    }
+      mapRef: mapRef,
+      heatMapStyles: {
+        0:{backgroundColor: '#FFEDA0'},
+        1:{backgroundColor: '#FED976'},
+        2:{backgroundColor: '#FEB24C'},
+        3:{backgroundColor: '#FD8D3C'},
+        4:{backgroundColor: '#FC4E2A'},
+        5:{backgroundColor: '#E31A1C'},
+        6:{backgroundColor: '#BD0026'},
+        7:{backgroundColor: '#a30021'},
+        8:{backgroundColor: '#85001b'},
+        9:{backgroundColor: '#6e0016'},
+      },
+      heatMapOn: false,
+      heatMapButton: {backgroundColor: '#3B2B59'},
+      heatMapLegendStyle: {visibility: 'hidden'},
+      precinctColor: '#3B2B59',
+      stateDefaultStyle: {
+        color: '#3B2B59',
+        weight: 2,
+        fillColor: "#3B2B59",
+        fillOpacity: 0.5,
+        dashArray: '3'
+      },
+      stateHighlightStyle: {
+        weight: 5,
+        color: '#3B2B59',
+        dashArray: '',
+        fillColor: 'white',
+        fillOpacity: 0.2
+      },
+      precinctDefaultStyle: {
+        color: '#3B2B59',
+        weight: 1,
+        fillColor: "transparent",
+        fillOpacity: 0.5,
+      },
+      precinctHighlightStyle: {
+        color: '#3B2B59',
+        weight: 1,
+        fillColor: "white",
+        fillOpacity: 0.5,
+      },
     };
     this.resetMap = this.resetMap.bind(this);
+    this.resetPrecinct = this.resetPrecinct.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
-    this.mapClick= this.mapClick.bind(this);
+    this.heatMapOn = this.heatMapOn.bind(this);
+    this.getPrecinctColor = this.getPrecinctColor.bind(this)
+    this.getStateData = this.getStateData.bind(this)
   }
 
-  componentDidMount() {
-    console.log("leaflet component did mount")
-    // axios.get("/backend/state/all/info").then(
-    //       result => {
-    //         this.setState({
-    //           states: result.data,
-    //         });
-    //       },
-    //       error => {
-    //         this.setState({
-    //           error
-    //         });
-    //       }
-    //       );
+  getStateData(){
+    return this.props.stateData
   }
 
   onEachFeature = (component, feature, layer) => {
     layer.on({
       mouseover: this.highlightFeature,
       mouseout: this.resetHighlight.bind(null, component),
-      click: this.clickSelectState.bind(null, component)
+      click: this.clickSelectState.bind(null, component),
     });
   }
 
   highlightFeature = (e) => {
     var layer = e.target;
-    // console.log("highlight ", layer)
     const stateName= e.target.feature.properties.name
     const stateDensity=e.target.feature.properties.density
     const statePopulation = e.target.feature.properties.population
     const stateNumDistricts = e.target.feature.properties.numDistricts
     this.setState({stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
-
-    layer.setStyle({
-      weight: 5,
-      color: '#3B2B59',
-      dashArray: '',
-      fillColor: 'white',
-      fillOpacity: 0.2
-    });
+    layer.setStyle(this.state.stateHighlightStyle);
   }
 
   resetHighlight = (component, e) => {
     var layer = e.target;
-
-    layer.setStyle({
-      color: '#3B2B59',
-      weight: 2,
-      fillColor: "#3B2B59",
-      fillOpacity: 0.5,
-      dashArray: '3'
-    });
+    layer.setStyle(this.state.stateDefaultStyle);
   }
 
   clickSelectState = (component, e) => {
-    // console.log('is called')
     if(e.properties == undefined){
       var e = e.target.feature
-    }else{
-      // console.log("no need")
     }
     const stateName= e.properties.name
     const stateDensity=e.properties.density
@@ -142,50 +154,136 @@ export default class LeafletMap extends Component<{}, State> {
     const stateLng = e.properties.lng
     const statePopulation = e.properties.population
     const stateNumDistricts = e.properties.numDistricts
-    layerControl[0].style.visibility = 'visible';
+    this.stateLayerControlToggle(stateName)
     this.props.onStateSelect(stateName);
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     }
 
-  mapClick(){
-    if(this.state.stateName == ''){
-    console.log("clicked map");
-  }
+    dropdownStateSelect(ev, stateNum){
+      var geoJSON = this.state.states
+      var e = geoJSON['features'][stateNum]
+      this.clickSelectState(null, e)
+    }
+
+    stateLayerControlToggle(stateName){
+      if(stateName=='Virginia'){
+          layerControl[0].style.visibility = 'visible';
+          layerControl[1].style.visibility = 'hidden';
+          layerControl[2].style.visibility = 'hidden';
+      }else if(stateName=='North Carolina'){
+          layerControl[1].style.visibility = 'visible';
+          layerControl[0].style.visibility = 'hidden';
+          layerControl[2].style.visibility = 'hidden';
+      }else{
+          layerControl[2].style.visibility = 'visible';
+          layerControl[1].style.visibility = 'hidden';
+          layerControl[0].style.visibility = 'hidden';
+      }
+    }
+
+    dropdownDemographicSelect(ev, demId){
+      this.props.onDemSelect(this.state.demographics[demId]);
+    }
+
+  onEachPrecinct = (component, feature, layer,stateName) => {
+    layer.on({
+      mouseover: this.highlightPrecinct,
+      mouseout: this.resetPrecinct.bind(null, component),
+    });
   }
 
+  highlightPrecinct = (e) => {
+    var layer = e.target;
+    const stateName= e.target.feature.properties.Precinct
+    this.setState({stateName: stateName});
+    layer.setStyle(this.state.precinctHighlightStyle);
+  }
+
+  resetPrecinct = (component, e) => {
+    var layer = e.target;
+    layer.setStyle(this.state.precinctDefaultStyle)
+  }
+
+  getPrecinctColor = (component, feature, layer) => {
+    if(this.state.heatMapOn){
+      const totalPop = feature.properties.demographicData.totalPop
+      const targetDem = this.props.currDem
+      var demData = feature.properties.demographicData
+      var targetPop = this.getTargetDemographicPopulation(targetDem, demData)
+      const d = (targetPop/totalPop)
+      var color = d > .90 ? '#6e0016' :
+         d > .80  ? '#85001b' :
+         d > .70  ? '#a30021' :
+         d > .60  ? '#BD0026' :
+         d > .50  ? '#E31A1C' :
+         d > .40  ? '#FC4E2A' :
+         d > .30  ? '#FD8D3C' :
+         d > .20  ? '#FEB24C' :
+         d > .10  ? '#FED976' :
+                  '#FFEDA0';
+      return {
+        weight: 2,
+        color: color,
+        dashArray: '',
+        fillColor: color,
+        fillOpacity: 1.0,
+      }
+    }else{
+      return this.state.precinctDefaultStyle
+    }
+  }
+
+  getTargetDemographicPopulation(targetDem, targetPop){
+    switch(targetDem){
+      case 'black':
+        return targetPop.blackPop
+        break;
+      case 'whiteNonHispanic':
+        return targetPop.whitePop
+        break;
+      case 'hispanic':
+        return targetPop.hispaPop
+        break;
+      case 'asian':
+        return targetPop.asianPop
+        break;
+      case 'americanIndian':
+        return targetPop.nativPop
+        break;
+      case 'pacific':
+        return targetPop.hawaiPop
+        break;
+      case 'twoOrMoreRaces':
+        return targetPop.otherPop
+        break;
+    }
+  }
 
   resetMap(){
-    layerControl[0].style.visibility = 'hidden';
+    for(var i=0; i<3; i++){
+      layerControl[i].style.visibility = 'hidden';
+    }
     this.setState(state => ({originalState: "True", stateSelected: false, lat: 37.090240, lng: -95.712891, zoom: 5, stateName: "", stateDensity: " "}));
     this.props.onReset();
   }
 
-  dropdownStateSelect(ev, stateNum){
-    var geoJSON = this.state.states
-    // console.log(geoJSON['features'][stateNum])
-    var e = geoJSON['features'][stateNum]
-    const stateName= e.properties.name
-    const stateDensity=e.properties.density
-    const stateLat = e.properties.lat
-    const stateLng = e.properties.lng
-    const statePopulation = e.properties.population
-    const stateNumDistricts = e.properties.numDistricts
-    layerControl[0].style.visibility = 'visible';
-    this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
-    console.log("DROPDOWN state select ", stateName);
-    this.props.onStateSelect(stateName);
-  }
-
-  dropdownDemographicSelect(ev, demId){
-    this.props.onDemSelect(this.state.demographics[demId]);
-    console.log("DROPDOWN demographic select", this.state.demographics[demId]);
+  heatMapOn(e){
+    if(this.state.heatMapOn){
+      console.log("turning off heat map")
+      this.setState({heatMapLegendStyle: {visibility: 'hidden'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
+    }else{
+      if(this.props.currDem != null){
+        this.setState({heatMapLegendStyle: {visibility: 'visible'}, heatMapOn: true, heatMapButton: {backgroundColor: '#3B2B59', borderColor: '#39ff14', borderWidth: 'thick'}})
+      }else{
+        alert("Please select target demographic for heat map")
+      }
+    }
   }
 
   render() {
     const states = this.state.states;
     const position = [this.state.lat, this.state.lng]
     const stateName = [this.state.name]
-    // const firstOverlayRef = useRef();
     const mapboxAccessToken = 'pk.eyJ1IjoiZG9scGhpbi1wYXJ0eSIsImEiOiJja2ZwcmpoemwwbW8zMnJuNTVha2I3aHV0In0.Y1agteWswtHBaLViI2UWig';
     const useStyles = makeStyles({
       root: {
@@ -195,6 +293,10 @@ export default class LeafletMap extends Component<{}, State> {
         width: 42,
       },
     });
+    const heatMapGrades = [0,10,20,30,40,50,60,70,80,90]
+    const dropdownStates = ['Virginia', 'North Carolina', 'Arkansas']
+    const camelcaseStates = ['virginia', 'northCarolina']
+    const dropdownDemographics = ['Black or African American', 'Non-Hispanic White', 'Hispanic and Latino', 'Asian', 'Native Americans and Alaska Natives','Native Hawaiians and Other Pacific Islanders', 'Two or more races' ]
 
     return (
       <div className='leftside'>
@@ -204,81 +306,104 @@ export default class LeafletMap extends Component<{}, State> {
               Select State
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={(e) => this.dropdownStateSelect(e,0)}>Virginia</Dropdown.Item>
-              <Dropdown.Item onClick={(e) => this.dropdownStateSelect(e,1)}>North Carolina</Dropdown.Item>
-              <Dropdown.Item onClick={(e) => this.dropdownStateSelect(e,2)}>Arkansas</Dropdown.Item>
+                {dropdownStates.map((stateName, i) =>
+                  <Dropdown.Item key={i} onClick={(e) => this.dropdownStateSelect(e,i)}>{stateName}</Dropdown.Item>
+                )}
             </Dropdown.Menu>
         </Dropdown>
-
             <Dropdown className="button-space" >
               <Dropdown.Toggle variant="button" className="button" id="dropdown-basic">
                 Select Demographic
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,0)}>Black or African American</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,1)}>Non-Hispanic White</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,2)}>Hispanic and Latino</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,3)}>Asian</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,4)}>Native Americans and Alaska Natives</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,5)}>Native Hawaiians and Other Pacific Islanders</Dropdown.Item>
-                <Dropdown.Item onClick={(e) => this.dropdownDemographicSelect(e,6)}>Two or more races</Dropdown.Item>
+                {dropdownDemographics.map((demName, i) =>
+                  <Dropdown.Item key={i} onClick={(e) => this.dropdownDemographicSelect(e,i)}>{demName}</Dropdown.Item>
+                )}
               </Dropdown.Menu>
           </Dropdown>
+          <Button className="button" style={this.state.heatMapButton} onClick={(e) => this.heatMapOn(e)}>Heat Map</Button>
           <p className='currMap-Info'> Selected State: {this.props.currState}</p>
           <p className='currMap-Info'> Selected Demographic: {this.props.currDem}</p>
         </div>
 
       <div className='leaflet-container'>
-
-        <Map center={position} zoom={this.state.zoom} ref={this.mapRef} onClick={this.mapClick}>
+        <Map center={position} zoom={this.state.zoom} ref={mapRef} onClick={this.mapClick}>
         <div className='map-information'>
           <p className='state-info'> State Name: {this.state.stateName}</p>
           <p className='state-info'> State Density: {this.state.stateDensity}</p>
           <p className='state-info'> Population: {this.state.statePopulation}</p>
           <p className='state-info'> Number of Districts: {this.state.stateNumDistricts}</p>
         </div>
-        <button className="reset-button" onClick={this.resetMap}>Reset Map</button>{' '}
-        <LayersControl position="topright">
+        <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
+          {heatMapGrades.map((grade, i, array) =>
+            <div className='text'>
+              <i style={this.state.heatMapStyles[i]}></i>
+              {(heatMapGrades[i+1])
+                ? <p key={i}>{grade}% - {heatMapGrades[i+1]}% </p>
+                : <p key={i}>{grade}% +</p>
+              }
+            </div>
+          )}
+        </div>
+        <button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
           id='mapbox/light-v9'
         ></TileLayer>
         <GeoJSON
-          data={this.state.states}
-          style={() => ({
-          color: '#3B2B59',
-          weight: 2,
-          fillColor: "#3B2B59",
-          fillOpacity: 0.5,
-          dashArray: '3',
-          })}
+          ref={stateRef}
+          key={hash(this.props.stateData)}
+          data={this.props.stateData}
+          style={this.state.stateDefaultStyle}
           state={() => ({
             name: ''
           })}
           onEachFeature={this.onEachFeature.bind(null, this)}
           ></GeoJSON>
+        {camelcaseStates.map((stateName, i) =>
+          <LayersControl key={i} position="topright">
           <Overlay name="Precinct Borders">
-              <LayerGroup id="lg1" ref={firstOverlayRef}>
-            <GeoJSON key="precinctLayer"
-              data={this.state.precincts}
-              style={() => ({
-              color: '#3B2B59',
-              weight: 2,
-              fillColor: "transparent",
-              fillOpacity: 0.5,
-              dashArray: '3',
-              })}
-            ></GeoJSON>
+                <LayerGroup  ref={firstOverlayRef}>
+              <GeoJSON key="precinctLayer"
+                data={this.state.precincts[stateName]}
+                style={this.getPrecinctColor.bind(null, this)}
+                onEachFeature={this.onEachPrecinct.bind(null, this)}
+              ></GeoJSON>
+            </LayerGroup>
+          </Overlay>
+          <Overlay name="District Borders">
+              <LayerGroup id="virginiaDistricts" ref={secondOverlayRef}>
+                <GeoJSON
+                  data={this.state.congressional}
+                  style={this.state.stateDefaultStyle}>
+                </GeoJSON>
           </LayerGroup>
         </Overlay>
-        <Overlay name="District Borders">
-            <LayerGroup id="lg2" ref={secondOverlayRef}>
-        </LayerGroup>
-      </Overlay>
-          </LayersControl>
+            </LayersControl>
+        )}
+            <LayersControl position="topright" id="arkansasLayers">
+            <Overlay name="Precinct Borders">
+                  <LayerGroup id="arkansasPrecincts" ref={firstOverlayRef}>
+                <GeoJSON key="precinctLayer"
+                  id='precinctLayer'
+                  data={this.state.precincts.arkansas}
+                  style={() => ({
+                  color: this.state.precinctColor,
+                  weight: 1,
+                  fillColor: "transparent",
+                  fillOpacity: 0.5,
+                  })}
+                  onEachFeature={this.onEachPrecinct.bind(null, this)}
+                ></GeoJSON>
+              </LayerGroup>
+            </Overlay>
+            <Overlay name="District Borders">
+                <LayerGroup id="lg2" ref={secondOverlayRef}>
+            </LayerGroup>
+          </Overlay>
+              </LayersControl>
         </Map>
-
       </div>
     </div>
     )

@@ -3,11 +3,9 @@ package com.party.dolphin.controller;
 import java.util.List;
 
 import com.party.dolphin.dto.*;
-import com.party.dolphin.model.*;
 import com.party.dolphin.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: Return DTO instead of model objects
@@ -24,7 +22,7 @@ public class JobController {
     }
 
     @RequestMapping(method=RequestMethod.GET, value="/job/{jobId}/status")
-    public Job checkStatus(@PathVariable int jobId) {
+    public JobDto checkStatus(@PathVariable int jobId) {
         return jobService.getJobStatus(jobId);
     }
 

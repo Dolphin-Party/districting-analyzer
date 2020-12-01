@@ -6,7 +6,7 @@ USE dolphins;
 CREATE TABLE IF NOT EXISTS States (
 	ID int PRIMARY KEY AUTO_INCREMENT,
     `name` varchar(255),
-    shape multipolygon,
+    shape JSON,
     canonicalDistrictingID int
 );
 
@@ -15,14 +15,14 @@ CREATE TABLE IF NOT EXISTS Counties (
     `name` varchar(255),
     stateID int NOT NULL,
     FOREIGN KEY (stateID) REFERENCES States(ID),
-    shape multipolygon
+    shape JSON
 );
 
 CREATE TABLE IF NOT EXISTS Precincts (
 	ID int PRIMARY KEY AUTO_INCREMENT,
     countyID int NOT NULL,
     FOREIGN KEY (countyID) REFERENCES Counties(ID),
-    shape multipolygon,
+    shape JSON,
     population int
 );
 

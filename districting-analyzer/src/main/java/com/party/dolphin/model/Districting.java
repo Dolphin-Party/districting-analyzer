@@ -85,7 +85,6 @@ public class Districting {
         }
         this.setDistrictsOrder(orderedList);
         this.districts = orderedList;
-        return;
     }
 
     private List<District> insertOrderedDistrict(List<District> list, District di) {

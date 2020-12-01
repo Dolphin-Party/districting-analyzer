@@ -11,7 +11,7 @@ public class County {
     private int id;
     private String name;
     private State state;
-    private String shape; // TODO: GEOJSON
+    private String shape;
     private Set<Precinct> precincts;
 
     /* Properties */
@@ -41,7 +41,7 @@ public class County {
         this.state = state;
     }
 
-    @Column(name="shape")
+    @Column(name="shape", columnDefinition="JSON")
     public String getShape() {
         return this.shape;
     }

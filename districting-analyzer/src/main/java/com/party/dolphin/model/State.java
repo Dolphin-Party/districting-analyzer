@@ -10,6 +10,7 @@ public class State {
     /* Fields */
     private int id;
     private String name;
+    private String shape;
     private Set<County> counties;
     private Districting canonicalDistricting;
 
@@ -37,6 +38,14 @@ public class State {
     }
     public void setCounties(Set<County> counties) {
         this.counties = counties;
+    }
+
+    @Column(name="shape", columnDefinition="JSON")
+    public String getShape() {
+        return this.shape;
+    }
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 
     @OneToOne

@@ -8,7 +8,7 @@ public class PrecinctDto {
     /* Fields */
     private int precinctId;
     private int countyId;
-    private String shape; // TODO: GEOJSON
+    private String shape;
     private Set<Integer> neighbors;
     private int population;
     private EnumMap<DemographicType, Integer> demographics;

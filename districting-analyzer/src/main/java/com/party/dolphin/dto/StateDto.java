@@ -6,6 +6,7 @@ public class StateDto {
     /* Fields */
     private int stateId;
     private String name;
+    private String shape;
     private int population;
     private Set<Integer> counties;
     private int canonicalDistrictingId;
@@ -23,6 +24,13 @@ public class StateDto {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getShape() {
+        return this.shape;
+    }
+    public void setShape(String shape) {
+        this.shape = shape;
     }
 
     public int getPopulation() {

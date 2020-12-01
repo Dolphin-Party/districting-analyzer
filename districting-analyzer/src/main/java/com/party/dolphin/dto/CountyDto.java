@@ -7,7 +7,7 @@ public class CountyDto {
     private int countyId;
     private String name;
     private int stateId;
-    private String shape; // TODO: GEOJSON
+    private String shape;
     private Set<Integer> precincts;
 
     /* Properties */

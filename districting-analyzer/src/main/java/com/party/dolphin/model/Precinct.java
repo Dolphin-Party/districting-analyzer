@@ -12,7 +12,7 @@ public class Precinct {
     /* Fields */
     private int id;
     private County county;
-    private String shape; // TODO: GEOJSON
+    private String shape;
     private Set<Precinct> neighbors;
     private int population;
     private EnumMap<DemographicType, Integer> demographics;
@@ -36,7 +36,7 @@ public class Precinct {
         this.county = county;
     }
 
-    @Column(name="shape")
+    @Column(name="shape", columnDefinition="JSON")
     public String getShape() {
         return this.shape;
     }

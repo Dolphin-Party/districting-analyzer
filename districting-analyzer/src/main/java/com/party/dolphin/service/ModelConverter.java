@@ -16,6 +16,7 @@ public class ModelConverter {
         StateDto stateDto = new StateDto();
         stateDto.setStateId(state.getId());
         stateDto.setName(state.getName());
+        stateDto.setShape(state.getShape());
         stateDto.setPopulation(state.getPopulation());
         stateDto.setCounties(
             state.getCounties().stream()

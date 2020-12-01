@@ -1,6 +1,5 @@
 import random
 from typing import List
-
 from precinct_graph import PrecinctGraph, PrecinctNode
 
 
@@ -28,6 +27,5 @@ def generate_seed_district(precincts: List[PrecinctNode], num_districts: int):
             checked_set.add(subgraph)
             checked_set.add(selected_merge)
             merged_subgraphs += 1
-
         precinct_graph.subgraphs = merged_subgraphs
     return precinct_graph

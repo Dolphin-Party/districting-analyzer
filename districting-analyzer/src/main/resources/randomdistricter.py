@@ -1,11 +1,9 @@
 import argparse
 import json
-
 import seed_district_generator
 from parameters import DistrictingParameters
 from precinct_graph import *
-
-#  load data out of JSON file
+from rebalance import rebalance_district
 
 parser = argparse.ArgumentParser(description='Generate random districtings given parameters')
 parser.add_argument('params', metavar='P', type=argparse.FileType('r'))
@@ -24,3 +22,7 @@ params: DistrictingParameters = json.load(args.params, object_hook=DistrictingPa
 seed_districting = seed_district_generator.generate_seed_district(precincts, params.num_districts)
 
 #  Rebalance for X iterations
+
+for _ in range(params.iterations):
+    # select two districts at random
+    rebalance_district(seed_districting)

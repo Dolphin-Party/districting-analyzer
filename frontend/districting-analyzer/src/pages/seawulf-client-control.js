@@ -22,13 +22,13 @@ export default class SeawulfClientControl extends Component<{}, State> {
     };
     this.onJobAdded = this.onJobAdded.bind(this);
   }
-  
+
   onJobAdded = (newJob) => {
     this.setState({currentState:this.props.currState});
     this.setState({currentDem:this.props.currDem});
     var jobDict = this.state.jobs;
     newJob.state = this.props.currState;
-    newJob.dem= 'hispanic';
+    newJob.dem= this.props.currDem;
     newJob.status = 'Submitted';
     var jobIdDict = this.state.jobIdDict
     newJob.stateId = jobIdDict[newJob.state]
@@ -74,7 +74,6 @@ export default class SeawulfClientControl extends Component<{}, State> {
       jobDict[jobId].buttonOption = 'Delete';
     }
     this.setState({jobs: jobDict});
-    //will we set state in the backend, or should I send update state from frontend again?
     if(Object.keys(this.state.jobs).length == 0){
       this.setState({noJobsText:{visibility: 'visible'}});
     }else{

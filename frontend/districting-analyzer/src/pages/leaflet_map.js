@@ -1,5 +1,6 @@
 import React, { Component, useState, useRef} from 'react'
 import axios from 'axios';
+import hash from 'object-hash'
 import { Link } from "react-router-dom";
 import L from "leaflet";
 import { Map, TileLayer, GeoJSON, LayersControl, LayerGroup, Marker} from 'react-leaflet'
@@ -8,15 +9,12 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { makeStyles } from '@material-ui/core/styles';
-// import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts2016.json'
 import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
-// import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts.json'
 import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
 import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
 import teamStates from '../assets/geojson/teamstates.json'
 import congressional from '../assets/geojson/us_congressional.json'
-// import data from '../assets/geojson/test.json'
-// import test from '../assets/geojson/test.json'
+
 
 
 const { Overlay } = LayersControl;
@@ -24,6 +22,7 @@ const precinctLayerRef = useRef();
 const center = [51, 0];
 const mapRef = useRef();
 const firstOverlayRef = useRef();
+const stateRef = useRef();
 const secondOverlayRef = useRef();
 const icon = L.icon({
   iconSize: [25, 41],
@@ -52,6 +51,7 @@ export default class LeafletMap extends Component<{}, State> {
       stateNumDistricts: " ",
       stateSelected: false,
       states: teamStates,
+      isLoading: true,
       precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
       precinctDisplay: false,
       congressional: congressional,
@@ -112,25 +112,13 @@ export default class LeafletMap extends Component<{}, State> {
     this.resetMap = this.resetMap.bind(this);
     this.resetPrecinct = this.resetPrecinct.bind(this);
     this.dropdownStateSelect = this.dropdownStateSelect.bind(this);
-    this.mapClick= this.mapClick.bind(this);
-    this.componentDidMount = this.componentDidMount.bind(this);
     this.heatMapOn = this.heatMapOn.bind(this);
     this.getPrecinctColor = this.getPrecinctColor.bind(this)
+    this.getStateData = this.getStateData.bind(this)
   }
 
-  componentDidMount() {
-    // axios.get("/backend/state/all/info").then(
-    //       result => {
-    //         this.setState({
-    //           states: result.data,
-    //         });
-    //       },
-    //       error => {
-    //         this.setState({
-    //           error
-    //         });
-    //       }
-    //       );
+  getStateData(){
+    return this.props.stateData
   }
 
   onEachFeature = (component, feature, layer) => {
@@ -166,36 +154,15 @@ export default class LeafletMap extends Component<{}, State> {
     const stateLng = e.properties.lng
     const statePopulation = e.properties.population
     const stateNumDistricts = e.properties.numDistricts
+    this.stateLayerControlToggle(stateName)
     this.props.onStateSelect(stateName);
-    console.log("PRecincts ", this.state.precincts)
     this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     }
 
     dropdownStateSelect(ev, stateNum){
       var geoJSON = this.state.states
       var e = geoJSON['features'][stateNum]
-      const stateName= e.properties.name
-      const stateDensity=e.properties.density
-      const stateLat = e.properties.lat
-      const stateLng = e.properties.lng
-      const statePopulation = e.properties.population
-      const stateNumDistricts = e.properties.numDistricts
-      if(stateName=='Virginia'){
-          layerControl[0].style.display = 'block';
-          layerControl[1].style.display = 'none';
-          layerControl[2].style.display = 'none';
-      }else if(stateName=='North Carolina'){
-          layerControl[1].style.visibility = 'visible';
-          layerControl[0].style.visibility = 'hidden';
-          layerControl[2].style.visibility = 'hidden';
-      }else{
-          layerControl[2].style.visibility = 'visible';
-          layerControl[1].style.visibility = 'hidden';
-          layerControl[0].style.visibility = 'hidden';
-      }
-      this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
-      console.log("DROPDOWN state select ", stateName);
-      this.props.onStateSelect(stateName);
+      this.clickSelectState(null, e)
     }
 
     stateLayerControlToggle(stateName){
@@ -216,11 +183,9 @@ export default class LeafletMap extends Component<{}, State> {
 
     dropdownDemographicSelect(ev, demId){
       this.props.onDemSelect(this.state.demographics[demId]);
-      console.log("DROPDOWN demographic select", this.state.demographics[demId]);
     }
 
   onEachPrecinct = (component, feature, layer,stateName) => {
-    console.log('stateName: ', stateName)
     layer.on({
       mouseover: this.highlightPrecinct,
       mouseout: this.resetPrecinct.bind(null, component),
@@ -237,12 +202,6 @@ export default class LeafletMap extends Component<{}, State> {
   resetPrecinct = (component, e) => {
     var layer = e.target;
     layer.setStyle(this.state.precinctDefaultStyle)
-  }
-
-  mapClick(){
-      if(this.state.stateName == ''){
-      console.log("clicked map");
-    }
   }
 
   getPrecinctColor = (component, feature, layer) => {
@@ -339,7 +298,6 @@ export default class LeafletMap extends Component<{}, State> {
     const camelcaseStates = ['virginia', 'northCarolina']
     const dropdownDemographics = ['Black or African American', 'Non-Hispanic White', 'Hispanic and Latino', 'Asian', 'Native Americans and Alaska Natives','Native Hawaiians and Other Pacific Islanders', 'Two or more races' ]
 
-
     return (
       <div className='leftside'>
         <div className="map_filter">
@@ -394,7 +352,9 @@ export default class LeafletMap extends Component<{}, State> {
           id='mapbox/light-v9'
         ></TileLayer>
         <GeoJSON
-          data={this.state.states}
+          ref={stateRef}
+          key={hash(this.props.stateData)}
+          data={this.props.stateData}
           style={this.state.stateDefaultStyle}
           state={() => ({
             name: ''

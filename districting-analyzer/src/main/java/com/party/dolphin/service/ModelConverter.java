@@ -20,8 +20,7 @@ public class ModelConverter {
         dto.setPopulation(state.getPopulation());
         dto.setCounties(
             state.getCounties().stream()
-                .mapToInt(c -> c.getId())
-                .boxed()
+                .map(c -> c.getId())
                 .collect(Collectors.toSet())
         );
         dto.setCanonicalDistrictingId(
@@ -38,8 +37,7 @@ public class ModelConverter {
         dto.setShape(county.getShape());
         dto.setPrecincts(
             county.getPrecincts().stream()
-                .mapToInt(p -> p.getId())
-                .boxed()
+                .map(p -> p.getId())
                 .collect(Collectors.toSet())
         );
         return dto;
@@ -53,8 +51,7 @@ public class ModelConverter {
         dto.setCountyId(precinct.getCounty().getId());
         dto.setNeighbors(
             precinct.getNeighbors().stream()
-                .mapToInt(p -> p.getId())
-                .boxed()
+                .map(p -> p.getId())
                 .collect(Collectors.toSet())
         );
         return dto;
@@ -67,8 +64,7 @@ public class ModelConverter {
         dto.setStateId(job.getState().getId());
         dto.setDistrictings(
             job.getDistrictings().stream()
-                .mapToInt(d -> d.getId())
-                .boxed()
+                .map(d -> d.getId())
                 .collect(Collectors.toList())
         );
         dto.setBoxWhiskers(
@@ -94,8 +90,7 @@ public class ModelConverter {
         dto.setJobId(districting.getJob().getId());
         dto.setDistricts(
             districting.getDistricts().stream()
-                .mapToInt(di -> di.getId())
-                .boxed()
+                .map(di -> di.getId())
                 .collect(Collectors.toList())
         );
         return dto;
@@ -109,8 +104,7 @@ public class ModelConverter {
         dto.setDistrictingId(district.getDistricting().getId());
         dto.setPrecincts(
             district.getPrecincts().stream()
-                .mapToInt(p -> p.getId())
-                .boxed()
+                .map(p -> p.getId())
                 .collect(Collectors.toSet())
         );
         return dto;

@@ -71,12 +71,19 @@ public class ModelConverter {
                 .boxed()
                 .collect(Collectors.toList())
         );
-        // TODO:
-        // jobDto.setBoxWhiskerData(
-        //     job.getBoxWhiskerData().stream();
-        // );
+        jobDto.setBoxWhiskers(
+            job.getBoxWhiskers().stream()
+                .map(bw -> createBoxWhiskerDto(bw))
+                .collect(Collectors.toList())
+        );
 
         return jobDto;
+    }
+
+    public BoxWhiskerDto createBoxWhiskerDto(BoxWhisker boxWhisker) {
+        BoxWhiskerDto dto = new BoxWhiskerDto();
+        BeanUtils.copyProperties(boxWhisker, dto);
+        return dto;
     }
 
     public DistrictingDto createDistrictingDto(Districting districting) {

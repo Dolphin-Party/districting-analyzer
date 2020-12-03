@@ -14,7 +14,7 @@ public class JobDto {
     private DemographicType targetDemographic; // TODO: enum or String?
     private boolean isSeawulf;
     private List<Integer> districtings;
-    private List<List<Double>> boxWhiskerData;
+    private List<BoxWhiskerDto> boxWhiskers;
     private int averageDistricting;
     private int extremeDistricting;
 
@@ -75,11 +75,11 @@ public class JobDto {
         this.districtings = districtings;
     }
 
-    public List<List<Double>> getBoxWhiskerData() {
-        return this.boxWhiskerData;
+    public List<BoxWhiskerDto> getBoxWhiskers() {
+        return this.boxWhiskers;
     }
-    public void setBoxWhiskerData(List<List<Double>> boxWhiskerData) {
-        this.boxWhiskerData = boxWhiskerData;
+    public void setBoxWhiskers(List<BoxWhiskerDto> boxWhiskerData) {
+        this.boxWhiskers = boxWhiskerData;
     }
 
     public int getAverageDistricting() {

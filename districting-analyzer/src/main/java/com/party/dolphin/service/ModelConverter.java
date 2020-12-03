@@ -13,71 +13,71 @@ import org.springframework.stereotype.Service;
 @Service
 public class ModelConverter {
     public StateDto createStateDto(State state) {
-        StateDto stateDto = new StateDto();
-        stateDto.setStateId(state.getId());
-        stateDto.setName(state.getName());
-        stateDto.setShape(state.getShape());
-        stateDto.setPopulation(state.getPopulation());
-        stateDto.setCounties(
+        StateDto dto = new StateDto();
+        dto.setStateId(state.getId());
+        dto.setName(state.getName());
+        dto.setShape(state.getShape());
+        dto.setPopulation(state.getPopulation());
+        dto.setCounties(
             state.getCounties().stream()
                 .mapToInt(c -> c.getId())
                 .boxed()
                 .collect(Collectors.toSet())
         );
-        stateDto.setCanonicalDistrictingId(
+        dto.setCanonicalDistrictingId(
             state.getCanonicalDistricting().getId()
         );
-        return stateDto;
+        return dto;
     }
 
     public CountyDto createCountyDto(County county) {
-        CountyDto countyDto = new CountyDto();
-        countyDto.setCountyId(county.getId());
-        countyDto.setName(county.getName());
-        countyDto.setStateId(county.getState().getId());
-        countyDto.setShape(county.getShape());
-        countyDto.setPrecincts(
+        CountyDto dto = new CountyDto();
+        dto.setCountyId(county.getId());
+        dto.setName(county.getName());
+        dto.setStateId(county.getState().getId());
+        dto.setShape(county.getShape());
+        dto.setPrecincts(
             county.getPrecincts().stream()
                 .mapToInt(p -> p.getId())
                 .boxed()
                 .collect(Collectors.toSet())
         );
-        return countyDto;
+        return dto;
     }
 
     public PrecinctDto createPrecinctDto(Precinct precinct) {
-        PrecinctDto precinctDto = new PrecinctDto();
-        BeanUtils.copyProperties(precinct, precinctDto);
+        PrecinctDto dto = new PrecinctDto();
+        BeanUtils.copyProperties(precinct, dto);
 
-        precinctDto.setPrecinctId(precinct.getId());
-        precinctDto.setCountyId(precinct.getCounty().getId());
-        precinctDto.setNeighbors(
+        dto.setPrecinctId(precinct.getId());
+        dto.setCountyId(precinct.getCounty().getId());
+        dto.setNeighbors(
             precinct.getNeighbors().stream()
                 .mapToInt(p -> p.getId())
                 .boxed()
                 .collect(Collectors.toSet())
         );
-        return precinctDto;
+        return dto;
     }
 
     public JobDto createJobDto(Job job) {
-        JobDto jobDto = new JobDto();
-        BeanUtils.copyProperties(job, jobDto);
+        JobDto dto = new JobDto();
+        BeanUtils.copyProperties(job, dto);
 
-        jobDto.setStateId(job.getState().getId());
-        jobDto.setDistrictings(
+        dto.setStateId(job.getState().getId());
+        dto.setDistrictings(
             job.getDistrictings().stream()
                 .mapToInt(d -> d.getId())
                 .boxed()
                 .collect(Collectors.toList())
         );
-        jobDto.setBoxWhiskers(
+        dto.setBoxWhiskers(
             job.getBoxWhiskers().stream()
                 .map(bw -> createBoxWhiskerDto(bw))
                 .collect(Collectors.toList())
         );
 
-        return jobDto;
+        return dto;
     }
 
     public BoxWhiskerDto createBoxWhiskerDto(BoxWhisker boxWhisker) {

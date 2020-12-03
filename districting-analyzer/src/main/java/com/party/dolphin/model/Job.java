@@ -2,6 +2,7 @@ package com.party.dolphin.model;
 
 import com.party.dolphin.model.enums.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -18,7 +19,7 @@ public class Job {
     private DemographicType targetDemographic;
     private boolean isSeawulf;
     private List<Districting> districtings;
-    private List<BoxWhisker> boxWhiskerData;
+    private List<BoxWhisker> boxWhiskers;
     private int averageDistricting;
     private int extremeDistricting;
 
@@ -101,11 +102,11 @@ public class Job {
     }
 
     @OneToMany(mappedBy="job")
-    public List<BoxWhisker> getBoxWhiskerData() {
-        return this.boxWhiskerData;
+    public List<BoxWhisker> getBoxWhiskers() {
+        return this.boxWhiskers;
     }
-    public void setBoxWhiskerData(List<BoxWhisker> boxWhiskerData) {
-        this.boxWhiskerData = boxWhiskerData;
+    public void setBoxWhiskers(List<BoxWhisker> boxWhiskers) {
+        this.boxWhiskers = boxWhiskers;
     }
 
     @Column(name="averageDistricting")
@@ -129,7 +130,7 @@ public class Job {
     public void analyzeJobResults() {
         this.calcNumberCounties();
         this.genOrderedDistricts();
-        this.genBoxWhiskerData();
+        this.genBoxWhisker();
         this.findRepresentativeDistrictings();
     }
 
@@ -145,8 +146,33 @@ public class Job {
         }
     }
 
-    private void genBoxWhiskerData() {
-        return;
+    private void genBoxWhisker() {
+        int numDistricts = this.districtings.get(0).getDistricts().size();
+        int numDistrictings = this.districtings.size();
+        int i, j;
+        List<Double> boxWhiskerData = new ArrayList<Double>(numDistricts);
+        List<BoxWhisker> boxWhiskerPlots = new ArrayList<BoxWhisker>(numDistricts);
+        
+
+        for (i = 0; i < numDistricts; i++) {
+            for (j = 0; j < numDistrictings; j++) {
+                boxWhiskerData.add(
+                    this.districtings.get(j)
+                        .getDistricts().get(i)
+                        .getTargetDemographicPercentVap()
+                );
+            }
+
+            BoxWhisker plot = new BoxWhisker();
+            plot.setJob(this);
+            plot.setOrder(i);
+            plot.calcStats(boxWhiskerData);
+
+            boxWhiskerPlots.add(plot);
+            boxWhiskerData.clear();
+        }
+
+        this.boxWhiskers = boxWhiskerPlots;
     }
 
     private void findRepresentativeDistrictings() {

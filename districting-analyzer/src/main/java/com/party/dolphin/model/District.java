@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="Districts")
-public class District {
+public class District implements Comparable<District> {
     /* Fields */
     private int id;
     private Districting districting;
@@ -104,5 +104,15 @@ public class District {
             totalPopulation += p.getPopulation();
         }
         return totalVAP / ((double)totalPopulation);
+    }
+
+    @Override
+    public int compareTo(District district) {
+        if (this.targetDemographicPercentVap < district.getTargetDemographicPercentVap())
+            return -1;
+        else if (this.targetDemographicPercentVap > district.getTargetDemographicPercentVap())
+            return 1;
+        else
+            return 0;
     }
 }

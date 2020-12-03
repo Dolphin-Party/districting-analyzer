@@ -1,5 +1,6 @@
 package com.party.dolphin.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.*;
@@ -97,5 +98,45 @@ public class BoxWhisker {
     }
     public void setMax(double max) {
         this.max = max;
+    }
+
+    /* Method for setting stats based on data */
+    public void calcStats(List<Double> data) {
+        Collections.sort(data);
+        int n = data.size();
+        this.min = data.get(0);
+        this.max = data.get(data.size() -1);
+        this.average = data.stream()
+                        .mapToDouble(di -> di)
+                        .average().getAsDouble();
+
+        // If even, split in half to calculate q1 & q3
+        // If odd, remove median, split in half, and calculate q1 & q3
+        // q1 & q3 are median of their respective halves
+        int pivot = n / 2;
+        this.median = calcMedian(data, 0, n-1);
+        this.q3 = calcMedian(data, pivot + 1, n-1);
+        if (n % 2 == 0) {
+            this.q1 = calcMedian(data, 0, pivot);
+        } else {
+            this.q1 = calcMedian(data, 0, pivot-1);
+        }
+    }
+
+    private double calcMedian(List<Double> data, int start, int end) {
+        // n == 1 edge case
+        if (start == end)
+            return data.get(start);
+
+        int n = end - start + 1;
+        int pivot = n / 2;
+        if (n % 2 == 0) {
+            return (
+                data.get(start + pivot - 1)
+                + data.get(start + pivot)
+                ) / 2;
+        } else {
+            return data.get(start + pivot);
+        }
     }
 }

@@ -3,7 +3,9 @@ package com.party.dolphin.model;
 import com.party.dolphin.model.enums.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -153,7 +155,6 @@ public class Job {
         List<Double> boxWhiskerData = new ArrayList<Double>(numDistricts);
         List<BoxWhisker> boxWhiskerPlots = new ArrayList<BoxWhisker>(numDistricts);
         
-
         for (i = 0; i < numDistricts; i++) {
             for (j = 0; j < numDistrictings; j++) {
                 boxWhiskerData.add(
@@ -175,8 +176,38 @@ public class Job {
         this.boxWhiskers = boxWhiskerPlots;
     }
 
+    // Based on euclidean distance for target demographic percent VAP
+    // compared to the average for each district
     private void findRepresentativeDistrictings() {
-        return;
+        List<Double> districtAverages = this.boxWhiskers.stream()
+            .map(bw -> bw.getAverage())
+            .collect(Collectors.toList());
+        Double euclidDist;
+        Double minDist = Double.POSITIVE_INFINITY;
+        Double maxDist = Double.NEGATIVE_INFINITY;
+        Districting avgD = this.districtings.get(0);
+        Districting extremeD = this.districtings.get(0);
+
+        for (Districting d : this.districtings) {
+            Iterator<Double> averageIt = districtAverages.iterator();
+            euclidDist = 0.0;
+
+            for (District di : d.getDistricts()) {
+                euclidDist += Math.pow(di.getTargetDemographicPercentVap() - averageIt.next(), 2);
+            }
+
+            if (euclidDist < minDist) {
+                minDist = euclidDist;
+                avgD = d;
+            }
+            if (euclidDist > maxDist) {
+                maxDist = euclidDist;
+                extremeD = d;
+            }
+        }
+
+        this.averageDistricting = avgD.getId();
+        this.extremeDistricting = extremeD.getId();
     }
 
 }

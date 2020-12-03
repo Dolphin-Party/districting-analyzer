@@ -75,16 +75,16 @@ public class Districting {
     }
 
     protected void genOrderedDistricts(DemographicType demographic) {
-        List<District> orderedList = new ArrayList<District>(this.districts.size());
+        List<District> orderedDistricts = new ArrayList<District>(this.districts.size());
         double percentVap;
         for (District di : this.districts) {
             percentVap = di.computePercentVAP(demographic);
             di.setTargetDemographic(demographic);
             di.setTargetDemographicPercentVap(percentVap);
-            orderedList = insertOrderedDistrict(orderedList, di);
+            orderedDistricts = insertOrderedDistrict(orderedDistricts, di);
         }
-        this.setDistrictsOrder(orderedList);
-        this.districts = orderedList;
+        this.setDistrictsOrder(orderedDistricts);
+        this.districts = orderedDistricts;
     }
 
     private List<District> insertOrderedDistrict(List<District> list, District di) {

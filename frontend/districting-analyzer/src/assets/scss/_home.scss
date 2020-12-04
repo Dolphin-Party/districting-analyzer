@@ -71,15 +71,13 @@ html, body {
 //   width: 10%;
 // }
 
-
-
 .map-information{
-  width: 20%;
-  height: 40%;
+  width: 25%;
+  height: 35%;
   top: 60%;
   margin: 1% 1% 1% 1%;
   padding: 1% 1% 1% 1%;
-  left: 80%;
+  left: 75%;
   position:relative;
   background-color: #3B2B59;
   opacity: 0.9;
@@ -88,6 +86,7 @@ html, body {
   border-radius: 10px;
   z-index:1000;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  line-height: 80%;
 }
 
 

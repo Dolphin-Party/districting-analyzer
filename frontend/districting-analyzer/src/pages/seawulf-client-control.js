@@ -24,19 +24,15 @@ export default class SeawulfClientControl extends Component<{}, State> {
   }
 
   onJobAdded = (newJob) => {
-    this.setState({currentState:this.props.currState});
-    this.setState({currentDem:this.props.currDem});
     var jobDict = this.state.jobs;
+    var jobIdDict = this.state.jobIdDict
     newJob.state = this.props.currState;
     newJob.dem= this.props.currDem;
     newJob.status = 'Submitted';
-    var jobIdDict = this.state.jobIdDict
     newJob.stateId = jobIdDict[newJob.state]
-    jobDict[this.state.nextId] = newJob;
     this.setState({nextId:this.state.nextId+1});
     this.setState({jobs: jobDict});
     this.setState({noJobsText:{visibility: 'hidden'}});
-
     axios.post("/backend/job/init", {
       stateId: newJob.stateId,
       numberDistrictings: newJob.randDist,
@@ -46,7 +42,8 @@ export default class SeawulfClientControl extends Component<{}, State> {
       if(!response){
         console.log("Error:", response);
       }else{
-        console.log("Successful!");
+        jobDict[response.data] = newJob;
+        console.log("Successful!", response.data);
       }
     })
   }
@@ -55,14 +52,16 @@ export default class SeawulfClientControl extends Component<{}, State> {
     var jobDict = this.state.jobs;
     if (jobDict[jobId].buttonOption == 'Delete'){
       delete jobDict[jobId];
-      // axios.post("/job/delete/jobId", {
-      // }).then(function(response){
-      //   if(!response){
-      //     console.log("Error:", response);
-      //   }
-      // })
+      axios.post("backend/job/"+jobId.toString()+"/delete", {
+      }).then(function(response){
+        if(!response){
+          console.log("Error:", response);
+        }else{
+          console.log("Deleted Successfully")
+        }
+      })
     }else{
-      // axios.post("/job/cancel/jobId", {
+      // axios.post("backend/job/cancel/jobId", {
       // }).then(function(response){
       //   if(response){
       //     jobDict[jobId].status = 'Cancelled';
@@ -83,8 +82,6 @@ export default class SeawulfClientControl extends Component<{}, State> {
   }
 
   onJobUpdate = (jobId) => {
-    // Get updates from seawulf and show on the job right away
-    // Make an alert that a job is done?
     var jobDict = this.state.jobs;
     var updatedStatus = null;
     // axios.get("/job/update/jobId").then(

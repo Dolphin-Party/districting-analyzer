@@ -11,7 +11,6 @@ class BoxWhiskerPlot extends Component {
 			stateName: this.props.boxWhiskerData.state,
 			dataPoints: this.props.boxWhiskerData.dataPoints,
     };
-		console.log("Hello from Box Whisker Plot", this.props.boxWhiskerData)
 		console.log(this.props.boxWhiskerData.jobId);
   }
 

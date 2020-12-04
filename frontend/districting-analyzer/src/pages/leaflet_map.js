@@ -15,8 +15,6 @@ import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
 import teamStates from '../assets/geojson/teamstates.json'
 import congressional from '../assets/geojson/us_congressional.json'
 
-
-
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
 const center = [51, 0];
@@ -45,7 +43,7 @@ export default class LeafletMap extends Component<{}, State> {
       lat: 37.090240,
       lng: -95.712891,
       zoom: 5,
-      stateName: "",
+      mapInfo: {text1: "", text2: "", text3: "", text4: "", text5: "", text6: "", text7: "", text8: ""},
       stateDensity: " ",
       statePopulation: " ",
       stateNumDistricts: " ",
@@ -131,11 +129,11 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightFeature = (e) => {
     var layer = e.target;
-    const stateName= e.target.feature.properties.name
+    this.updateMapInfo("State: ", e.properties.name, "Population: ", e.properties.population, "Number of Districts: ", e.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateDensity=e.target.feature.properties.density
     const statePopulation = e.target.feature.properties.population
     const stateNumDistricts = e.target.feature.properties.numDistricts
-    this.setState({stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
+    this.setState({stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     layer.setStyle(this.state.stateHighlightStyle);
   }
 
@@ -149,20 +147,32 @@ export default class LeafletMap extends Component<{}, State> {
       var e = e.target.feature
     }
     const stateName= e.properties.name
-    const stateDensity=e.properties.density
+    this.updateMapInfo("State: ", e.properties.name, "Population: ", e.properties.population, "Number of Districts: ", e.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateLat = e.properties.lat
     const stateLng = e.properties.lng
-    const statePopulation = e.properties.population
-    const stateNumDistricts = e.properties.numDistricts
     this.stateLayerControlToggle(stateName)
     this.props.onStateSelect(stateName);
-    this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng, stateName: stateName, stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
+    this.setState({originalState: "False", zoom: 7, stateSelected: true, lat:stateLat, lng:stateLng});
     }
 
     dropdownStateSelect(ev, stateNum){
       var geoJSON = this.state.states
       var e = geoJSON['features'][stateNum]
       this.clickSelectState(null, e)
+    }
+
+    updateMapInfo(label1, content1, label2, content2, label3, content3, label4, content4, label5, content5, label6, content6, label7, content7, label8, content8){
+      var mapInfo = this.state.mapInfo
+      mapInfo['text1'] = label1.concat(content1)
+      mapInfo['text2'] = label2.concat(content2)
+      mapInfo['text3'] = label3.concat(content3)
+      mapInfo['text4'] = label4.concat(content4)
+      mapInfo['text5'] = label5.concat(content5)
+      mapInfo['text6'] = label6.concat(content6)
+      mapInfo['text7'] = label7.concat(content7)
+      mapInfo['text8'] = label8.concat(content8)
+      this.setState({mapInfo: mapInfo})
+      console.log(mapInfo, this.state.mapInfo)
     }
 
     stateLayerControlToggle(stateName){
@@ -194,8 +204,17 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightPrecinct = (e) => {
     var layer = e.target;
-    const stateName= e.target.feature.properties.Precinct
-    this.setState({stateName: stateName});
+    var precinct = e.target.feature.properties
+    var demData = precinct.demographicData
+    this.updateMapInfo(
+    "Precinct: ", precinct.Precinct,
+    "Black or African American Total: " + Math.round(demData.blackPop), ", VAP:" + Math.round(demData.blackPop),
+    "Non-Hispanic White Total: " + Math.round(demData.whitePop), ", VAP: " + Math.round(demData.whitePop),
+    "Hispanic/Latino Total: " + Math.round(demData.hispaPop), ", VAP: " + Math.round(demData.hispaPop),
+    "Asian: "+ Math.round(demData.asianPop) , ", VAP: "+ Math.round(demData.asianPop),
+    "Native Americans & Alaska Natives "+ Math.round(demData.nativPop), ", VAP"+ Math.round(demData.nativPop),
+    "Native Hawaiians and Other Pacific Islanders Total: " + Math.round(demData.hawaiPop),  ", VAP: "+ Math.round(demData.hawaiPop),
+    "Two or more races Total: "+ Math.round(demData.otherPop), ", VAP: "+ Math.round(demData.otherPop))
     layer.setStyle(this.state.precinctHighlightStyle);
   }
 
@@ -263,13 +282,12 @@ export default class LeafletMap extends Component<{}, State> {
     for(var i=0; i<3; i++){
       layerControl[i].style.visibility = 'hidden';
     }
-    this.setState(state => ({originalState: "True", stateSelected: false, lat: 37.090240, lng: -95.712891, zoom: 5, stateName: "", stateDensity: " "}));
+    this.setState(state => ({originalState: "True", stateSelected: false, lat: 37.090240, lng: -95.712891, zoom: 5, stateDensity: " "}));
     this.props.onReset();
   }
 
   heatMapOn(e){
     if(this.state.heatMapOn){
-      console.log("turning off heat map")
       this.setState({heatMapLegendStyle: {visibility: 'hidden'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
     }else{
       if(this.props.currDem != null){
@@ -329,10 +347,9 @@ export default class LeafletMap extends Component<{}, State> {
       <div className='leaflet-container'>
         <Map center={position} zoom={this.state.zoom} ref={mapRef} onClick={this.mapClick}>
         <div className='map-information'>
-          <p className='state-info'> State Name: {this.state.stateName}</p>
-          <p className='state-info'> State Density: {this.state.stateDensity}</p>
-          <p className='state-info'> Population: {this.state.statePopulation}</p>
-          <p className='state-info'> Number of Districts: {this.state.stateNumDistricts}</p>
+          {Object.entries(this.state.mapInfo).map( ([i, text]) => (
+            <p key={i} className='state-info'>{text}</p>
+          ))}
         </div>
         <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>

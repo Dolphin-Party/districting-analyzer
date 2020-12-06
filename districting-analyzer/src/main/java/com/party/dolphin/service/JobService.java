@@ -69,11 +69,16 @@ public class JobService {
         return modelConverter.createJobDto(job);
     }
 
-    public boolean deleteJob(int jobId) {
+    public boolean cancelJob(int jobId) {
         Job job = jobRepository.findById(jobId);
         job = serverDispatcher.getJobStatus(job);
         if (job.getStatus() == JobStatus.running)
             job = serverDispatcher.cancelJob(job);
+        return true;
+    }
+
+    public boolean deleteJob(int jobId) {
+        Job job = jobRepository.findById(jobId);
         jobRepository.delete(job);
         return true;
     }

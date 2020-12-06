@@ -1,8 +1,8 @@
 package com.party.dolphin.service;
 
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
@@ -43,16 +43,23 @@ public class JobService {
         return job.getId();
     }
 
-    public JobDto getJob(int id) {
+    public JobDto getJobDto(int id) {
         Job job = jobRepository.findById(id);
         return modelConverter.createJobDto(job);
+    }
+
+    public List<JobDto> getAllJobDtos() {
+        List<Job> jobs = jobRepository.findAll();
+        return jobs.stream()
+                    .map(j -> modelConverter.createJobDto(j))
+                    .collect(Collectors.toList());
     }
 
     public List<JobDto> getJobsByState(int stateId) {
         List<Job> jobs = jobRepository.findAllByStateId(stateId);
         return jobs.stream()
-            .map(j -> modelConverter.createJobDto(j))
-            .collect(Collectors.toList());
+                    .map(j -> modelConverter.createJobDto(j))
+                    .collect(Collectors.toList());
     }
 
     public JobDto getJobStatus(int jobId) {

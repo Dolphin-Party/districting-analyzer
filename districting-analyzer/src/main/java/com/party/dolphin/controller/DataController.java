@@ -66,7 +66,12 @@ public class DataController {
 
     @GetMapping("/job/{jobId}")
     public JobDto getJob(@PathVariable int jobId) {
-        return jobService.getJob(jobId);
+        return jobService.getJobDto(jobId);
+    }
+
+    @GetMapping("/job/all")
+    public List<JobDto> getAllJobs() {
+        return jobService.getAllJobDtos();
     }
 
     @GetMapping("/districting/{districtingId}")

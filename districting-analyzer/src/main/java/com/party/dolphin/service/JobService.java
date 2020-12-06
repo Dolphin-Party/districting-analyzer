@@ -74,6 +74,7 @@ public class JobService {
         job = serverDispatcher.getJobStatus(job);
         if (job.getStatus() == JobStatus.running)
             job = serverDispatcher.cancelJob(job);
+        job = jobRepository.save(job);
         return true;
     }
 

@@ -16,17 +16,17 @@ public class JobController {
     @Autowired
     private JobService jobService;
 
-    @RequestMapping(method=RequestMethod.POST, value="/job/init")
+    @PostMapping(value="/job/init")
     public int addJob(@RequestBody JobDto job) {
         return jobService.addJob(job);
     }
 
-    @RequestMapping(method=RequestMethod.GET, value="/job/{jobId}/status")
+    @GetMapping(value="/job/{jobId}/status")
     public JobDto checkStatus(@PathVariable int jobId) {
         return jobService.getJobStatus(jobId);
     }
 
-    @RequestMapping(method=RequestMethod.POST, value="/job/{jobId}/delete")
+    @PostMapping(value="/job/{jobId}/delete")
     public boolean deleteJob(@PathVariable int jobId) {
         return jobService.deleteJob(jobId);
     }

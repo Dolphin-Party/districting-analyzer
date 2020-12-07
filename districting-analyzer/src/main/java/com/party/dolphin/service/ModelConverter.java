@@ -61,6 +61,7 @@ public class ModelConverter {
         JobDto dto = new JobDto();
         BeanUtils.copyProperties(job, dto);
 
+        dto.setJobId(job.getId());
         dto.setStateId(job.getState().getId());
         dto.setDistrictings(
             job.getDistrictings().stream()

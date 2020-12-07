@@ -129,10 +129,10 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightFeature = (e) => {
     var layer = e.target;
-    this.updateMapInfo("State: ", e.properties.name, "Population: ", e.properties.population, "Number of Districts: ", e.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
-    const stateDensity=e.target.feature.properties.density
-    const statePopulation = e.target.feature.properties.population
-    const stateNumDistricts = e.target.feature.properties.numDistricts
+    this.updateMapInfo("State: ", layer.feature.properties.name, "Population: ", layer.feature.properties.population, "Number of Districts: ", layer.feature.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
+    const stateDensity=layer.feature.properties.density
+    const statePopulation = layer.feature.properties.population
+    const stateNumDistricts = layer.feature.properties.numDistricts
     this.setState({stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     layer.setStyle(this.state.stateHighlightStyle);
   }
@@ -353,7 +353,7 @@ export default class LeafletMap extends Component<{}, State> {
         </div>
         <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>
-            <div className='text'>
+            <div key={i} className='text'>
               <i style={this.state.heatMapStyles[i]}></i>
               {(heatMapGrades[i+1])
                 ? <p key={i}>{grade}% - {heatMapGrades[i+1]}% </p>

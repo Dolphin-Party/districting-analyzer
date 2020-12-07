@@ -9,22 +9,45 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import Table from 'react-bootstrap/Table'
+import axios from 'axios';
 
 
 export default class JobHistoryTab extends Component<{}, State> {
   constructor(props) {
       super(props);
       this.state = {
-        jobs:this.props.jobs,
-        noJobsText: this.props.noJobsText
+        jobs:[],
+        noJobsText: this.props.noJobsText,
+        isLoading: true,
+        stateDict: {1: "Arkansas", 2: "North Carolina", 3: "Virginia"}
       };
       this.handleLoad = this.handleLoad.bind(this)
       this.jobsAvailability = this.jobsAvailability.bind(this)
+      this.jobButtonOptions = this.jobButtonOptions.bind(this)
   }
 
 
   componentDidMount() {
-   window.addEventListener('load', this.handleLoad);
+   axios.get("/backend/job/all")
+   .then(response => {
+     this.setState({ jobs: response.data})
+     this.setState({ isLoading: false });
+   })
+   .then(this.jobButtonOptions())
+   .then(window.addEventListener('load', this.handleLoad))
+   .then(console.log("Job History Mounted, ", this.state.jobs))
+}
+
+jobButtonOptions() {
+  var jobsList = this.state.jobs
+  jobsList.forEach(job => {
+    if(job.status != 'stopped'){
+      job['buttonOption'] = 'Cancel'
+    }else{
+      job['buttonOption'] = 'Delete'
+    }
+  })
+  this.setState({ jobs: jobsList})
 }
 
   componentWillUnmount() {
@@ -55,22 +78,27 @@ export default class JobHistoryTab extends Component<{}, State> {
 
   render() {
     const cancelButton= document.getElementsByClassName('cancelButton');
+    const { isLoading, stateData } = this.state;
+    if (isLoading) {
+      console.log(this.state.jobs)
+      return <div>Loading...</div>;
+    }else{
     return (
       <div className='jobs-list'>
         <p className='noJobsText' style={this.props.noJobsText}>You currently have no jobs.</p>
-        {Object.entries(this.state.jobs).map( ([key, job]) => (
+        {this.state.jobs.map((job, key) => (
           <div key={key} className='job-info'>
             <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>Job #</th>
-                  <th >{key}</th>
+                  <th>{job.jobId}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>State:</td>
-                  <td>{job.state}</td>
+                  <td>{this.state.stateDict[job.stateId]}</td>
                 </tr>
                 <tr>
                   <td>Status</td>
@@ -78,22 +106,22 @@ export default class JobHistoryTab extends Component<{}, State> {
                 </tr>
                 <tr>
                   <td>Number of Districtings:</td>
-                  <td>{job.randDist}</td>
+                  <td>{job.numberDistrictings}</td>
                 </tr>
                 <tr>
                   <td>% of Compactness:</td>
-                  <td> {job.comp}</td>
+                  <td> {job.compactnessAmount}</td>
                 </tr>
                 <tr>
                   <td>Racial/Ethnic Demographic:</td>
-                  <td> {job.dem}</td>
+                  <td> {job.targetDemographic}</td>
                 </tr>
                 <tr>
                   <td>% of voting age population:</td>
-                  <td> {job.pvap}</td>
+                  <td> {job.buttonOption}</td>
                 </tr>
                 <tr>
-                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,key)}>{job.buttonOption}</Button>{' '}</td>
+                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='running' ? 'Cancel' : 'Delete' }</Button>{' '}</td>
                   <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobDataPlot(e,key,job)}>Display Plot</Button>{' '}</td>
                 </tr>
               </tbody>
@@ -102,5 +130,6 @@ export default class JobHistoryTab extends Component<{}, State> {
         ))}
       </div>
     )
+    }
   }
 }

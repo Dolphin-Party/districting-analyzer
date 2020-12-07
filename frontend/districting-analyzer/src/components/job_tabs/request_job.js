@@ -23,9 +23,9 @@ export default class RequestJobTab extends Component<{}, State> {
       stateId : null,
       status: null,
       state: null,
-      randDist: null,
-      comp: null,
-      dem: null,
+      numberDistrictings: null,
+      compactnessAmount: null,
+      targetDemographic: null,
       pvap: null,
       buttonOption: 'Cancel',
       boxWhiskerAvailability: {opacity: '0.2'},
@@ -40,15 +40,15 @@ export default class RequestJobTab extends Component<{}, State> {
     }
   }
   setNumRandomDistrictings = (newValue) => {
-    this.setState({randDist: newValue});
+    this.setState({numberDistrictings: newValue});
   }
   setCompactness = (newValue) => {
     var compDict=this.state.compDict
     var temp=compDict[newValue]
-    this.setState({comp: temp});
+    this.setState({compactnessAmount: temp});
   }
   setTargetDemographic = (newValue) => {
-    this.setState({dem: newValue});
+    this.setState({targetDemographic: newValue});
   }
   setVAP = (newValue) => {
     this.setState({pvap: newValue});

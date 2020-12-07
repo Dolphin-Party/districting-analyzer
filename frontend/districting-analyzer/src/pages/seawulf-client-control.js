@@ -27,7 +27,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
     var jobDict = this.state.jobs;
     var jobIdDict = this.state.jobIdDict
     newJob.state = this.props.currState;
-    newJob.dem= this.props.currDem;
+    newJob.targetDemographic= this.props.currDem;
     newJob.status = 'Submitted';
     newJob.stateId = jobIdDict[newJob.state]
     this.setState({nextId:this.state.nextId+1});
@@ -35,9 +35,9 @@ export default class SeawulfClientControl extends Component<{}, State> {
     this.setState({noJobsText:{visibility: 'hidden'}});
     axios.post("/backend/job/init", {
       stateId: newJob.stateId,
-      numberDistrictings: newJob.randDist,
-      compactnessAmount: newJob.comp,
-      targetDemographic: newJob.dem,
+      numberDistrictings: newJob.numberDistrictings,
+      compactnessAmount: newJob.compactnessAmount,
+      targetDemographic: newJob.targetDemographic,
     }).then(function(response){
       if(!response){
         console.log("Error:", response);
@@ -48,11 +48,11 @@ export default class SeawulfClientControl extends Component<{}, State> {
     })
   }
 
-  onJobCancelDelete= (jobId) => {
-    var jobDict = this.state.jobs;
-    if (jobDict[jobId].buttonOption == 'Delete'){
-      delete jobDict[jobId];
-      axios.post("backend/job/"+jobId.toString()+"/delete", {
+  onJobCancelDelete= (job) => {
+    // var jobDict = this.state.jobs;
+    if (job.status == 'stopped'){
+      // delete jobDict[jobId];
+      axios.post("backend/job/"+job.jobId.toString()+"/delete", {
       }).then(function(response){
         if(!response){
           console.log("Error:", response);
@@ -61,18 +61,18 @@ export default class SeawulfClientControl extends Component<{}, State> {
         }
       })
     }else{
-      // axios.post("backend/job/cancel/jobId", {
-      // }).then(function(response){
-      //   if(response){
-      //     jobDict[jobId].status = 'Cancelled';
-      //   }else{
-      //     jobDict[jobId].status = 'Error';
-      //   }
-      // })
-      jobDict[jobId].status = 'Cancelled'; //to be deleted
-      jobDict[jobId].buttonOption = 'Delete';
+      axios.post("backend/job/"+job.jobId.toString()+"/cancel", {
+      }).then(function(response){
+        if(response){
+          job.status = 'stopped';
+        }else{
+          job.status = 'Error';
+        }
+      })
+      // job.status = 'stopped'; //to be deleted
+      // jobDict[jobId].buttonOption = 'Delete';
     }
-    this.setState({jobs: jobDict});
+    // this.setState({jobs: jobDict});
     if(Object.keys(this.state.jobs).length == 0){
       this.setState({noJobsText:{visibility: 'visible'}});
     }else{
@@ -120,9 +120,9 @@ export default class SeawulfClientControl extends Component<{}, State> {
       jobId: jobId,
       status: job.status,
       state: job.state,
-      randDist: job.randDist,
-      comp: job.comp,
-      dem: job.dem,
+      numberDistrictings: job.numberDistrictings,
+      compactnessAmount: job.compactnessAmount,
+      targetDemographic: job.targetDemographic,
       pvap: job.pvap,
       dataPoints: [
         { label: "1",  y: [179, 256, 300, 418, 274] },

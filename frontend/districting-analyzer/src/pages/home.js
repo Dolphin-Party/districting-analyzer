@@ -45,7 +45,7 @@ export default class Home extends Component<{}, State> {
     axios.get("/backend/state/all/info").then(response => {
       this.setState({ stateData: [JSON.parse(response.data[0].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[2].shape)]});
       this.setState({ isLoading: false });
-    }).then(console.log(this.state.stateData))
+    })
   }
 
   handleStateSelect = (state) => {

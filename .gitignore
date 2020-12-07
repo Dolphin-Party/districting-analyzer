@@ -1,3 +1,4 @@
 .vimrc
 .vscode/
 /districting-analyzer/src/main/resources/venv/
+/districting-analyzer/files/

@@ -63,16 +63,20 @@ public class ModelConverter {
 
         dto.setJobId(job.getId());
         dto.setStateId(job.getState().getId());
-        dto.setDistrictings(
-            job.getDistrictings().stream()
-                .map(d -> d.getId())
-                .collect(Collectors.toList())
-        );
-        dto.setBoxWhiskers(
-            job.getBoxWhiskers().stream()
-                .map(bw -> createBoxWhiskerDto(bw))
-                .collect(Collectors.toList())
-        );
+        if (job.getDistrictings() != null) {
+            dto.setDistrictings(
+                job.getDistrictings().stream()
+                    .map(d -> d.getId())
+                    .collect(Collectors.toList())
+            );
+        }
+        if (job.getBoxWhiskers() != null) {
+            dto.setBoxWhiskers(
+                job.getBoxWhiskers().stream()
+                    .map(bw -> createBoxWhiskerDto(bw))
+                    .collect(Collectors.toList())
+            );
+        }
 
         return dto;
     }

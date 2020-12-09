@@ -40,3 +40,13 @@ class PrecinctSubgraph(object):
     @property
     def compactness(self):
         return cmp.compactness_score(self)
+
+    @property
+    def population(self):
+        return sum(map(lambda n: n.vap, self.__nodes))
+
+    @staticmethod
+    def from_set(dist: Set[PrecinctNode]):
+        res = PrecinctSubgraph()
+        res.__nodes = dist
+        return res

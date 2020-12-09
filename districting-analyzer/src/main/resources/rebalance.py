@@ -67,9 +67,6 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
 
             new_dist1.neighbors.add(new_dist2)
             new_dist2.neighbors.add(new_dist1)
-
-            # update neighbors in graph
-            pass
     else:
         new_dists_beat_params = False
         #  if at least 1 district doesn't meet parameter, find cut that improves both scores

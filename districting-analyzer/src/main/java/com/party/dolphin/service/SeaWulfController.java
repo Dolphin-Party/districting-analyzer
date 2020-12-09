@@ -34,9 +34,28 @@ public class SeaWulfController {
         //     System.out.println(ioex.getMessage());
         // }
         // return true;
-
         return sendData(job.getState());
     }
+
+    // public boolean writeJobScript(Job job){
+    //   // create a slurm script file
+    //   File file = new File("job.slurm");
+    //   FleWriter writer = new FileWriter("job.slurm")
+    //   writer.write("#!/bin/bash")
+    //   writer.write("#")
+    //   writer.write("#SBATCH --job-name="+job.jobId)
+    //   writer.write("#SBATCH --output="+job.jobId+".txt")
+    //   writer.write("#SBATCH --ntasks-per-node=40")
+    //   writer.write("#SBATCH --nodes=2")
+    //   writer.write("#SBATCH --time=05:00")
+    //   writer.write("#SBATCH -p short-40core")
+    //   writer.write("#SBATCH --nodes=2")
+    //   writer.write("#SBATCH --mail-type=BEGIN,END")
+    //   writer.write("#SBATCH --mail-user=kamile.demir@stonybrook.edu")
+    //   writer.write("module load slurm")
+    //   writer.write("module load shared")
+    //   writer.write("Rscript $HOME/project/CSE416/Dolphins/run.R %s\n" %data)
+    // }
 
     // TODO: How much to send? Just precincts? State? Counties?
     private boolean sendData(State state) {

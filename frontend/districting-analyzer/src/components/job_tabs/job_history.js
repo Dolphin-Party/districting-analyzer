@@ -24,6 +24,7 @@ export default class JobHistoryTab extends Component<{}, State> {
       this.handleLoad = this.handleLoad.bind(this)
       this.jobsAvailability = this.jobsAvailability.bind(this)
       this.jobButtonOptions = this.jobButtonOptions.bind(this)
+      this.componentDidMount = this.componentDidMount.bind(this)
   }
 
 
@@ -35,7 +36,6 @@ export default class JobHistoryTab extends Component<{}, State> {
    })
    .then(this.jobButtonOptions())
    .then(window.addEventListener('load', this.handleLoad))
-   .then(console.log("Job History Mounted, ", this.state.jobs))
 }
 
 jobButtonOptions() {
@@ -54,6 +54,11 @@ jobButtonOptions() {
     window.removeEventListener('load', this.handleLoad)
   }
 
+  shouldComponentUpdate(){
+    console.log("Component has updated!")
+    return true
+  }
+
   handleLoad = () => {
     this.jobsAvailability();
   }
@@ -67,7 +72,12 @@ jobButtonOptions() {
   }
 
   handleJobCancelDelete(e,jobId){
-    this.props.onCancelDelete(jobId);
+    // this.setState({ isLoading:true })
+    this.props.onCancelDelete(jobId)
+    .then(response => axios.get("/backend/job/all"))
+    .then(response => {
+      this.setState({ jobs: response.data})
+    }).then(this.setState({ isLoading: false }))
   }
 
   handleJobDataPlot=(e,key,job)=>{

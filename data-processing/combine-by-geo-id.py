@@ -38,8 +38,7 @@ def process_state(state_name):
                 demographic = demographics_map.get(col_name) 
                 if not demographic:
                     continue
-                sql.write("INSERT INTO 'PrecinctDemographics' ('precinctID', 'demographic', 'population') VALUES ('%s', '%s', '%s');\n" % (precinctID, demographic, population)) 
-            sql.write("INSERT INTO 'Precincts' ('population') VALUES (%d);\n" % row[2])
+                sql.write("INSERT INTO PrecinctDemographics (`precinctID`, `demographic`, `population`) VALUES ('%s', '%s', '%s');\n" % (precinctID, demographic, population)) 
 
         # precinct geo data
         precinct_geoids = set()
@@ -49,11 +48,11 @@ def process_state(state_name):
             match = re.fullmatch('tl_2010_(?P<state>\d\d)(?P<county>\d\d\d)_.*', filename)
             stateId = match.group('state')
             if not state_set:
-                sql.write("INSERT INTO 'States' ('ID', 'name') VALUES ('%s', '%s');\n" % (stateId, state_name))
+                sql.write("INSERT INTO States (`ID`, `name`) VALUES ('%s', '%s');\n" % (stateId, state_name))
                 state_set = True
             countyId = match.group('county')
             countyName = county_names_map[countyId]
-            sql.write("INSERT INTO 'Counties' ('ID', 'name', 'stateID') VALUES ('%s', '%s', '%s');\n" % (countyId, countyName, stateId)) 
+            sql.write("INSERT INTO Counties (`ID`, `name`, `stateID`) VALUES (%d, '%s', %d);\n" % (int(countyId), countyName, int(stateId))) 
             shp_file = geopandas.read_file('zip://'+os.path.abspath(directory)+'/'+filename)
             def format_geoid(geoid):
                 assert stateId+countyId == geoid[:5]
@@ -67,7 +66,12 @@ def process_state(state_name):
             for _, row in shp_file.iterrows():
                 precinctID = row[-1]
                 geometry = geopandas.GeoSeries([row[-2]]).to_json()
-                sql.write("INSERT INTO 'Precincts' ('ID', 'countyID', 'shape') VALUES ('%s', '%s', '%s');\n" % (precinctID, countyId, geometry)) 
+                sql.write("INSERT INTO Precincts (`ID`, `countyID`, `shape`) VALUES ('%s', %d, '%s');\n" % (precinctID, int(countyId), geometry)) 
+
+        # generate sql for total population 
+        for _, row in demographic_data.iterrows():
+            precinctID = row[-1]
+            sql.write("UPDATE Precincts SET `population` = %d WHERE `ID` = '%s';\n" % (int(row[2]), precinctID))
 
         # sanity check
         demographic_geoids = set(demographic_data[primary_key])

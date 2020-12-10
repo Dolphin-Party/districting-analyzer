@@ -65,6 +65,31 @@ public class ServerDispatcher {
     }
 
     private Job runLocally(Job job) {
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "python3",
+            algorithmDirName + "main.py",
+            job.getArgsFilePath(),
+            job.getPrecinctFilePath()
+        );
+        pb.redirectErrorStream(true);
+        try {
+            process = pb.start();
+            debugProcessOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+        try {
+            process.waitFor();
+        } catch (InterruptedException intEx) {
+            process.destroy();
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+
+        job.setStatus(JobStatus.finishDistricting);
         return job;
     }
 
@@ -121,6 +146,16 @@ public class ServerDispatcher {
     }
 
     private Job readOutputFiles(Job job) {
+        File file = new File(job.getOutputFilePath());
+        if (!file.exists()) {
+            System.out.println("File not found");
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<DistrictingDto> districtings;
+
         return job;
     }
 

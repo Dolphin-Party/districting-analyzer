@@ -20,6 +20,9 @@ public class Job {
     private String compactnessAmount; // TODO: annotations for enum & enum itself
     private DemographicType targetDemographic;
     private boolean isSeawulf;
+    private String argsFilePath;
+    private String precinctFilePath;
+    private String outputFilePath;
     private List<Districting> districtings;
     private List<BoxWhisker> boxWhiskers;
     private int averageDistricting;
@@ -93,6 +96,30 @@ public class Job {
     }
     public void setIsSeawulf(boolean isSeawulf) {
         this.isSeawulf = isSeawulf;
+    }
+
+    @Transient
+    public String getArgsFilePath() {
+        return this.argsFilePath;
+    }
+    public void setArgsFilePath(String argsFilePath) {
+        this.argsFilePath = argsFilePath;
+    }
+
+    @Transient
+    public String getPrecinctFilePath() {
+        return this.precinctFilePath;
+    }
+    public void setPrecinctFilePath(String precinctFilePath) {
+        this.precinctFilePath = precinctFilePath;
+    }
+
+    @Transient
+    public String getOutputFilePath() {
+        return this.outputFilePath;
+    }
+    public void setOutputFilePath(String outputFilePath) {
+        this.outputFilePath = outputFilePath;
     }
 
     @OneToMany(mappedBy="job")

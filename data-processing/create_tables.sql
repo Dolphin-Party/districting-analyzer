@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS PrecinctDemographics (
 );
 
 CREATE TABLE IF NOT EXISTS PrecinctNeighbors (
-	precinctID int NOT NULL,
-	neighborID int NOT NULL,
+	precinctID char(11) NOT NULL,
+	neighborID char(11) NOT NULL,
 	PRIMARY KEY (precinctID,neighborID)
 );
 

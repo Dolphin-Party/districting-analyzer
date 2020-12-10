@@ -1,29 +1,21 @@
 package com.party.dolphin.service;
 
 import java.io.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.party.dolphin.dto.JobDto;
-import com.party.dolphin.dto.PrecinctDto;
 import com.party.dolphin.model.Job;
-import com.party.dolphin.model.State;
+import com.party.dolphin.model.enums.JobStatus;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SeaWulfController {
 
-    public static final String precinctFileName = "files/%s_precincts.json";
-    public static final String sendFileScript = "src/resources/sendFile.sh";
-
-    @Autowired
-    private ModelConverter modelConverter;
+    public static final String algorithmDirName = "files/algorithm/";
+    public static final String sendFileScript = "src/main/esources/sendFile.sh";
 
     // TODO: Test this with data
-    public boolean sendJob(Job job) {
+    public Job sendJob(Job job) {
         // Process process;
         // ProcessBuilder pb = new ProcessBuilder("python3", "src/main/resources/fib.py");
         // pb.redirectErrorStream(true);
@@ -34,7 +26,38 @@ public class SeaWulfController {
         //     System.out.println(ioex.getMessage());
         // }
         // return true;
-        return sendData(job.getState());
+
+        // if (!sendData(job.getState())) {
+        //     System.out.println("Could not send precinct data to the SeaWulf");
+        //     return false;
+        // }
+
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder("bash", "src/main/resources/send_to_slurm.sh");
+        pb.redirectErrorStream(true);
+        //sendData(job);
+        try {
+            process = pb.start();
+            debugProcessOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+        try {
+            process.waitFor();
+        } catch (InterruptedException intEx) {
+            process.destroy();
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+
+        job.setStatus(JobStatus.running);
+        return job;
+    }
+
+    public Job checkJobStatus(Job job) {
+        return job;
     }
 
     // public boolean writeJobScript(Job job){
@@ -58,16 +81,14 @@ public class SeaWulfController {
     // }
 
     // TODO: How much to send? Just precincts? State? Counties?
-    private boolean sendData(State state) {
-        String dataFileName = String.format(precinctFileName, state.getName().replace(' ', '_'));
-        File file = new File(dataFileName);
-        if (!file.exists() && writeFile(file, state)) {
-            System.out.println("Failed to create or write file");
-            return false;
-        }
-
+    private boolean sendData(Job job) {
         Process process;
-        ProcessBuilder pb = new ProcessBuilder("bash", sendFileScript, dataFileName);
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            sendFileScript,
+            job.getArgsFilePath(),
+            job.getPrecinctFilePath()
+        );
         pb.redirectErrorStream(true);
         try {
             process = pb.start();
@@ -86,27 +107,7 @@ public class SeaWulfController {
         return true;
     }
 
-    private boolean writeFile(File file, State state) {
-        ObjectMapper mapper = new ObjectMapper();
-        List<PrecinctDto> precincts = state
-            .getCounties().stream()
-            .map(c -> c.getPrecincts())
-            .flatMap(p -> p.stream())
-            .map(p -> modelConverter.createPrecinctDto(p))
-            .collect(Collectors.toList());
-
-        try {
-            File parentDirs = file.getParentFile();
-            if (!parentDirs.exists() && !parentDirs.mkdirs())
-                throw new IOException("Couldn't create parent dir: " + parentDirs.getName());
-            file.createNewFile();
-            //PrintWriter writer = new PrintWriter(new FileWriter(file));
-            mapper.writeValue(file, precincts);
-        } catch (IOException ioex) {
-            System.out.println(ioex.getMessage());
-            return false;
-        }
-
+    private boolean readOutputData(Job job) {
         return true;
     }
 

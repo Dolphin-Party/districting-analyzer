@@ -42,14 +42,10 @@ def process_state(state_name):
 
         # precinct geo data
         precinct_geoids = set()
-        state_set = False
         directory = 'data/'+state_name+'/geodata'
         for filename in os.listdir(directory):
             match = re.fullmatch('tl_2010_(?P<state>\d\d)(?P<county>\d\d\d)_.*', filename)
             stateId = match.group('state')
-            if not state_set:
-                sql.write("INSERT INTO States (`ID`, `name`) VALUES ('%s', '%s');\n" % (stateId, state_name))
-                state_set = True
             countyId = match.group('county')
             countyName = county_names_map[countyId]
             sql.write("INSERT INTO Counties (`ID`, `name`, `stateID`) VALUES (%d, '%s', %d);\n" % (int(countyId), countyName, int(stateId))) 

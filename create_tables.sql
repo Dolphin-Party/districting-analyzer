@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
 
 CREATE TABLE IF NOT EXISTS Districtings (
 	ID int PRIMARY KEY,
-    jobID int,
+    jobID int NULL,
     FOREIGN KEY (jobID) REFERENCES Jobs(ID),
     targetDemographic varchar(255),
     districtingIndex int
@@ -75,9 +75,8 @@ CREATE TABLE IF NOT EXISTS Districts (
 
 CREATE TABLE IF NOT EXISTS DistrictPrecincts (
 	districtID int NOT NULL,
-	FOREIGN KEY (districtID) REFERENCES Districts(ID),
 	precinctID int NOT NULL,
-	FOREIGN KEY (precinctID) REFERENCES Precincts(ID)
+	PRIMARY KEY (districtID,precinctID)
 );
 
 CREATE TABLE IF NOT EXISTS BoxWhiskers (

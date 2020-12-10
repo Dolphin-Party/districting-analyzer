@@ -49,36 +49,38 @@ export default class SeawulfClientControl extends Component<{}, State> {
   }
 
   onJobCancelDelete= (job) => {
-    // var jobDict = this.state.jobs;
-    if (job.status == 'stopped'){
-      // delete jobDict[jobId];
-      axios.post("backend/job/"+job.jobId.toString()+"/delete", {
-      }).then(function(response){
-        if(!response){
-          console.log("Error:", response);
-        }else{
-          console.log("Deleted Successfully")
-        }
-      })
-    }else{
-      axios.post("backend/job/"+job.jobId.toString()+"/cancel", {
-      }).then(function(response){
-        if(response){
-          job.status = 'stopped';
-        }else{
-          job.status = 'Error';
-        }
-      })
-      // job.status = 'stopped'; //to be deleted
-      // jobDict[jobId].buttonOption = 'Delete';
-    }
-    // this.setState({jobs: jobDict});
-    if(Object.keys(this.state.jobs).length == 0){
-      this.setState({noJobsText:{visibility: 'visible'}});
-    }else{
-      this.setState({noJobsText:{visibility: 'hidden'}});
-    }
-
+    return new Promise((resolve, reject) => {
+      if (job.status == 'stopped'){
+        // delete jobDict[jobId];
+        axios.post("backend/job/"+job.jobId.toString()+"/delete", {
+        }).then(function(response){
+          if(!response){
+            console.log("Job Delete Error:", response);
+          }else{
+            alert("Job #"+job.jobId+" was deleted successfully")
+          }
+        })
+      }else{
+        axios.post("backend/job/"+job.jobId.toString()+"/cancel", {
+        }).then(function(response){
+          if(response){
+            job.status = 'stopped';
+            alert("Job #"+job.jobId+" was stopped successfully")
+          }else{
+            console.log("Job Delete Error:", response);
+          }
+        })
+      }
+      if(Object.keys(this.state.jobs).length == 0){
+        this.setState({noJobsText:{visibility: 'visible'}});
+      }else{
+        this.setState({noJobsText:{visibility: 'hidden'}});
+      }
+      axios.get("/backend/job/all")
+      .then(response => {
+        console.log("Within seawulf ctr, ", response.data)
+      }).then(resolve("okay"))
+    });
   }
 
   onJobUpdate = (jobId) => {

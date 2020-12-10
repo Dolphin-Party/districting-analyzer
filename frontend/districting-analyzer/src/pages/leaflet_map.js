@@ -9,11 +9,13 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { makeStyles } from '@material-ui/core/styles';
-import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
-import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
-import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
+// import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
+// import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
+// import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
 import teamStates from '../assets/geojson/teamstates.json'
-import congressional from '../assets/geojson/us_congressional.json'
+import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
+import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
+import northCarolinaDistricts from '../assets/geojson/northCarolinaDistricts.json'
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
@@ -50,10 +52,10 @@ export default class LeafletMap extends Component<{}, State> {
       stateSelected: false,
       states: teamStates,
       isLoading: true,
-      precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
+      // precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
+      precincts: {arkansas: [], virginia: [], northCarolina: []},
+      districts: {arkansas: arkansasDistricts, virginia: virginiaDistricts, northCarolina: northCarolinaDistricts},
       precinctDisplay: false,
-      congressional: congressional,
-      districts: {},
       demographics: {
         0:'black',
         1:'whiteNonHispanic',
@@ -381,7 +383,7 @@ export default class LeafletMap extends Component<{}, State> {
         {camelcaseStates.map((stateName, i) =>
           <LayersControl key={i} position="topright">
           <Overlay name="Precinct Borders">
-                <LayerGroup  ref={firstOverlayRef}>
+              <LayerGroup ref={firstOverlayRef}>
               <GeoJSON key="precinctLayer"
                 data={this.state.precincts[stateName]}
                 style={this.getPrecinctColor.bind(null, this)}
@@ -390,11 +392,11 @@ export default class LeafletMap extends Component<{}, State> {
             </LayerGroup>
           </Overlay>
           <Overlay name="District Borders">
-              <LayerGroup id="virginiaDistricts" ref={secondOverlayRef}>
-                <GeoJSON
-                  data={this.state.congressional}
-                  style={this.state.stateDefaultStyle}>
-                </GeoJSON>
+              <LayerGroup ref={secondOverlayRef}>
+                <GeoJSON key="districtLayer"
+                  data={this.state.precincts[stateName]}
+                  style={this.state.stateDefaultStyle}
+                  ></GeoJSON>
           </LayerGroup>
         </Overlay>
             </LayersControl>
@@ -416,8 +418,12 @@ export default class LeafletMap extends Component<{}, State> {
               </LayerGroup>
             </Overlay>
             <Overlay name="District Borders">
-                <LayerGroup id="lg2" ref={secondOverlayRef}>
-            </LayerGroup>
+              <LayerGroup id="arkansasDistricts" ref={secondOverlayRef}>
+                <GeoJSON
+                  data={arkansasDistricts}
+                  style={this.state.stateDefaultStyle}>
+                </GeoJSON>
+          </LayerGroup>
           </Overlay>
               </LayersControl>
         </Map>

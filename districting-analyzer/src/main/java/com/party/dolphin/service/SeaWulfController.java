@@ -54,7 +54,7 @@ public class SeaWulfController {
     //   writer.write("#SBATCH --mail-user=kamile.demir@stonybrook.edu")
     //   writer.write("module load slurm")
     //   writer.write("module load shared")
-    //   writer.write("Rscript $HOME/project/CSE416/Dolphins/run.R %s\n" %data)
+    //   writer.write("python run.py %s\n" %data)
     // }
 
     // TODO: How much to send? Just precincts? State? Counties?

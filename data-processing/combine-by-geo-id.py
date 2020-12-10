@@ -8,13 +8,11 @@ import sys
 import zipfile
 
 
-def main(args):
-    state_name = 'Arkansas'
+def process_state(state_name):
     primary_key = 'Final_GEO_ID'
-    demographic_data_file = 'data/Arkansas/ArkansasDemographicData.csv'
+    demographic_data_file = 'data/'+state_name+'/'+state_name+'DemographicData.csv'
     demographic_data = pandas.read_csv(demographic_data_file, header=[1])
     demographic_data[primary_key] = [r[9:] for r in demographic_data['id'].values.tolist()]
-    print(demographic_data[primary_key])
     demographic_geoids = set(demographic_data[primary_key])
     precinct_geoids = set()
     directory = 'data/'+state_name+'/geodata'
@@ -29,6 +27,9 @@ def main(args):
         precinct_geoids.update(geoids)
     print('difference', len(demographic_geoids), len(precinct_geoids), len(list(demographic_geoids - precinct_geoids)))
     print('difference', list(demographic_geoids)[:3], list(precinct_geoids)[:3], list(demographic_geoids - precinct_geoids)[:3])
+
+def main(args):
+    process_state(args[1])
 
 if __name__ == '__main__':
     main(sys.argv)

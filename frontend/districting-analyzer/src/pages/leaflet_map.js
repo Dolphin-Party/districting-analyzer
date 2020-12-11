@@ -10,9 +10,9 @@ import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { makeStyles} from '@material-ui/core/styles';
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio} from '@material-ui/core';
-// import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
-// import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
-// import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
+import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
+import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
+import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
 import teamStates from '../assets/geojson/teamstates.json'
 import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
@@ -55,8 +55,8 @@ export default class LeafletMap extends Component<{}, State> {
       stateSelected: false,
       states: teamStates,
       isLoading: true,
-      // precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
-      precincts: {arkansas: [], virginia: [], northCarolina: []},
+      precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
+      // precincts: {arkansas: [], virginia: [], northCarolina: []},
       districts: {arkansas: arkansasDistricts, virginia: virginiaDistricts, northCarolina: northCarolinaDistricts},
       precinctDisplay: false,
       demographics: {
@@ -257,6 +257,32 @@ export default class LeafletMap extends Component<{}, State> {
          d > .20  ? '#FEB24C' :
          d > .10  ? '#FED976' :
                   '#FFEDA0';
+      return {
+        weight: 2,
+        color: color,
+        dashArray: '',
+        fillColor: color,
+        fillOpacity: 1.0,
+      }
+    }else if(this.props.districtingOn){
+      // const d = feature.properties.random.districtID -- something like this
+      const d = feature.properties.districtID
+      var color = d > 15 ? '#cbc7d4' :
+          d > 14  ? '#08ff8b' :
+          d > 13  ? '#5df5ae' :
+          d > 12  ? '#1de085' :
+          d > 11  ? '#00c468' :
+          d > 10  ? '#0d7343' :
+          d > 9  ? '#54876f' :
+         d > 8  ? '#1b4332' :
+         d > 7  ? '#2d6a4f' :
+         d > 6  ? '#40916c' :
+         d > 5  ? '#52b788' :
+         d > 4  ? '#74c69d' :
+         d > 3  ? '#95d5b2' :
+         d > 2  ? '#b7e4c7' :
+         d > 1  ? '#d8f3dc' :
+                  '#d8f3dc';
       return {
         weight: 2,
         color: color,

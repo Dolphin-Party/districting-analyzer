@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 public class ServerDispatcher {
 
     public static final String algorithmDirName = "files/algorithm/";
-    public static final String sendFileScript = "src/main/esources/sendFile.sh";
+    public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
+    public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
+
 
     @Autowired
     private ModelConverter modelConverter;
@@ -53,9 +55,9 @@ public class ServerDispatcher {
 
     public Job getJobStatus(Job job) {
         if (job.getIsSeawulf() && job.getStatus() == JobStatus.running)
-            seawulfController.checkJobStatus(job);
+            job = seawulfController.checkJobStatus(job);
         if (job.getStatus() == JobStatus.finishDistricting)
-            job.analyzeJobResults();
+            job = checkLocalJob(job);
         return job;
     }
 
@@ -65,84 +67,96 @@ public class ServerDispatcher {
     }
 
     private Job runLocally(Job job) {
-        Process process;
-        ProcessBuilder pb = new ProcessBuilder(
-            "python3",
-            algorithmDirName + "main.py",
-            job.getArgsFilePath(),
-            job.getPrecinctFilePath()
-        );
-        pb.redirectErrorStream(true);
-        try {
-            process = pb.start();
-            debugProcessOutput(process);
-        } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
-            job.setStatus(JobStatus.error);
-            return job;
-        }
-        try {
-            process.waitFor();
-        } catch (InterruptedException intEx) {
-            process.destroy();
+        String outputDir = String.format(outputDirPathTemplate, job.getId());
+        if (!createOutputDir(outputDir)) {
+            System.out.println("Failed to create output dir");
             job.setStatus(JobStatus.error);
             return job;
         }
 
-        job.setStatus(JobStatus.finishDistricting);
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "python3",
+            "fib.py",
+            job.getArgsFilePath(),
+            job.getPrecinctFilePath(),
+            outputDir
+        );
+        pb.redirectErrorStream(true);
+        try {
+            process = pb.start();
+            job.setStatus(JobStatus.running);
+            debugProcessOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+            job.setStatus(JobStatus.error);
+        }
+
+        return job;
+    }
+
+    private Job checkLocalJob(Job job) {
         return job;
     }
 
     private boolean writeArgsFile(Job job) {
         File file = new File(job.getArgsFilePath());
-        if (file.exists()) {
-            System.out.println("File already exists");
-            return true;
-        }
-        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("numDistricts", 1);
+        map.put("compactness", 0.2);
+        map.put("iterations", 10);
+        map.put("numDistrictings", 10);
+        map.put("percentDiff", 0.1);
 
-        try {
-            File parentDirs = file.getParentFile();
-            if (!parentDirs.exists() && !parentDirs.mkdirs())
-                throw new IOException("Couldn't create parent dir: " + parentDirs.getName());
-            file.createNewFile();
-            //PrintWriter writer = new PrintWriter(new FileWriter(file));
-            mapper.writeValue(file, "Test");
-        } catch (IOException ioex) {
-            System.out.println(ioex.getMessage());
-            return false;
-        }
+        wrtieJsonFile(file, object);
 
         return true;
     }
 
+    // Sacrifice efficiency for readability
+    // by fetching precincts before checking if file exists
     private boolean writePrecinctsFile(Job job) {
         File file = new File(job.getPrecinctFilePath());
-        if (file.exists()) {
-            System.out.println("File already exists");
-            return true;
-        }
-
-        ObjectMapper mapper = new ObjectMapper();
         List<PrecinctDto> precincts = job.getState()
             .getCounties().stream()
             .map(c -> c.getPrecincts())
             .flatMap(p -> p.stream())
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
+        
+        return wrtieJsonFile(file, precincts);
+    }
+
+    // object can be a POJO, List, or Map
+    private boolean wrtieJsonFile(File file, Object object) {
+        if (file.exists()) {
+            System.out.println("File already exists");
+            return true;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+
         try {
             File parentDirs = file.getParentFile();
             if (!parentDirs.exists() && !parentDirs.mkdirs())
                 throw new IOException("Couldn't create parent dir: " + parentDirs.getName());
             file.createNewFile();
             //PrintWriter writer = new PrintWriter(new FileWriter(file));
-            mapper.writeValue(file, precincts);
+            mapper.writeValue(file, object);
         } catch (IOException ioex) {
             System.out.println(ioex.getMessage());
             return false;
         }
-
         return true;
+    }
+
+    private boolean createDir(String dir) {
+        File file = new File(job.outputDir());
+        if (file.exists() && file.isDirectory()) {
+            System.out.println("Directory already exists");
+            return true;
+        }
+
+        return file.mkdirs();
     }
 
     private Job readOutputFiles(Job job) {

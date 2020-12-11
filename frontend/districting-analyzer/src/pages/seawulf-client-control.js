@@ -34,7 +34,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
     this.setState({jobs: jobDict});
     this.setState({noJobsText:{visibility: 'hidden'}});
     axios.post("/backend/job/init", {
-      stateId: newJob.stateId,
+      stateId: 51,
       numberDistrictings: newJob.numberDistrictings,
       compactnessAmount: newJob.compactnessAmount,
       targetDemographic: newJob.targetDemographic,
@@ -107,7 +107,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
     }
   }
 
-  onJobDataRequest = (jobId) => {
+  onJobDataRequest = (job) => {
     var jobPlotData = null;
     // axios.get("/job/boxWhiskerData/"{jobId}).then(
     //       result => {
@@ -117,9 +117,8 @@ export default class SeawulfClientControl extends Component<{}, State> {
     //         console.log(error)
     //       }
     //       );
-    var job = this.state.jobDict[jobId]
     jobPlotData = { //temporary dummy data,to be deleted
-      jobId: jobId,
+      jobId: job.jobId,
       status: job.status,
       state: job.state,
       numberDistrictings: job.numberDistrictings,

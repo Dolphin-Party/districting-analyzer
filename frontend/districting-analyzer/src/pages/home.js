@@ -15,6 +15,8 @@ import MapViewFilter from './map-view-filter'
 import SeawulfClientControl from './seawulf-client-control'
 import DataControl from './data-control'
 
+import teamStates from '../assets/geojson/teamstates.json'
+
 const ReactDOM = require('react-dom');
 
 export default class Home extends Component<{}, State> {
@@ -27,6 +29,8 @@ export default class Home extends Component<{}, State> {
       currDem: null,
       submitAvailability: {opacity: '0.2'},
       warnText:'Please select State & Demographic',
+      districtingMenuStyle: {visibility: 'hidden'},
+      districtingState: null,
       boxWhiskerJob: {
         jobId: '',
         status: '',
@@ -42,10 +46,12 @@ export default class Home extends Component<{}, State> {
 
   componentDidMount() {
     console.log("Home did mount")
-    axios.get("/backend/state/all/info").then(response => {
-      this.setState({ stateData: [JSON.parse(response.data[0].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[2].shape)]});
-      this.setState({ isLoading: false });
-    })
+    this.setState({ stateData: teamStates});
+    this.setState({ isLoading: false });
+    // axios.get("/backend/state/all/info").then(response => {
+    //   this.setState({ stateData: [JSON.parse(response.data[0].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[2].shape)]});
+    //   this.setState({ isLoading: false });
+    // })
   }
 
   handleStateSelect = (state) => {
@@ -81,8 +87,14 @@ export default class Home extends Component<{}, State> {
     }
   }
 
+  handleHeatMapSelect = () => {
+    this.setState({districtingMenuStyle: {visibility: 'hidden'}});
+  }
+
   handleBoxWhiskerSelect = (data) => {
     this.setState({boxWhiskerJob: data});
+    this.setState({districtingMenuStyle: {visibility: 'visible'}});
+    this.setState({districtingState: '1'})
   }
 
   render() {
@@ -92,7 +104,9 @@ export default class Home extends Component<{}, State> {
     }else{
       return (
         <div>
-        <LeafletMap stateData={this.state.stateData} currState={this.state.currState} currDem={this.state.currDem} onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect} onReset={this.handleReset}/>
+        <LeafletMap
+          districtingMenuStyle={this.state.districtingMenuStyle} districtingState={this.state.districtingState} stateData={this.state.stateData} currState={this.state.currState} currDem={this.state.currDem}
+          onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect} onReset={this.handleReset} handleHeatMapSelect={this.handleHeatMapSelect}/>
         <SeawulfClientControl currState={this.state.currState} currDem={this.state.currDem} submitAvailability={this.state.submitAvailability} warnText={this.state.warnText} onBoxWhiskerSelect={this.handleBoxWhiskerSelect}/>
         <DataControl boxWhiskerData={this.state.boxWhiskerJob}/>
         </div>

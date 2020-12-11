@@ -11,7 +11,7 @@ import Input from '@material-ui/core/Input';
 import Table from 'react-bootstrap/Table'
 import axios from 'axios';
 
-
+const districtingMenu= document.getElementsByClassName('districtingMenu');
 export default class JobHistoryTab extends Component<{}, State> {
   constructor(props) {
       super(props);
@@ -29,13 +29,16 @@ export default class JobHistoryTab extends Component<{}, State> {
 
 
   componentDidMount() {
-   axios.get("/backend/job/all")
-   .then(response => {
-     this.setState({ jobs: response.data})
-     this.setState({ isLoading: false });
-   })
-   .then(this.jobButtonOptions())
-   .then(window.addEventListener('load', this.handleLoad))
+   // axios.get("/backend/job/all")
+   // .then(response => {
+   //   this.setState({ jobs: response.data})
+   //   this.setState({ jobs: [{jobId: '1', stateId:'2', status: 'Finished'}]})
+   //   this.setState({ isLoading: false });
+   // })
+   // .then(this.jobButtonOptions())
+   // .then(window.addEventListener('load', this.handleLoad))
+   this.setState({ jobs: [{jobId: '1', stateId:'2', status: 'Finished'}]})
+   this.setState({ isLoading: false });
 }
 
 jobButtonOptions() {
@@ -80,9 +83,9 @@ jobButtonOptions() {
     }).then(this.setState({ isLoading: false }))
   }
 
-  handleJobDataPlot=(e,key,job)=>{
-    if (job.boxWhiskerAvailability.opacity == '1'){
-      this.props.requestJobData(key);
+  handleJobSelect=(e,key,job)=>{
+    if (job.status == 'Finished'){
+      this.props.requestJobData(job);
     }
   }
 
@@ -97,7 +100,9 @@ jobButtonOptions() {
       <div className='jobs-list'>
         <p className='noJobsText' style={this.props.noJobsText}>You currently have no jobs.</p>
         {this.state.jobs.map((job, key) => (
-          <div key={key} className='job-info'>
+          <div
+            key={key}
+            className='job-info'>
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -132,7 +137,7 @@ jobButtonOptions() {
                 </tr>
                 <tr>
                   <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='running' ? 'Cancel' : 'Delete' }</Button>{' '}</td>
-                  <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobDataPlot(e,key,job)}>Display Plot</Button>{' '}</td>
+                  <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobSelect(e,key,job)}>Display Districting</Button>{' '}</td>
                 </tr>
               </tbody>
             </Table>

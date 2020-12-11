@@ -21,6 +21,7 @@
     "react-dom": "^16.13.1",
     "react-geojson": "^1.5.2",
     "react-leaflet": "^2.7.0",
+    "react-native-simple-radio-button": "^2.7.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3"
   },

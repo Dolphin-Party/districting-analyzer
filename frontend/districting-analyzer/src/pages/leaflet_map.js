@@ -8,7 +8,8 @@ import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles} from '@material-ui/core/styles';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio} from '@material-ui/core';
 // import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
 // import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
 // import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
@@ -16,6 +17,8 @@ import teamStates from '../assets/geojson/teamstates.json'
 import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
 import northCarolinaDistricts from '../assets/geojson/northCarolinaDistricts.json'
+
+import radioButton from '../components/radioButton'
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
@@ -81,6 +84,9 @@ export default class LeafletMap extends Component<{}, State> {
       heatMapOn: false,
       heatMapButton: {backgroundColor: '#3B2B59'},
       heatMapLegendStyle: {visibility: 'hidden'},
+      districtingMenuStyle: {visibility: 'visible'},
+      districtingState: this.props.districtingState,
+      selectedDistricting: null,
       precinctColor: '#3B2B59',
       stateDefaultStyle: {
         color: '#3B2B59',
@@ -115,6 +121,14 @@ export default class LeafletMap extends Component<{}, State> {
     this.heatMapOn = this.heatMapOn.bind(this);
     this.getPrecinctColor = this.getPrecinctColor.bind(this)
     this.getStateData = this.getStateData.bind(this)
+    this.componentDidUpdate = this.componentDidUpdate.bind(this)
+  }
+
+  componentDidUpdate(prevProps){
+    console.log("Component Did Update",this.props.districtingState,  prevProps.districtingState)
+    if (this.props.districtingState !== prevProps.districtingState){
+      this.dropdownStateSelect(null,this.props.districtingState)
+    }
   }
 
   getStateData(){
@@ -160,6 +174,7 @@ export default class LeafletMap extends Component<{}, State> {
     dropdownStateSelect(ev, stateNum){
       var geoJSON = this.state.states
       var e = geoJSON['features'][stateNum]
+      console.log('dropdownStateSelect', e)
       this.clickSelectState(null, e)
     }
 
@@ -293,11 +308,20 @@ export default class LeafletMap extends Component<{}, State> {
       this.setState({heatMapLegendStyle: {visibility: 'hidden'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
     }else{
       if(this.props.currDem != null){
+        this.props.handleHeatMapSelect()
         this.setState({heatMapLegendStyle: {visibility: 'visible'}, heatMapOn: true, heatMapButton: {backgroundColor: '#3B2B59', borderColor: '#39ff14', borderWidth: 'thick'}})
       }else{
         alert("Please select target demographic for heat map")
       }
     }
+  }
+
+  districtingOn(){
+    this.setState({districtingMenuStyle: {visibility: 'visible'}})
+  }
+
+  handleDistrictingRadioOption(e, option){
+    this.setState({selectedDistricting: option})
   }
 
   render() {
@@ -317,6 +341,7 @@ export default class LeafletMap extends Component<{}, State> {
     const dropdownStates = ['Virginia', 'North Carolina', 'Arkansas']
     const camelcaseStates = ['virginia', 'northCarolina']
     const dropdownDemographics = ['Black or African American', 'Non-Hispanic White', 'Hispanic and Latino', 'Asian', 'Native Americans and Alaska Natives','Native Hawaiians and Other Pacific Islanders', 'Two or more races' ]
+    const districtingTypes = ['Random', 'Average', 'Extreme', 'Minimum']
 
     return (
       <div className='leftside'>
@@ -348,10 +373,15 @@ export default class LeafletMap extends Component<{}, State> {
 
       <div className='leaflet-container'>
         <Map center={position} zoom={this.state.zoom} ref={mapRef} onClick={this.mapClick}>
-        <div className='map-information'>
-          {Object.entries(this.state.mapInfo).map( ([i, text]) => (
-            <p key={i} className='state-info'>{text}</p>
-          ))}
+
+        <div className='districtingMenu' style={this.props.districtingMenuStyle}>
+            <FormControl component="fieldset"><FormLabel component="legend">Districtings</FormLabel>
+                {districtingTypes.map((type, i, array) =>
+                  <RadioGroup value={this.state.selectedDistricting}>
+                    <FormControlLabel value={type} control={<Radio />} label={type} onClick={(e) => this.handleDistrictingRadioOption(e, type)}/>
+                  </RadioGroup>
+                )}
+            </FormControl>
         </div>
         <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>
@@ -364,6 +394,13 @@ export default class LeafletMap extends Component<{}, State> {
             </div>
           )}
         </div>
+
+        <div className='map-information'>
+          {Object.entries(this.state.mapInfo).map( ([i, text]) => (
+            <p key={i} className='state-info'>{text}</p>
+          ))}
+        </div>
+
         <button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

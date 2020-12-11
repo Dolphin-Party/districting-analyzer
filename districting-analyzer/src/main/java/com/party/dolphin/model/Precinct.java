@@ -13,7 +13,7 @@ public class Precinct {
     private String id;
     private County county;
     private String shape;
-    private Set<Precinct> neighbors;
+    private Set<PrecinctNeighbor> neighbors;
     private int population;
     private Map<DemographicType, Integer> demographics;
 
@@ -44,12 +44,11 @@ public class Precinct {
         this.shape = shape;
     }
 
-    @ManyToMany
-    @JoinTable(name="PrecinctNeighbors")
-    public Set<Precinct> getNeighbors() {
+    @OneToMany(mappedBy="precinct")
+    public Set<PrecinctNeighbor> getNeighbors() {
         return this.neighbors;
     }
-    public void setNeighbors(Set<Precinct> neighbors) {
+    public void setNeighbors(Set<PrecinctNeighbor> neighbors) {
         this.neighbors = neighbors;
     }
 

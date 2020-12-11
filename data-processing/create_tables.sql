@@ -70,7 +70,8 @@ CREATE TABLE IF NOT EXISTS Districts (
     FOREIGN KEY (districtingID) REFERENCES Districtings(ID),
     numberCounties int,
     targetDemographic varchar(255),
-    targetDemographicPercentVap double
+    targetDemographicPercentVap double,
+    `order` int
 );
 
 CREATE TABLE IF NOT EXISTS DistrictPrecincts (

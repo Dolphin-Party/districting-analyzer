@@ -6,9 +6,9 @@ import com.party.dolphin.model.Precinct;
 
 import org.springframework.data.repository.Repository;
 
-public interface PrecinctRepository extends Repository<Precinct, Integer> {
+public interface PrecinctRepository extends Repository<Precinct, String> {
     
-    Precinct findById(Integer id);
+    Precinct findById(String id);
 
     List<Precinct> findAllByCountyId(int countyId);
 }

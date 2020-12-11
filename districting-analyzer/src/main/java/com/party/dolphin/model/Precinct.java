@@ -10,20 +10,20 @@ import javax.persistence.*;
 @Table(name="Precincts")
 public class Precinct {
     /* Fields */
-    private int id;
+    private String id;
     private County county;
     private String shape;
     private Set<Precinct> neighbors;
     private int population;
-    private EnumMap<DemographicType, Integer> demographics;
+    private Map<DemographicType, Integer> demographics;
 
     /* Properties */
     @Id
     @Column(name="ID", updatable=false)
-    public int getId() {
+    public String getId() {
         return this.id;
     }
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -72,7 +72,7 @@ public class Precinct {
     public Map<DemographicType,Integer> getDemographics() {
         return this.demographics;
     }
-    public void setDemographics(EnumMap<DemographicType,Integer> demographics) {
+    public void setDemographics(Map<DemographicType,Integer> demographics) {
         this.demographics = demographics;
     }
 

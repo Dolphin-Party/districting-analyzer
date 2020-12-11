@@ -6,18 +6,18 @@ import java.util.*;
 
 public class PrecinctDto {
     /* Fields */
-    private int precinctId;
+    private String precinctId;
     private int countyId;
     private String shape;
-    private Set<Integer> neighbors;
+    private Set<String> neighbors;
     private int population;
-    private EnumMap<DemographicType, Integer> demographics;
+    private Map<DemographicType, Integer> demographics;
 
     /* Properties */
-    public int getPrecinctId() {
+    public String getPrecinctId() {
         return this.precinctId;
     }
-    public void setPrecinctId(int precinctId) {
+    public void setPrecinctId(String precinctId) {
         this.precinctId = precinctId;
     }
 
@@ -35,10 +35,10 @@ public class PrecinctDto {
         this.shape = shape;
     }
 
-    public Set<Integer> getNeighbors() {
+    public Set<String> getNeighbors() {
         return this.neighbors;
     }
-    public void setNeighbors(Set<Integer> neighbors) {
+    public void setNeighbors(Set<String> neighbors) {
         this.neighbors = neighbors;
     }
 
@@ -49,7 +49,7 @@ public class PrecinctDto {
         this.population = population;
     }
 
-    public EnumMap<DemographicType,Integer> getDemographics() {
+    public Map<DemographicType,Integer> getDemographics() {
         return this.demographics;
     }
     public void setDemographics(EnumMap<DemographicType,Integer> demographics) {

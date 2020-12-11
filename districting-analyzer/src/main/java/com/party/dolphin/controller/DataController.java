@@ -45,7 +45,7 @@ public class DataController {
     }
 
     @GetMapping("/precinct/{precinctId}")
-    public PrecinctDto getPrecinct(@PathVariable int precinctId) {
+    public PrecinctDto getPrecinct(@PathVariable String precinctId) {
         return dataService.getPrecinctDto(precinctId);
     }
 

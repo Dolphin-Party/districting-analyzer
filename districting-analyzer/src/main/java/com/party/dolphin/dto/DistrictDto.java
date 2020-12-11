@@ -8,7 +8,7 @@ public class DistrictDto {
     /* Fields */
     private int districtId;
     private int districtingId;
-    private Set<Integer> precincts;
+    private Set<String> precincts;
     private int numberCounties;
     private DemographicType targetDemographic;
     private double targetDemographicPercentVAP;
@@ -29,10 +29,10 @@ public class DistrictDto {
         this.districtingId = districtingId;
     }
 
-    public Set<Integer> getPrecincts() {
+    public Set<String> getPrecincts() {
         return this.precincts;
     }
-    public void setPrecincts(Set<Integer> precincts) {
+    public void setPrecincts(Set<String> precincts) {
         this.precincts = precincts;
     }
 

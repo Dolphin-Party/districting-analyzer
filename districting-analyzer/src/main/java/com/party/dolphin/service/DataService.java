@@ -51,6 +51,10 @@ public class DataService {
                         .collect(Collectors.toList());
     }
 
+    public Precinct getPrecinct(String id) {
+        return precinctRepository.findById(id);
+    }
+
     public PrecinctDto getPrecinctDto(String id) {
         Precinct precinct = precinctRepository.findById(id);
         return modelConverter.createPrecinctDto(precinct);

@@ -141,7 +141,17 @@ public class ServerDispatcher {
             .flatMap(p -> p.stream())
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
-        return writeJsonFile(file, precincts);
+        // List<PrecinctNeighborDto> precinctEdges = precincts.stream()
+        //     .map(p -> p.getEdges())
+        //     .flatMap(l -> l.stream())
+        //     .collect(Collectors.toList());
+        precincts.stream()
+            .forEach(p -> p.setNeighbors(null));
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("precincts", precincts);
+        // map.put("edges", precinctEdges);
+        return writeJsonFile(file, map);
     }
 
     // object can be a POJO, List, or Map

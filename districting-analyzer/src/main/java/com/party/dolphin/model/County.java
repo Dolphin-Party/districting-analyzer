@@ -11,6 +11,7 @@ public class County {
     private int id;
     private String name;
     private State state;
+    private int population;
     private String shape;
     private Set<Precinct> precincts;
 
@@ -32,7 +33,15 @@ public class County {
         this.name = name;
     }
 
-    @ManyToOne
+    @Column(name="population")
+    public int getPopulation() {
+        return this.population;
+    }
+    public void setPopulation(int population) {
+        this.population = population;
+    }
+
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="stateID")
     public State getState() {
         return this.state;
@@ -57,11 +66,4 @@ public class County {
         this.precincts = precincts;
     }
 
-    /* Other Methods */
-    @Transient
-    public int getPopulation() {
-        return this.precincts.stream()
-                            .mapToInt(p -> p.getPopulation())
-                            .sum();
-    }
 }

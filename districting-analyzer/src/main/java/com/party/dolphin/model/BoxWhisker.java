@@ -35,7 +35,7 @@ public class BoxWhisker {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="jobID")
     public Job getJob() {
         return this.job;

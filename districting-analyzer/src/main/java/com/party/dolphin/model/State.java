@@ -10,6 +10,7 @@ public class State {
     /* Fields */
     private int id;
     private String name;
+    private int population;
     private String shape;
     private Set<County> counties;
     private Districting canonicalDistricting;
@@ -30,6 +31,14 @@ public class State {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(name="population")
+    public int getPopulation() {
+        return this.population;
+    }
+    public void setPopulation(int population) {
+        this.population = population;
     }
 
     @OneToMany(mappedBy="state")
@@ -55,14 +64,6 @@ public class State {
     }
     public void setCanonicalDistricting(Districting canonicalDistricting) {
         this.canonicalDistricting = canonicalDistricting;
-    }
-
-    /* Other Methods */
-    @Transient
-    public int getPopulation() {
-        return counties.stream()
-                        .mapToInt(c -> c.getPopulation())
-                        .sum();
     }
 
 }

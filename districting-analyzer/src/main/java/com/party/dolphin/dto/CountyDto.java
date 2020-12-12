@@ -7,6 +7,7 @@ public class CountyDto {
     private int countyId;
     private String name;
     private int stateId;
+    private int population;
     private String shape;
     private Set<String> precincts;
 
@@ -30,6 +31,13 @@ public class CountyDto {
     }
     public void setStateId(int stateId) {
         this.stateId = stateId;
+    }
+
+    public int getPopulation() {
+        return this.population;
+    }
+    public void setPopulation(int population) {
+        this.population = population;
     }
 
     public String getShape() {

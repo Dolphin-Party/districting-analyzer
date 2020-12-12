@@ -53,7 +53,7 @@ public class Job {
         this.status = status;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="stateID")
     public State getState() {
         return this.state;

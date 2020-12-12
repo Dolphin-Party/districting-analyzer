@@ -27,7 +27,7 @@ public class Precinct {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="countyID")
     public County getCounty() {
         return this.county;

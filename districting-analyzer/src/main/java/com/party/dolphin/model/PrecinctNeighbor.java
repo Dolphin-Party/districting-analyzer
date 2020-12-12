@@ -19,7 +19,7 @@ public class PrecinctNeighbor {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("precinctId")
     @JoinColumn(name = "precinctID")
     public Precinct getPrecinct() {
@@ -29,7 +29,7 @@ public class PrecinctNeighbor {
         this.precinct = precinct;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @MapsId("neighborId")
     @JoinColumn(name = "neighborID")
     public Precinct getNeighbor() {

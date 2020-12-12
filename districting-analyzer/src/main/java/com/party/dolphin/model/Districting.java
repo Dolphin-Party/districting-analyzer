@@ -33,7 +33,7 @@ public class Districting {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="jobID")
     public Job getJob() {
         return this.job;
@@ -59,7 +59,7 @@ public class Districting {
         this.districtingIndex = districtingIndex;
     }
 
-    @OneToMany(mappedBy="districting")
+    @OneToMany(mappedBy="districting", cascade=CascadeType.PERSIST)
     public List<District> getDistricts() {
         return this.districts;
     }

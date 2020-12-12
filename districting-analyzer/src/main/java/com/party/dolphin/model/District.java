@@ -35,7 +35,7 @@ public class District implements Comparable<District> {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="districtingID")
     public Districting getDistricting() {
         return this.districting;

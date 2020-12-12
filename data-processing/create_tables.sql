@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS States (
 	ID int PRIMARY KEY,
     `name` varchar(255),
     shape JSON,
+    population int(11),
     canonicalDistrictingID int
 );
 
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS Counties (
     `name` varchar(255),
     stateID int NOT NULL,
     FOREIGN KEY (stateID) REFERENCES States(ID),
+    population int(11),
     shape JSON
 );
 

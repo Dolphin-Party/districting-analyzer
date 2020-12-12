@@ -64,14 +64,14 @@ public class JobService {
 
     public JobDto getJobStatus(int jobId) {
         Job job = jobRepository.findById(jobId);
-        job = serverDispatcher.getJobStatus(job);
+        job = serverDispatcher.checkJobStatus(job);
         job = jobRepository.save(job);
         return modelConverter.createJobDto(job);
     }
 
     public boolean cancelJob(int jobId) {
         Job job = jobRepository.findById(jobId);
-        job = serverDispatcher.getJobStatus(job);
+        job = serverDispatcher.checkJobStatus(job);
         if (job.getStatus() == JobStatus.running)
             job = serverDispatcher.cancelJob(job);
         job = jobRepository.save(job);

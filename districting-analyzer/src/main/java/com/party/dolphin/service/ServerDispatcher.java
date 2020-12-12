@@ -1,7 +1,9 @@
 package com.party.dolphin.service;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,12 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServerDispatcher {
 
+    // TODO: Turn all of these into global env. variables/properties
     public static final String algorithmDirName = "files/algorithm/";
     public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
     public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
+    public static final String outputFileName = "out.txt";
 
 
     @Autowired
@@ -53,11 +57,19 @@ public class ServerDispatcher {
         return job;
     }
 
-    public Job getJobStatus(Job job) {
-        if (job.getIsSeawulf() && job.getStatus() == JobStatus.running)
-            job = seawulfController.checkJobStatus(job);
-        if (job.getStatus() == JobStatus.finishDistricting)
-            job = checkLocalJob(job);
+    public Job checkJobStatus(Job job) {
+        if (job.getStatus() == JobStatus.running) {
+            if (job.getIsSeawulf())
+                job = seawulfController.checkJobStatus(job);
+            else
+                job = checkLocalJob(job);
+        }
+        if (job.getStatus() == JobStatus.finishDistricting) {
+            job = readOutputFiles(job);
+            job.analyzeJobResults();
+            job.setStatus(JobStatus.finishProcessing);
+        }
+
         return job;
     }
 
@@ -68,7 +80,7 @@ public class ServerDispatcher {
 
     private Job runLocally(Job job) {
         String outputDir = String.format(outputDirPathTemplate, job.getId());
-        if (!createOutputDir(outputDir)) {
+        if (!createDir(outputDir)) {
             System.out.println("Failed to create output dir");
             job.setStatus(JobStatus.error);
             return job;
@@ -96,6 +108,12 @@ public class ServerDispatcher {
     }
 
     private Job checkLocalJob(Job job) {
+        String outputDir = String.format(outputDirPathTemplate, job.getId());
+        File file = new File(outputDir + outputFileName);
+        if (!file.exists())
+            return job;
+        // else file finished
+        job.setStatus(JobStatus.finishDistricting);
         return job;
     }
 
@@ -107,10 +125,7 @@ public class ServerDispatcher {
         map.put("iterations", 10);
         map.put("numDistrictings", 10);
         map.put("percentDiff", 0.1);
-
-        wrtieJsonFile(file, object);
-
-        return true;
+        return writeJsonFile(file, map);
     }
 
     // Sacrifice efficiency for readability
@@ -123,12 +138,11 @@ public class ServerDispatcher {
             .flatMap(p -> p.stream())
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
-        
-        return wrtieJsonFile(file, precincts);
+        return writeJsonFile(file, precincts);
     }
 
     // object can be a POJO, List, or Map
-    private boolean wrtieJsonFile(File file, Object object) {
+    private boolean writeJsonFile(File file, Object object) {
         if (file.exists()) {
             System.out.println("File already exists");
             return true;
@@ -150,7 +164,7 @@ public class ServerDispatcher {
     }
 
     private boolean createDir(String dir) {
-        File file = new File(job.outputDir());
+        File file = new File(dir);
         if (file.exists() && file.isDirectory()) {
             System.out.println("Directory already exists");
             return true;

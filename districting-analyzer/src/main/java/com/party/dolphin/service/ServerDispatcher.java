@@ -24,7 +24,7 @@ public class ServerDispatcher {
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
     public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
-    public static final String outputFileName = "out.txt";
+    public static final String outputFileName = "out.json";
 
 
     @Autowired
@@ -59,17 +59,21 @@ public class ServerDispatcher {
 
     public Job checkJobStatus(Job job) {
         if (job.getStatus() == JobStatus.running) {
+            job.setOutputFilePath(
+                String.format(outputDirPathTemplate + outputFileName, job.getId())
+            );
+
             if (job.getIsSeawulf())
                 job = seawulfController.checkJobStatus(job);
             else
                 job = checkLocalJob(job);
-        }
-        if (job.getStatus() == JobStatus.finishDistricting) {
-            job = readOutputFiles(job);
-            job.analyzeJobResults();
-            job.setStatus(JobStatus.finishProcessing);
-        }
 
+            if (job.getStatus() == JobStatus.finishDistricting) {
+                job = readOutputFiles(job);
+                job.analyzeJobResults();
+                job.setStatus(JobStatus.finishProcessing);
+            }
+        }
         return job;
     }
 
@@ -108,8 +112,7 @@ public class ServerDispatcher {
     }
 
     private Job checkLocalJob(Job job) {
-        String outputDir = String.format(outputDirPathTemplate, job.getId());
-        File file = new File(outputDir + outputFileName);
+        File file = new File(job.getOutputFilePath());
         if (!file.exists())
             return job;
         // else file finished
@@ -173,6 +176,7 @@ public class ServerDispatcher {
         return file.mkdirs();
     }
 
+    // TODO:
     private Job readOutputFiles(Job job) {
         File file = new File(job.getOutputFilePath());
         if (!file.exists()) {

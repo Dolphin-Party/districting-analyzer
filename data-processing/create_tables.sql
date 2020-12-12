@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS Precincts (
 
 CREATE TABLE IF NOT EXISTS PrecinctDemographics (
 	precinctID char(11) NOT NULL,
+    FOREIGN KEY (precinctID) REFERENCES Precincts(ID),
 	demographic varchar(255) NOT NULL,
 	population int(11) DEFAULT NULL,
 	PRIMARY KEY (precinctID,demographic)

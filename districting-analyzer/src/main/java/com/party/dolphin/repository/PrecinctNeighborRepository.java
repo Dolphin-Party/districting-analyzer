@@ -8,8 +8,6 @@ import com.party.dolphin.model.PrecinctNeighborId;
 import org.springframework.data.repository.Repository;
 
 public interface PrecinctNeighborRepository extends Repository<PrecinctNeighbor, PrecinctNeighborId> {
-    
-    PrecinctNeighbor findByPrecinctId(String id);
 
-    List<PrecinctNeighbor> findAllByPrecinctId(int countyId);
+    List<PrecinctNeighbor> findAllByPrecinctId(int precinctId);
 }

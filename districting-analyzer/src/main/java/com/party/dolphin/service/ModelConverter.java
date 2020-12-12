@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 // Docs suggest BeanWrapper?
 @Service
 public class ModelConverter {
+
     public StateDto createStateDto(State state) {
         StateDto dto = new StateDto();
         dto.setStateId(state.getId());

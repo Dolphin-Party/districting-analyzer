@@ -43,6 +43,10 @@ public class JobService {
         return job.getId();
     }
 
+    public Job getJob(int id) {
+        return jobRepository.findById(id);
+    }
+
     public JobDto getJobDto(int id) {
         Job job = jobRepository.findById(id);
         return modelConverter.createJobDto(job);

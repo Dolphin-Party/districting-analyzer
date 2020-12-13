@@ -122,7 +122,7 @@ public class Job {
         this.outputFilePath = outputFilePath;
     }
 
-    @OneToMany(mappedBy="job")
+    @OneToMany(mappedBy="job", cascade=CascadeType.ALL)
     public List<Districting> getDistrictings() {
         return this.districtings;
     }
@@ -130,7 +130,7 @@ public class Job {
         this.districtings = districtings;
     }
 
-    @OneToMany(mappedBy="job")
+    @OneToMany(mappedBy="job", cascade=CascadeType.ALL)
     public List<BoxWhisker> getBoxWhiskers() {
         return this.boxWhiskers;
     }

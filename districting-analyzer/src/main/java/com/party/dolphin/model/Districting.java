@@ -59,7 +59,7 @@ public class Districting {
         this.districtingIndex = districtingIndex;
     }
 
-    @OneToMany(mappedBy="districting", cascade=CascadeType.PERSIST)
+    @OneToMany(mappedBy="districting", cascade=CascadeType.ALL)
     public List<District> getDistricts() {
         return this.districts;
     }

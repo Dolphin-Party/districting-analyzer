@@ -1,6 +1,7 @@
 package com.party.dolphin.service;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -9,12 +10,16 @@ import com.party.dolphin.model.*;
 import com.party.dolphin.model.enums.DemographicType;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 // TODO: Check how many sets can be replace with BeanUtils.copyProperties
 // Docs suggest BeanWrapper?
 @Service
 public class ModelConverter {
+
+    @Autowired
+    DataService dataService;
 
     public StateDto createStateDto(State state) {
         StateDto dto = new StateDto();
@@ -23,9 +28,9 @@ public class ModelConverter {
         dto.setShape(state.getShape());
         dto.setPopulation(state.getPopulation());
         dto.setCounties(
-            state.getCounties().stream()
-                .map(c -> c.getId())
-                .collect(Collectors.toSet())
+            new HashSet<Integer>(
+                dataService.getCountyIdsByState(state.getId())
+            )
         );
         dto.setCanonicalDistrictingId(
             state.getCanonicalDistricting().getId()
@@ -40,9 +45,9 @@ public class ModelConverter {
         dto.setStateId(county.getState().getId());
         dto.setShape(county.getShape());
         dto.setPrecincts(
-            county.getPrecincts().stream()
-                .map(p -> p.getId())
-                .collect(Collectors.toSet())
+            new HashSet<String>(
+                dataService.getPrecinctIdsByCounty(county.getId())
+            )
         );
         return dto;
     }
@@ -59,7 +64,8 @@ public class ModelConverter {
                 .collect(Collectors.toSet())
         );
 
-        Map<DemographicType, Integer> map = new EnumMap<DemographicType, Integer>(DemographicType.class);
+        Map<DemographicType, Integer> map =
+            new EnumMap<DemographicType, Integer>(DemographicType.class);
         precinct.getDemographics().stream()
             .forEach(d -> map.put(d.getDemographic(), d.getPopulation()));
         dto.setDemographics(map);

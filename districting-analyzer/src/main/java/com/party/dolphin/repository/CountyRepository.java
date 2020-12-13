@@ -10,5 +10,5 @@ public interface CountyRepository extends Repository<County, Integer> {
 
     County findById(int id);
 
-    List<County> findAllByStateId(int stateId);
+    <T> List<T> findAllByStateId(int stateId, Class<T> type);
 }

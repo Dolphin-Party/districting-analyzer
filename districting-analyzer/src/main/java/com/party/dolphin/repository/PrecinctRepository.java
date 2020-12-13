@@ -10,5 +10,5 @@ public interface PrecinctRepository extends Repository<Precinct, String> {
     
     Precinct findById(String id);
 
-    List<Precinct> findAllByCountyId(int countyId);
+    <T> List<T> findAllByCountyId(int countyId, Class<T> type);
 }

@@ -1,9 +1,14 @@
 package com.party.dolphin.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+@JsonInclude(Include.NON_NULL)
 public class PrecinctDto {
     /* Fields */
     private String precinctId;
@@ -54,6 +59,14 @@ public class PrecinctDto {
     }
     public void setDemographics(Map<DemographicType,Integer> demographics) {
         this.demographics = demographics;
+    }
+
+    /* Other Methods */
+    @JsonIgnore
+    public List<PrecinctNeighborDto> getEdges() {
+        return this.neighbors.stream()
+                    .map(n -> new PrecinctNeighborDto(this.precinctId, n))
+                    .collect(Collectors.toList());
     }
 
 }

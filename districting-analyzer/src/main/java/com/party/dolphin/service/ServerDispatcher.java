@@ -122,6 +122,11 @@ public class ServerDispatcher {
 
     private boolean writeArgsFile(Job job) {
         File file = new File(job.getArgsFilePath());
+        if (file.exists()) {
+            System.out.println("File " + file.getName() + "already exists");
+            return true;
+        }
+
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("numDistricts", 1);
         map.put("compactness", 0.2);
@@ -131,33 +136,38 @@ public class ServerDispatcher {
         return writeJsonFile(file, map);
     }
 
-    // Sacrifice efficiency for readability
-    // by fetching precincts before checking if file exists
     private boolean writePrecinctsFile(Job job) {
         File file = new File(job.getPrecinctFilePath());
+        if (file.exists()) {
+            System.out.println("File " + file.getName() + "already exists");
+            return true;
+        }
+
         List<PrecinctDto> precincts = job.getState()
             .getCounties().stream()
             .map(c -> c.getPrecincts())
             .flatMap(p -> p.stream())
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
-        // List<PrecinctNeighborDto> precinctEdges = precincts.stream()
-        //     .map(p -> p.getEdges())
-        //     .flatMap(l -> l.stream())
-        //     .collect(Collectors.toList());
+        List<PrecinctNeighborDto> precinctEdges = precincts.stream()
+            .map(p -> p.getEdges())
+            .flatMap(l -> l.stream())
+            .collect(Collectors.toList());
         precincts.stream()
             .forEach(p -> p.setNeighbors(null));
 
         Map<String, Object> map = new HashMap<String, Object>();
+        System.out.println("Num. precincts: " + precincts.size());
+        System.out.println("Num. edges: " + precinctEdges.size());
         map.put("precincts", precincts);
-        // map.put("edges", precinctEdges);
+        map.put("edges", precinctEdges);
         return writeJsonFile(file, map);
     }
 
     // object can be a POJO, List, or Map
     private boolean writeJsonFile(File file, Object object) {
         if (file.exists()) {
-            System.out.println("File already exists");
+            System.out.println("File " + file.getName() + "already exists");
             return true;
         }
         ObjectMapper mapper = new ObjectMapper();

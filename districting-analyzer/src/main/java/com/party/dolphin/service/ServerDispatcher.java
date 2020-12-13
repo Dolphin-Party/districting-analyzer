@@ -181,6 +181,7 @@ public class ServerDispatcher {
             mapper.writeValue(file, object);
         } catch (IOException ioex) {
             System.out.println(ioex.getMessage());
+            file.delete();
             return false;
         }
         return true;

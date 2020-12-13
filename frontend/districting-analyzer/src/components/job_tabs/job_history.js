@@ -19,7 +19,7 @@ export default class JobHistoryTab extends Component<{}, State> {
         jobs:[],
         noJobsText: this.props.noJobsText,
         isLoading: true,
-        stateDict: {1: "Arkansas", 2: "North Carolina", 3: "Virginia"}
+        stateDict: {5: "Arkansas", 37: "North Carolina", 51: "Virginia"}
       };
       this.handleLoad = this.handleLoad.bind(this)
       this.jobsAvailability = this.jobsAvailability.bind(this)
@@ -29,16 +29,13 @@ export default class JobHistoryTab extends Component<{}, State> {
 
 
   componentDidMount() {
-   // axios.get("/backend/job/all")
-   // .then(response => {
-   //   this.setState({ jobs: response.data})
-   //   this.setState({ jobs: [{jobId: '1', stateId:'2', status: 'Finished'}]})
-   //   this.setState({ isLoading: false });
-   // })
-   // .then(this.jobButtonOptions())
-   // .then(window.addEventListener('load', this.handleLoad))
-   this.setState({ jobs: [{jobId: '1', stateId:'2', status: 'Finished'}]})
-   this.setState({ isLoading: false });
+   axios.get("/backend/job/all")
+   .then(response => {
+     this.setState({ jobs: response.data})
+     this.setState({ isLoading: false });
+   })
+   .then(this.jobButtonOptions())
+   .then(window.addEventListener('load', this.handleLoad))
 }
 
 jobButtonOptions() {
@@ -84,9 +81,9 @@ jobButtonOptions() {
   }
 
   handleJobSelect=(e,key,job)=>{
-    if (job.status == 'Finished'){
+    // if (job.status == 'Finished'){
       this.props.requestJobData(job);
-    }
+    // }
   }
 
   render() {

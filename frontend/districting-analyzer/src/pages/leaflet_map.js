@@ -17,8 +17,13 @@ import teamStates from '../assets/geojson/teamstates.json'
 import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
 import northCarolinaDistricts from '../assets/geojson/northCarolinaDistricts.json'
+import alabama from '../assets/geojson/alabama.json'
 
 import radioButton from '../components/radioButton'
+import union from '@turf/union'
+import sample_districting from '../assets/geojson/sample_districting.json'
+import * as turf from '@turf/turf'
+import * as geojsonMerge from '@mapbox/geojson-merge'
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
@@ -27,6 +32,7 @@ const mapRef = useRef();
 const firstOverlayRef = useRef();
 const stateRef = useRef();
 const secondOverlayRef = useRef();
+const thirdOverlayRef = useRef();
 const icon = L.icon({
   iconSize: [25, 41],
   iconAnchor: [10, 41],
@@ -58,6 +64,7 @@ export default class LeafletMap extends Component<{}, State> {
       precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
       // precincts: {arkansas: [], virginia: [], northCarolina: []},
       districts: {arkansas: arkansasDistricts, virginia: virginiaDistricts, northCarolina: northCarolinaDistricts},
+      stateDict: {51: 0, 37:1, 5:2},
       precinctDisplay: false,
       demographics: {
         0:'black',
@@ -86,6 +93,7 @@ export default class LeafletMap extends Component<{}, State> {
       heatMapLegendStyle: {visibility: 'hidden'},
       districtingMenuStyle: {visibility: 'visible'},
       districtingState: this.props.districtingState,
+      currentDist: [],
       selectedDistricting: null,
       precinctColor: '#3B2B59',
       stateDefaultStyle: {
@@ -125,9 +133,8 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   componentDidUpdate(prevProps){
-    console.log("Component Did Update",this.props.districtingState,  prevProps.districtingState)
     if (this.props.districtingState !== prevProps.districtingState){
-      this.dropdownStateSelect(null,this.props.districtingState)
+      this.dropdownStateSelect(null,this.state.stateDict[this.props.districtingState])
     }
   }
 
@@ -144,6 +151,9 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   highlightFeature = (e) => {
+    console.log("highligthing feature")
+    console.log("calling getDistricting")
+    this.getDistricting()
     var layer = e.target;
     this.updateMapInfo("State: ", layer.feature.properties.name, "Population: ", layer.feature.properties.population, "Number of Districts: ", layer.feature.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateDensity=layer.feature.properties.density
@@ -174,7 +184,6 @@ export default class LeafletMap extends Component<{}, State> {
     dropdownStateSelect(ev, stateNum){
       var geoJSON = this.state.states
       var e = geoJSON['features'][stateNum]
-      console.log('dropdownStateSelect', e)
       this.clickSelectState(null, e)
     }
 
@@ -189,7 +198,6 @@ export default class LeafletMap extends Component<{}, State> {
       mapInfo['text7'] = label7.concat(content7)
       mapInfo['text8'] = label8.concat(content8)
       this.setState({mapInfo: mapInfo})
-      console.log(mapInfo, this.state.mapInfo)
     }
 
     stateLayerControlToggle(stateName){
@@ -221,6 +229,7 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightPrecinct = (e) => {
     var layer = e.target;
+    console.log("precinct,", e.target)
     var precinct = e.target.feature.properties
     var demData = precinct.demographicData
     this.updateMapInfo(
@@ -293,6 +302,24 @@ export default class LeafletMap extends Component<{}, State> {
     }else{
       return this.state.precinctDefaultStyle
     }
+  }
+
+  getDistricting(){
+    console.log("getDistricting")
+    // var mergedDistrict = geojsonMerge.merge(sample_districting);
+    // var precincts = sample_districting
+    // var poly1 = turf.polygon(precincts[0]["geometry"]["coordinates"], {"fill": "#0f0"});
+    // var poly2 = turf.polygon(precincts[1]["geometry"]["coordinates"], {"fill": "#00f"});
+    // var union = turf.union(poly1, poly2);
+    // var poly1, poly2, union
+    // for(var i=2; i< precincts.length; i++){
+    //   poly1 = turf.polygon(precincts[i]["geometry"]["coordinates"], {"fill": "#0f0"});
+    //   poly2 = turf.polygon(precincts[i+1]["geometry"]["coordinates"], {"fill": "#00f"});
+    //   union = turf.union(poly1, poly2, union);
+    // }
+    //
+    // this.setState({currentDist: [mergedDistrict]})
+    // console.log("New Union performed ", mergedDistrict)
   }
 
   getTargetDemographicPopulation(targetDem, targetPop){
@@ -396,10 +423,8 @@ export default class LeafletMap extends Component<{}, State> {
           <p className='currMap-Info'> Selected State: {this.props.currState}</p>
           <p className='currMap-Info'> Selected Demographic: {this.props.currDem}</p>
         </div>
-
       <div className='leaflet-container'>
         <Map center={position} zoom={this.state.zoom} ref={mapRef} onClick={this.mapClick}>
-
         <div className='districtingMenu' style={this.props.districtingMenuStyle}>
             <FormControl component="fieldset"><FormLabel component="legend">Districtings</FormLabel>
                 {districtingTypes.map((type, i, array) =>
@@ -447,7 +472,7 @@ export default class LeafletMap extends Component<{}, State> {
           <LayersControl key={i} position="topright">
           <Overlay name="Precinct Borders">
               <LayerGroup ref={firstOverlayRef}>
-              <GeoJSON key="precinctLayer"
+              <GeoJSON
                 data={this.state.precincts[stateName]}
                 style={this.getPrecinctColor.bind(null, this)}
                 onEachFeature={this.onEachPrecinct.bind(null, this)}
@@ -457,11 +482,21 @@ export default class LeafletMap extends Component<{}, State> {
           <Overlay name="District Borders">
               <LayerGroup ref={secondOverlayRef}>
                 <GeoJSON key="districtLayer"
-                  data={this.state.precincts[stateName]}
+                  data={this.state.districts[stateName]}
                   style={this.state.stateDefaultStyle}
                   ></GeoJSON>
           </LayerGroup>
         </Overlay>
+        {(this.state.currentDist).map((dist, i) =>
+          <Overlay name="Districting Boundary">
+              <LayerGroup ref={thirdOverlayRef}>
+                <GeoJSON key="districtLayer"
+                  data={this.state.currentDist[i]}
+                  style={this.state.stateDefaultStyle}
+                  ></GeoJSON>
+          </LayerGroup>
+          </Overlay>
+      )}
             </LayersControl>
         )}
             <LayersControl position="topright" id="arkansasLayers">

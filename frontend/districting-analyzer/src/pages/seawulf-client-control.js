@@ -18,7 +18,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
       jobs: {},
       noJobsText:{visibility: 'visible',},
       submitAvailability: this.props.submitAvailability,
-      jobIdDict: {"Arkansas":1, "North Carolina":2, "Virginia":3},
+      jobIdDict: {"Arkansas":5, "North Carolina":37, "Virginia":51},
     };
     this.onJobAdded = this.onJobAdded.bind(this);
   }
@@ -34,7 +34,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
     this.setState({jobs: jobDict});
     this.setState({noJobsText:{visibility: 'hidden'}});
     axios.post("/backend/job/init", {
-      stateId: 51,
+      stateId: newJob.stateId,
       numberDistrictings: newJob.numberDistrictings,
       compactnessAmount: newJob.compactnessAmount,
       targetDemographic: newJob.targetDemographic,
@@ -140,7 +140,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
         { label: "12",  y: [241, 255, 276.5, 294, 274.5] },
       ],
     }
-    this.props.onBoxWhiskerSelect(jobPlotData);
+    this.props.onBoxWhiskerSelect(jobPlotData, job);
   }
 
 

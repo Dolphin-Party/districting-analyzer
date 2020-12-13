@@ -15,7 +15,7 @@ import MapViewFilter from './map-view-filter'
 import SeawulfClientControl from './seawulf-client-control'
 import DataControl from './data-control'
 
-import teamStates from '../assets/geojson/teamstates.json'
+// import teamStates from '../assets/geojson/teamstates.json'
 
 const ReactDOM = require('react-dom');
 
@@ -47,12 +47,12 @@ export default class Home extends Component<{}, State> {
 
   componentDidMount() {
     console.log("Home did mount")
-    this.setState({ stateData: teamStates});
-    this.setState({ isLoading: false });
-    // axios.get("/backend/state/all/info").then(response => {
-    //   this.setState({ stateData: [JSON.parse(response.data[0].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[2].shape)]});
-    //   this.setState({ isLoading: false });
-    // })
+    // this.setState({ stateData: teamStates});
+    // this.setState({ isLoading: false });
+    axios.get("/backend/state/all/info").then(response => {
+      this.setState({ stateData: [JSON.parse(response.data[0].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[2].shape)]});
+      this.setState({ isLoading: false });
+    })
   }
 
   handleStateSelect = (state) => {
@@ -92,10 +92,11 @@ export default class Home extends Component<{}, State> {
     this.setState({districtingMenuStyle: {visibility: 'hidden'}});
   }
 
-  handleBoxWhiskerSelect = (data) => {
+  handleBoxWhiskerSelect = (data, job) => {
+    console.log("handling districting display")
     this.setState({boxWhiskerJob: data});
     this.setState({districtingMenuStyle: {visibility: 'visible'}, districtingOn: true});
-    this.setState({districtingState: '1'})
+    this.setState({districtingState: job.stateId})
   }
 
   render() {

@@ -54,7 +54,7 @@ public class ModelConverter {
         dto.setCountyId(precinct.getCounty().getId());
         dto.setNeighbors(
             precinct.getNeighbors().stream()
-                .map(p -> p.getNeighbor().getId())
+                .map(p -> p.getId())
                 .collect(Collectors.toSet())
         );
 

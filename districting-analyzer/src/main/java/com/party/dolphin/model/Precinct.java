@@ -3,6 +3,7 @@ package com.party.dolphin.model;
 import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -13,7 +14,8 @@ public class Precinct {
     private String id;
     private County county;
     private String shape;
-    private Set<PrecinctNeighbor> neighbors;
+    private Set<PrecinctNeighbor> neighborsLower;
+    private Set<PrecinctNeighbor> neighborsUpper;
     private int population;
     private List<PrecinctDemographic> demographics;
 
@@ -45,11 +47,19 @@ public class Precinct {
     }
 
     @OneToMany(mappedBy="precinct")
-    public Set<PrecinctNeighbor> getNeighbors() {
-        return this.neighbors;
+    public Set<PrecinctNeighbor> getNeighborsLower() {
+        return this.neighborsLower;
     }
-    public void setNeighbors(Set<PrecinctNeighbor> neighbors) {
-        this.neighbors = neighbors;
+    public void setNeighborsLower(Set<PrecinctNeighbor> neighborsLower) {
+        this.neighborsLower = neighborsLower;
+    }
+
+    @OneToMany(mappedBy="neighbor")
+    public Set<PrecinctNeighbor> getNeighborsUpper() {
+        return this.neighborsUpper;
+    }
+    public void setNeighborsUpper(Set<PrecinctNeighbor> neighborsUpper) {
+        this.neighborsUpper = neighborsUpper;
     }
 
     @Column(name="population")
@@ -69,6 +79,24 @@ public class Precinct {
     }
 
     /* Other Methods */
+    @Transient
+    public Set<Precinct> getNeighbors() {
+        int capacity = this.neighborsLower.size() + this.neighborsUpper.size();
+        Set<Precinct> allNeighbors = new HashSet<Precinct>(capacity);
+        allNeighbors.addAll(
+            this.neighborsLower.stream()
+                .map(n -> n.getNeighbor())
+                .collect(Collectors.toSet())
+        );
+        allNeighbors.addAll(
+            this.neighborsUpper.stream()
+                .map(n -> n.getPrecinct())
+                .collect(Collectors.toSet())
+        );
+        return allNeighbors;
+    }
+
+    @Transient
     public int getVAP(DemographicType demographic) {
         return this.demographics.stream()
                     .filter(d -> d.getDemographic() == demographic)

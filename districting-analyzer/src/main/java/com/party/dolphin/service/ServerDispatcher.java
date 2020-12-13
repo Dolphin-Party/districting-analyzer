@@ -1,9 +1,7 @@
 package com.party.dolphin.service;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,10 +26,15 @@ public class ServerDispatcher {
 
 
     @Autowired
+    private JobService jobService;
+    @Autowired
+    private DtoConverter dtoConverter;
+    @Autowired
     private ModelConverter modelConverter;
     @Autowired
     private SeaWulfController seawulfController;
 
+    /** Job Control **/
     public Job runJob(Job job) {
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
@@ -120,6 +123,7 @@ public class ServerDispatcher {
         return job;
     }
 
+    /** Write files **/
     private boolean writeArgsFile(Job job) {
         File file = new File(job.getArgsFilePath());
         if (file.exists()) {
@@ -197,7 +201,7 @@ public class ServerDispatcher {
         return file.mkdirs();
     }
 
-    // TODO:
+    /** Read file **/
     private Job readOutputFiles(Job job) {
         File file = new File(job.getOutputFilePath());
         if (!file.exists()) {
@@ -207,11 +211,55 @@ public class ServerDispatcher {
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        List<DistrictingDto> districtings;
+        String[][][] ids;
+        try {
+            ids = mapper.readValue(file, String[][][].class);
+        } catch (IOException ioex) {
+            System.out.println(ioex.getMessage());
+            job.setStatus(JobStatus.error);
+            return job;
+        }
 
+        ArrayList<Districting> districtings = new ArrayList<Districting>(job.getNumberDistrictings());
+        for (String[][] districting : ids) {
+            Districting d = parseDistrictingDistricts(districting, job);
+            d = jobService.saveDistricting(d);
+            districtings.add(d);
+        }
+        job.setDistrictings(districtings);
+        job = jobService.saveJob(job);
         return job;
     }
 
+    private Districting parseDistrictingDistricts(String[][] districting, Job job) {
+        DistrictingDto dto = new DistrictingDto();
+        dto.setJobId(job.getId());
+        dto.setTargetDemographic(job.getTargetDemographic());
+        ArrayList<District> districts = new ArrayList<District>();
+        for (String[] district : districting) {
+            District d = parseDistrictPrecincts(district);
+            d = jobService.saveDistrict(d);
+            districts.add(d);
+        }
+        dto.setDistricts(
+            districts.stream()
+                .map(di -> di.getId())
+                .collect(Collectors.toList())
+        );
+        return dtoConverter.createDistricting(dto);
+    }
+
+    private District parseDistrictPrecincts(String[] district) {
+        DistrictDto dto = new DistrictDto();
+        HashSet<String> precincts = new HashSet<String>();
+        for (String precinctId : district) {
+            precincts.add(precinctId);
+        }
+        dto.setPrecincts(precincts);
+        return dtoConverter.createDistrict(dto);
+    }
+
+    // Debug, for printing process stdout/stderr
     private void debugProcessOutput(Process process) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

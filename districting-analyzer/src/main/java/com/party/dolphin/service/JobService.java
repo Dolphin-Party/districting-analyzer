@@ -30,6 +30,7 @@ public class JobService {
     @Autowired
     private ModelConverter modelConverter;
 
+    /** Job Control **/
     public int addJob(JobDto jobDto) {
         Job job = new Job();
         BeanUtils.copyProperties(jobDto, job);
@@ -41,29 +42,6 @@ public class JobService {
         job = serverDispatcher.runJob(job);
         job = jobRepository.save(job);
         return job.getId();
-    }
-
-    public Job getJob(int id) {
-        return jobRepository.findById(id);
-    }
-
-    public JobDto getJobDto(int id) {
-        Job job = jobRepository.findById(id);
-        return modelConverter.createJobDto(job);
-    }
-
-    public List<JobDto> getAllJobDtos() {
-        List<Job> jobs = jobRepository.findAll();
-        return jobs.stream()
-                    .map(j -> modelConverter.createJobDto(j))
-                    .collect(Collectors.toList());
-    }
-
-    public List<JobDto> getJobsByState(int stateId) {
-        List<Job> jobs = jobRepository.findAllByStateId(stateId);
-        return jobs.stream()
-                    .map(j -> modelConverter.createJobDto(j))
-                    .collect(Collectors.toList());
     }
 
     public JobDto getJobStatus(int jobId) {
@@ -88,6 +66,30 @@ public class JobService {
         return true;
     }
 
+    /** Get entities and dtos **/
+    public Job getJob(int id) {
+        return jobRepository.findById(id);
+    }
+
+    public JobDto getJobDto(int id) {
+        Job job = jobRepository.findById(id);
+        return modelConverter.createJobDto(job);
+    }
+
+    public List<JobDto> getAllJobDtos() {
+        List<Job> jobs = jobRepository.findAll();
+        return jobs.stream()
+                    .map(j -> modelConverter.createJobDto(j))
+                    .collect(Collectors.toList());
+    }
+
+    public List<JobDto> getJobsByState(int stateId) {
+        List<Job> jobs = jobRepository.findAllByStateId(stateId);
+        return jobs.stream()
+                    .map(j -> modelConverter.createJobDto(j))
+                    .collect(Collectors.toList());
+    }
+
     public DistrictingDto getDistrictingDto(int id) {
         Districting districting = districtingRepository.findById(id);
         return modelConverter.createDistrictingDto(districting);
@@ -103,5 +105,18 @@ public class JobService {
         return districts.stream()
                         .map(d -> modelConverter.createDistrictDto(d))
                         .collect(Collectors.toList());
+    }
+
+    /** Save entities **/
+    public Job saveJob(Job job) {
+        return jobRepository.save(job);
+    }
+
+    public Districting saveDistricting(Districting districting) {
+        return districtingRepository.save(districting);
+    }
+
+    public District saveDistrict(District district) {
+        return districtRepository.save(district);
     }
 }

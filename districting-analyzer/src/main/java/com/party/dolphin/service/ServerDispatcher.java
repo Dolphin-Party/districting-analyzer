@@ -50,30 +50,30 @@ public class ServerDispatcher {
             return job;
         }
 
-        if (job.getIsSeawulf())
-            job = seawulfController.sendJob(job);
-        else
-            job = runLocally(job);
+        // if (job.getIsSeawulf())
+        //     job = seawulfController.sendJob(job);
+        // else
+        //     job = runLocally(job);
         return job;
     }
 
     public Job checkJobStatus(Job job) {
-        if (job.getStatus() == JobStatus.running) {
-            job.setOutputFilePath(
-                String.format(outputDirPathTemplate + outputFileName, job.getId())
-            );
+        // if (job.getStatus() == JobStatus.running) {
+        //     job.setOutputFilePath(
+        //         String.format(outputDirPathTemplate + outputFileName, job.getId())
+        //     );
 
-            if (job.getIsSeawulf())
-                job = seawulfController.checkJobStatus(job);
-            else
-                job = checkLocalJob(job);
+        //     if (job.getIsSeawulf())
+        //         job = seawulfController.checkJobStatus(job);
+        //     else
+        //         job = checkLocalJob(job);
 
-            if (job.getStatus() == JobStatus.finishDistricting) {
-                job = readOutputFiles(job);
-                job.analyzeJobResults();
-                job.setStatus(JobStatus.finishProcessing);
-            }
-        }
+        //     if (job.getStatus() == JobStatus.finishDistricting) {
+        //         job = readOutputFiles(job);
+        //         job.analyzeJobResults();
+        //         job.setStatus(JobStatus.finishProcessing);
+        //     }
+        // }
         return job;
     }
 
@@ -123,7 +123,7 @@ public class ServerDispatcher {
     private boolean writeArgsFile(Job job) {
         File file = new File(job.getArgsFilePath());
         if (file.exists()) {
-            System.out.println("File " + file.getName() + "already exists");
+            System.out.println("File " + file.getName() + " already exists");
             return true;
         }
 
@@ -139,7 +139,7 @@ public class ServerDispatcher {
     private boolean writePrecinctsFile(Job job) {
         File file = new File(job.getPrecinctFilePath());
         if (file.exists()) {
-            System.out.println("File " + file.getName() + "already exists");
+            System.out.println("File " + file.getName() + " already exists");
             return true;
         }
 
@@ -167,7 +167,7 @@ public class ServerDispatcher {
     // object can be a POJO, List, or Map
     private boolean writeJsonFile(File file, Object object) {
         if (file.exists()) {
-            System.out.println("File " + file.getName() + "already exists");
+            System.out.println("File " + file.getName() + " already exists");
             return true;
         }
         ObjectMapper mapper = new ObjectMapper();

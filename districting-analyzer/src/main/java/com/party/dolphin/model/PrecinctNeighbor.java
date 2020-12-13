@@ -6,16 +6,16 @@ import javax.persistence.*;
 @Table(name="PrecinctNeighbors")
 public class PrecinctNeighbor {
     /* Fields */
-    private PrecinctNeighborId id;
+    private PrecinctNeighborPK id;
     private Precinct precinct;
     private Precinct neighbor;
 
     /* Properties */
     @EmbeddedId
-    public PrecinctNeighborId getId() {
+    public PrecinctNeighborPK getId() {
         return this.id;
     }
-    public void setId(PrecinctNeighborId id) {
+    public void setId(PrecinctNeighborPK id) {
         this.id = id;
     }
 

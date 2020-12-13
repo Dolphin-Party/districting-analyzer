@@ -1,9 +1,12 @@
 package com.party.dolphin.service;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.model.*;
+import com.party.dolphin.model.enums.DemographicType;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -54,6 +57,11 @@ public class ModelConverter {
                 .map(p -> p.getNeighbor().getId())
                 .collect(Collectors.toSet())
         );
+
+        Map<DemographicType, Integer> map = new EnumMap<DemographicType, Integer>(DemographicType.class);
+        precinct.getDemographics().stream()
+            .forEach(d -> map.put(d.getDemographic(), d.getPopulation()));
+        dto.setDemographics(map);
         return dto;
     }
 

@@ -6,16 +6,17 @@ import java.util.Objects;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class PrecinctNeighborId implements Serializable {
+public class PrecinctNeighborPK implements Serializable {
     /* Fields */
+    private static final long serialVersionUID = 1L;
     private String precinctId;
     private String neighborId;
 
     /* Constructors */
-    public PrecinctNeighborId() {
+    public PrecinctNeighborPK() {
     }
 
-    public PrecinctNeighborId(String precinctId, String neighborId) {
+    public PrecinctNeighborPK(String precinctId, String neighborId) {
         this.precinctId = precinctId;
         this.neighborId = neighborId;
     }
@@ -41,7 +42,7 @@ public class PrecinctNeighborId implements Serializable {
         if (o == null || this.getClass() != o.getClass())
             return false;
 
-        PrecinctNeighborId id = (PrecinctNeighborId) o;
+        PrecinctNeighborPK id = (PrecinctNeighborPK) o;
         return this.precinctId.equals(id.precinctId) &&
                 this.neighborId.equals(id.neighborId);
     }

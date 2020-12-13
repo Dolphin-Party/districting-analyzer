@@ -15,7 +15,7 @@ public class Precinct {
     private String shape;
     private Set<PrecinctNeighbor> neighbors;
     private int population;
-    private Map<DemographicType, Integer> demographics;
+    private List<PrecinctDemographic> demographics;
 
     /* Properties */
     @Id
@@ -60,23 +60,20 @@ public class Precinct {
         this.population = population;
     }
 
-    @ElementCollection
-    @CollectionTable(
-        name="PrecinctDemographics",
-        joinColumns=@JoinColumn(name="precinctID")
-    )
-    @MapKeyEnumerated(EnumType.STRING)
-    @MapKeyColumn(name="demographic")
-    @Column(name="population")
-    public Map<DemographicType,Integer> getDemographics() {
+    @OneToMany(mappedBy="precinct", fetch=FetchType.EAGER)
+    public List<PrecinctDemographic> getDemographics() {
         return this.demographics;
     }
-    public void setDemographics(Map<DemographicType,Integer> demographics) {
+    public void setDemographics(List<PrecinctDemographic> demographics) {
         this.demographics = demographics;
     }
 
     /* Other Methods */
     public int getVAP(DemographicType demographic) {
-        return this.demographics.get(demographic);
+        return this.demographics.stream()
+                    .filter(d -> d.getDemographic() == demographic)
+                    .findFirst()
+                    .orElse(new PrecinctDemographic())
+                    .getPopulation();
     }
 }

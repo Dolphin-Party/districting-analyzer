@@ -52,7 +52,7 @@ public class PrecinctDto {
     public Map<DemographicType,Integer> getDemographics() {
         return this.demographics;
     }
-    public void setDemographics(EnumMap<DemographicType,Integer> demographics) {
+    public void setDemographics(Map<DemographicType,Integer> demographics) {
         this.demographics = demographics;
     }
 

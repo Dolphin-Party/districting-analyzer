@@ -79,11 +79,11 @@ public class PrecinctDto {
         try {
             Map<
                 String, List<
-                    Map<String, Map<String, String>>
+                    Map<String, String>
                 >
             > geojson = mapper.readValue(this.shape, Map.class);
             String coordinates = mapper.writeValueAsString(
-                geojson.get("features").get(0).get("geometry").get("coordinates")
+                geojson.get("features").get(0).get("geometry")
             );
             this.shape = coordinates;
         } catch (JsonProcessingException ex) {

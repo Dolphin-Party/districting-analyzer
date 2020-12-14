@@ -1,8 +1,6 @@
 package com.party.dolphin.service;
 
 import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.party.dolphin.dto.*;
@@ -118,5 +116,18 @@ public class JobService {
 
     public District saveDistrict(District district) {
         return districtRepository.save(district);
+    }
+
+    /** Debug **/
+    public boolean readFileTest(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        job = serverDispatcher.readOutputFiles(job);
+        return true;
+    }
+
+    public int createDistrict(DistrictDto dto) {
+        District district = new District();
+        district = districtRepository.save(district);
+        return district.getId();
     }
 }

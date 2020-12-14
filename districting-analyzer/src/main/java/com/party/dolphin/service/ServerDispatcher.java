@@ -62,20 +62,19 @@ public class ServerDispatcher {
 
     public Job checkJobStatus(Job job) {
         if (job.getStatus() == JobStatus.running) {
-            job.setOutputFilePath(
-                String.format(outputDirPathTemplate + outputFileName, job.getId())
-            );
+            String outputFile = String.format(outputDirPathTemplate + outputFileName, job.getId());
+            job.setOutputFile(new File(outputFile));
 
             if (job.getIsSeawulf())
                 job = seawulfController.checkJobStatus(job);
             else
                 job = checkLocalJob(job);
 
-            // if (job.getStatus() == JobStatus.finishDistricting) {
-            //     job = readOutputFiles(job);
-            //     job.analyzeJobResults();
-            //     job.setStatus(JobStatus.finishProcessing);
-        // }
+            if (job.getStatus() == JobStatus.finishDistricting) {
+                job = readOutputFiles(job);
+                //job.analyzeJobResults();
+                job.setStatus(JobStatus.finishProcessing);
+            }
         }
         return job;
     }
@@ -86,9 +85,9 @@ public class ServerDispatcher {
     }
 
     private Job runLocally(Job job) {
-        String outputDir = String.format(outputDirPathTemplate, job.getId());
-        job.setOutputFilePath(outputDir + outputFileName);
-        if (!createDir(outputDir)) {
+        String outputFilePath = String.format(outputDirPathTemplate + outputFileName, job.getId());
+        job.setOutputFile(new File(outputFilePath));
+        if (!createDir(job.getOutputFile().getParent())) {
             System.out.println("Failed to create output dir");
             job.setStatus(JobStatus.error);
             return job;
@@ -100,10 +99,10 @@ public class ServerDispatcher {
             algorithmFileName,
             job.getArgsFilePath(),
             job.getPrecinctFilePath(),
-            outputDir
+            job.getOutputFile().getParent()
         );
         pb.redirectErrorStream(true);
-        pb.redirectOutput(new File(job.getOutputFilePath()));
+        pb.redirectOutput(job.getOutputFile());
         try {
             process = pb.start();
             job.setStatus(JobStatus.running);
@@ -117,8 +116,7 @@ public class ServerDispatcher {
     }
 
     private Job checkLocalJob(Job job) {
-        File file = new File(job.getOutputFilePath());
-        if (!file.exists())
+        if (!job.getOutputFile().exists())
             return job;
         // else file finished
         job.setStatus(JobStatus.finishDistricting);
@@ -158,7 +156,7 @@ public class ServerDispatcher {
         for (PrecinctDto p : precincts) {
             if (!p.convertShapeToCoordinates())
                 return false;
-            }
+        }
         List<PrecinctNeighborDto> precinctEdges = precincts.stream()
             .map(p -> p.getEdges())
             .flatMap(l -> l.stream())
@@ -211,9 +209,8 @@ public class ServerDispatcher {
     }
 
     /** Read file **/
-    private Job readOutputFiles(Job job) {
-        File file = new File(job.getOutputFilePath());
-        if (!file.exists()) {
+    public Job readOutputFiles(Job job) {
+        if (!job.getOutputFile().exists()) {
             System.out.println("File not found");
             job.setStatus(JobStatus.error);
             return job;
@@ -222,7 +219,7 @@ public class ServerDispatcher {
         ObjectMapper mapper = new ObjectMapper();
         String[][][] ids;
         try {
-            ids = mapper.readValue(file, String[][][].class);
+            ids = mapper.readValue(job.getOutputFile(), String[][][].class);
         } catch (IOException ioex) {
             System.out.println(ioex.getMessage());
             job.setStatus(JobStatus.error);
@@ -232,7 +229,6 @@ public class ServerDispatcher {
         ArrayList<Districting> districtings = new ArrayList<Districting>(job.getNumberDistrictings());
         for (String[][] districting : ids) {
             Districting d = parseDistrictingDistricts(districting, job);
-            d = jobService.saveDistricting(d);
             districtings.add(d);
         }
         job.setDistrictings(districtings);
@@ -240,32 +236,33 @@ public class ServerDispatcher {
         return job;
     }
 
-    private Districting parseDistrictingDistricts(String[][] districting, Job job) {
-        DistrictingDto dto = new DistrictingDto();
-        dto.setJobId(job.getId());
-        dto.setTargetDemographic(job.getTargetDemographic());
+    private Districting parseDistrictingDistricts(String[][] districtingDistricts, Job job) {
+        Districting districting = new Districting();
+        districting = jobService.saveDistricting(districting);
+        districting.setJob(job);
+        districting.setTargetDemographic(job.getTargetDemographic());
+
         ArrayList<District> districts = new ArrayList<District>();
-        for (String[] district : districting) {
+        for (String[] district : districtingDistricts) {
             District d = parseDistrictPrecincts(district);
+            d.setDistricting(districting);
             d = jobService.saveDistrict(d);
             districts.add(d);
         }
-        dto.setDistricts(
-            districts.stream()
-                .map(di -> di.getId())
-                .collect(Collectors.toList())
-        );
-        return dtoConverter.createDistricting(dto);
+
+        districting.setDistricts(districts);
+        districting = jobService.saveDistricting(districting);
+        return districting;
     }
 
-    private District parseDistrictPrecincts(String[] district) {
+    private District parseDistrictPrecincts(String[] districtPrecincts) {
         DistrictDto dto = new DistrictDto();
         HashSet<String> precincts = new HashSet<String>();
-        for (String precinctId : district) {
+        for (String precinctId : districtPrecincts) {
             precincts.add(precinctId);
         }
         dto.setPrecincts(precincts);
-        return dtoConverter.createDistrict(dto);
+        return dtoConverter.createNewDistrict(dto);
     }
 
     // Debug, for printing process stdout/stderr
@@ -284,5 +281,4 @@ public class ServerDispatcher {
             ioex.printStackTrace();
         }
     }
-
 }

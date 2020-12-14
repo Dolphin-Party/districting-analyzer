@@ -17,11 +17,11 @@ public class DtoConverter {
     @Autowired
     private JobService jobService;
 
-    public Districting createDistricting(DistrictingDto dto) {
+    public Districting createNewDistricting(DistrictingDto dto) {
         Districting districting = new Districting();
-        BeanUtils.copyProperties(dto, districting);
+        districting = jobService.saveDistricting(districting);
 
-        districting.setId(dto.getDistrictingId());
+        BeanUtils.copyProperties(dto, districting);
         districting.setJob(
             jobService.getJob(dto.getJobId())
         );
@@ -29,11 +29,12 @@ public class DtoConverter {
         return districting;
     }
 
-    public District createDistrict(DistrictDto dto) {
+    // Caller initializes entity object b/c id is auto-generated
+    public District createNewDistrict(DistrictDto dto) {
         District district = new District();
-        BeanUtils.copyProperties(dto, district);
+        district = jobService.saveDistrict(district);
 
-        district.setId(dto.getDistrictId());
+        BeanUtils.copyProperties(dto, district);
         district.setPrecincts(
             dto.getPrecincts().stream()
                 .map(id -> dataService.getPrecinct(id))

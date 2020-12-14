@@ -114,6 +114,10 @@ CREATE TABLE IF NOT EXISTS BoxWhiskerIdSequence (
 );
 
 INSERT INTO JobIdSequence VALUE (1);
-INSERT INTO DistrictingIdSequence VALUE (1);
+INSERT INTO DistrictingIdSequence VALUE (5);
 INSERT INTO DistrictIdSequence VALUE (1);
 INSERT INTO BoxWhiskerIdSequence VALUE (1);
+
+ALTER TABLE Counties ADD INDEX (stateID);
+ALTER TABLE Precincts ADD INDEX (countyID);
+ALTER TABLE Districts ADD INDEX (districtingID);

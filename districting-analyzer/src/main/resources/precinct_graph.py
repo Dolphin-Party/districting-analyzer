@@ -24,10 +24,13 @@ class PrecinctGraph(object):
         return self.__subgraphs
 
     @subgraphs.setter
-    def subgraphs(self, new_subgraphs):
+    def subgraphs(self, new_subgraphs: PrecinctSubgraph):
         self.__subgraphs = new_subgraphs
 
     @property
     def num_districts(self):
         return len(self.__subgraphs)
 
+    @property
+    def population(self):
+        return sum(map(lambda d: d.population, self.__subgraphs))

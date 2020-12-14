@@ -17,7 +17,9 @@ public class Job {
     private JobStatus status;
     private State state;
     private int numberDistrictings;
+    private int iterations;
     private String compactnessAmount; // TODO: annotations for enum & enum itself
+    private double percentDiff;
     private DemographicType targetDemographic;
     private boolean isSeawulf;
     private String argsFilePath;
@@ -73,6 +75,14 @@ public class Job {
         this.numberDistrictings = numberDistrictings;
     }
 
+    @Column(name="iterations")
+    public int getIterations() {
+        return this.iterations;
+    }
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
+    }
+
     @Column(name="compactnessAmount")
     public String getCompactnessAmount() {
         return this.compactnessAmount;
@@ -80,6 +90,15 @@ public class Job {
     public void setCompactnessAmount(String compactnessAmount) {
         this.compactnessAmount = compactnessAmount;
     }
+
+    @Column(name="percentDiff")
+    public double getPercentDiff() {
+        return this.percentDiff;
+    }
+    public void setPercentDiff(double percentDiff) {
+        this.percentDiff = percentDiff;
+    }
+
 
     @Enumerated(EnumType.STRING)
     @Column(name="targetDemographic")

@@ -9,6 +9,7 @@ public class StateDto {
     private String shape;
     private int population;
     private Set<Integer> counties;
+    private int numberDistricts;
     private int canonicalDistrictingId;
 
     /* Properties */
@@ -45,6 +46,13 @@ public class StateDto {
     }
     public void setCounties(Set<Integer> counties) {
         this.counties = counties;
+    }
+
+    public int getNumberDistricts() {
+        return this.numberDistricts;
+    }
+    public void setNumberDistricts(int numberDistricts) {
+        this.numberDistricts = numberDistricts;
     }
 
     public int getCanonicalDistrictingId() {

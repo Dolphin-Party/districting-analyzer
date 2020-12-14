@@ -23,9 +23,9 @@ public class ModelConverter {
 
     public StateDto createStateDto(State state) {
         StateDto dto = new StateDto();
+        BeanUtils.copyProperties(state, dto);
+
         dto.setStateId(state.getId());
-        dto.setName(state.getName());
-        dto.setShape(state.getShape());
         dto.setPopulation(state.getPopulation());
         dto.setCounties(
             new HashSet<Integer>(

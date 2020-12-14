@@ -13,6 +13,7 @@ public class State {
     private int population;
     private String shape;
     private Set<County> counties;
+    private int numberDistricts;
     private Districting canonicalDistricting;
 
     /* Properties */
@@ -55,6 +56,13 @@ public class State {
     }
     public void setShape(String shape) {
         this.shape = shape;
+    }
+
+    public int getNumberDistricts() {
+        return this.numberDistricts;
+    }
+    public void setNumberDistricts(int numberDistricts) {
+        this.numberDistricts = numberDistricts;
     }
 
     @OneToOne

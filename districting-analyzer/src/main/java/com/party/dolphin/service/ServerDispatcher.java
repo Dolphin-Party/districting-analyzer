@@ -132,11 +132,11 @@ public class ServerDispatcher {
         }
 
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("numDistricts", 1);
-        map.put("compactness", 0.2);
-        map.put("iterations", 10);
-        map.put("numDistrictings", 10);
-        map.put("percentDiff", 0.1);
+        map.put("numDistricts", job.getState().getNumberDistricts());
+        map.put("compactness", job.getCompactnessAmount());
+        map.put("iterations", job.getIterations());
+        map.put("numDistrictings", job.getNumberDistrictings());
+        map.put("percentDiff", job.getPercentDiff());
         return writeJsonFile(file, map);
     }
 

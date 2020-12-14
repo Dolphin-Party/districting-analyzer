@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS States (
     `name` varchar(255),
     shape JSON,
     population int(11),
+    numberDistricts int,
     canonicalDistrictingID int
 );
 
@@ -48,7 +49,9 @@ CREATE TABLE IF NOT EXISTS Jobs (
     FOREIGN KEY (stateID) REFERENCES States(ID),
     `status` varchar(255),
     numberDistrictings int,
+    iterations int,
     compactnessAmount varchar(255),
+    percentDiff float,
     targetDemographic varchar(255),
     isSeawulf boolean,
     averageDistricting int,

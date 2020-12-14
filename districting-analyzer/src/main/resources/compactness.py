@@ -1,8 +1,7 @@
-from precinct_graph import PrecinctSubgraph
 from shapely.ops import unary_union
 
 
-def compactness_score(district: PrecinctSubgraph):
+def compactness_score(district: 'PrecinctSubgraph'):
     shapes = [node.shape for node in district.nodes]
 
     district_shape = unary_union(shapes)

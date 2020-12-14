@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 public class ServerDispatcher {
 
     // TODO: Turn all of these into global env. variables/properties
-    public static final String algorithmDirName = "files/algorithm/";
+    public static final String algorithmFileName = "src/main/resources/randomdistricter.py";
     public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
     public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
-    public static final String outputFileName = "out.json";
+    public static final String outputFileName = "results.json";
 
 
     @Autowired
@@ -53,30 +53,30 @@ public class ServerDispatcher {
             return job;
         }
 
-        // if (job.getIsSeawulf())
-        //     job = seawulfController.sendJob(job);
-        // else
-        //     job = runLocally(job);
+        if (job.getIsSeawulf())
+            job = seawulfController.sendJob(job);
+        else
+            job = runLocally(job);
         return job;
     }
 
     public Job checkJobStatus(Job job) {
-        // if (job.getStatus() == JobStatus.running) {
-        //     job.setOutputFilePath(
-        //         String.format(outputDirPathTemplate + outputFileName, job.getId())
-        //     );
+        if (job.getStatus() == JobStatus.running) {
+            job.setOutputFilePath(
+                String.format(outputDirPathTemplate + outputFileName, job.getId())
+            );
 
-        //     if (job.getIsSeawulf())
-        //         job = seawulfController.checkJobStatus(job);
-        //     else
-        //         job = checkLocalJob(job);
+            if (job.getIsSeawulf())
+                job = seawulfController.checkJobStatus(job);
+            else
+                job = checkLocalJob(job);
 
-        //     if (job.getStatus() == JobStatus.finishDistricting) {
-        //         job = readOutputFiles(job);
-        //         job.analyzeJobResults();
-        //         job.setStatus(JobStatus.finishProcessing);
-        //     }
+            // if (job.getStatus() == JobStatus.finishDistricting) {
+            //     job = readOutputFiles(job);
+            //     job.analyzeJobResults();
+            //     job.setStatus(JobStatus.finishProcessing);
         // }
+        }
         return job;
     }
 
@@ -87,6 +87,7 @@ public class ServerDispatcher {
 
     private Job runLocally(Job job) {
         String outputDir = String.format(outputDirPathTemplate, job.getId());
+        job.setOutputFilePath(outputDir + outputFileName);
         if (!createDir(outputDir)) {
             System.out.println("Failed to create output dir");
             job.setStatus(JobStatus.error);
@@ -102,6 +103,7 @@ public class ServerDispatcher {
             outputDir
         );
         pb.redirectErrorStream(true);
+        pb.redirectOutput(new File(job.getOutputFilePath()));
         try {
             process = pb.start();
             job.setStatus(JobStatus.running);

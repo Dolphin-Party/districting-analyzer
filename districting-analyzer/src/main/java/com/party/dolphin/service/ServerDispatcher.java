@@ -20,10 +20,9 @@ public class ServerDispatcher {
     public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
-    public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
-    public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
+    public static final String jobDirPathTemplate = "files/job_%d/";
+    public static final String argsFilePathTemplate = "job_args.json";
     public static final String outputFileName = "results.json";
-
 
     @Autowired
     private JobService jobService;
@@ -45,7 +44,7 @@ public class ServerDispatcher {
             return job;
         }
         job.setArgsFilePath(
-            String.format(argsFilePathTemplate, job.getId())
+            String.format(jobDirPathTemplate + argsFilePathTemplate, job.getId())
         );
         if (!writeArgsFile(job)) {
             System.out.println("Failed to create or write file");
@@ -62,7 +61,7 @@ public class ServerDispatcher {
 
     public Job checkJobStatus(Job job) {
         if (job.getStatus() == JobStatus.running) {
-            String outputFile = String.format(outputDirPathTemplate + outputFileName, job.getId());
+            String outputFile = String.format(jobDirPathTemplate + outputFileName, job.getId());
             job.setOutputFile(new File(outputFile));
 
             if (job.getIsSeawulf())
@@ -85,7 +84,7 @@ public class ServerDispatcher {
     }
 
     private Job runLocally(Job job) {
-        String outputFilePath = String.format(outputDirPathTemplate + outputFileName, job.getId());
+        String outputFilePath = String.format(jobDirPathTemplate + outputFileName, job.getId());
         job.setOutputFile(new File(outputFilePath));
         if (!createDir(job.getOutputFile().getParent())) {
             System.out.println("Failed to create output dir");
@@ -93,7 +92,6 @@ public class ServerDispatcher {
             return job;
         }
 
-        Process process;
         ProcessBuilder pb = new ProcessBuilder(
             "python3",
             algorithmFileName,
@@ -104,9 +102,9 @@ public class ServerDispatcher {
         pb.redirectErrorStream(true);
         pb.redirectOutput(job.getOutputFile());
         try {
-            process = pb.start();
+            pb.start();
             job.setStatus(JobStatus.running);
-            debugProcessOutput(process);
+            //debugProcessOutput(process);
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);

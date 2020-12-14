@@ -58,6 +58,7 @@ public class State {
         this.shape = shape;
     }
 
+    @Column(name="numberDistricts")
     public int getNumberDistricts() {
         return this.numberDistricts;
     }

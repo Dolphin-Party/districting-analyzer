@@ -32,8 +32,8 @@ class PrecinctNode(object):
             res[precinct["id"]] = PrecinctNode(precinct["id"], precinct["vap"],
                                                shape(json["shape"]))
         for edge in json["edges"]:
-            precinct1 = res[edge["id1"]]
-            precinct2 = res[edge["id2"]]
+            precinct1 = res[edge["precinctId"]]
+            precinct2 = res[edge["neighborId"]]
 
             precinct1.adjacent_precincts.add(precinct2)
             precinct2.adjacent_precincts.add(precinct1)

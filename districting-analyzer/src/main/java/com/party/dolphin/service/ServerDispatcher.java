@@ -97,7 +97,7 @@ public class ServerDispatcher {
         Process process;
         ProcessBuilder pb = new ProcessBuilder(
             "python3",
-            "fib.py",
+            algorithmFileName,
             job.getArgsFilePath(),
             job.getPrecinctFilePath(),
             outputDir

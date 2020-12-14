@@ -18,7 +18,9 @@ parser.add_argument('outdir', metavar='O')
 args = parser.parse_args()
 
 #  Unpack JSON files
-precincts: List[PrecinctNode] = json.load(args.data, object_hook=PrecinctNode.from_json)
+#precincts: List[PrecinctNode] = json.load(args.data, object_hook=PrecinctNode.from_json)
+x = json.load(args.data)
+precincts = PrecinctNode.from_json(x)
 params: DistrictingParameters = json.load(args.params, object_hook=DistrictingParameters.from_json)
 
 #  Generate seed districting

@@ -29,8 +29,10 @@ class PrecinctNode(object):
     def from_json(json: dict):
         res = {}
         for precinct in json["precincts"]:
-            res[precinct["id"]] = PrecinctNode(precinct["id"], precinct["vap"],
-                                               shape(json["shape"]))
+            print(precinct["shape"])
+            print(precinct["shape"]["features"])
+            res[precinct["precinctId"]] = PrecinctNode(precinct["precinctId"], precinct["population"],
+                                               shape(precinct["shape"]["features"][0]["geometry"]))
         for edge in json["edges"]:
             precinct1 = res[edge["precinctId"]]
             precinct2 = res[edge["neighborId"]]

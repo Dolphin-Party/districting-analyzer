@@ -149,7 +149,6 @@ public class ServerDispatcher {
             return true;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
         List<PrecinctDto> precincts = job.getState()
             .getCounties().stream()
             .map(c -> c.getPrecincts())
@@ -157,18 +156,9 @@ public class ServerDispatcher {
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
         for (PrecinctDto p : precincts) {
-            try {
-                Map<String, String> geojson = mapper.readValue(p.getShape(), Map.class);
-                List<String> features = mapper.readValue(geojson.get("features"), List.class);
-                Map<String, String> feature = mapper.readValue(features.get(0), Map.class);
-                Map<String, String> geometry = mapper.readValue(feature.get("geometry"), Map.class);
-                String coordinates = geometry.get("coordinates");
-                p.setShape(coordinates);
-            } catch (JsonProcessingException ex) {
-                System.out.println(ex.getMessage());
+            if (!p.convertShapeToCoordinates())
                 return false;
             }
-        }
         List<PrecinctNeighborDto> precinctEdges = precincts.stream()
             .map(p -> p.getEdges())
             .flatMap(l -> l.stream())

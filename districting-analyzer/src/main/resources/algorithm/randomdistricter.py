@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 import seed_district_generator
+import math
 from districting_job import generate_districting
 from parameters import DistrictingParameters
 from precinct_graph import *
@@ -36,7 +37,8 @@ if __name__ == '__main__':
     comm.barrier()
     seed_districting = comm.bcast(seed_districting, root=0)
     idx = [x for x in range(params.num_districtings)]
-    idx = [idx[x:x+comm.size] for x in range(0, len(idx), comm.size)]
+    sublist_n = math.ceil(len(idx) / comm.size)
+    idx = [idx[x:x+sublist_n] for x in range(0, len(idx), sublist_n)]
     idx = comm.scatter(idx, root=0)
     comm.barrier()
 

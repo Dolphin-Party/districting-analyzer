@@ -36,6 +36,7 @@ if __name__ == '__main__':
     comm.barrier()
     seed_districting = comm.bcast(seed_districting, root=0)
     idx = [x for x in range(params.num_districtings)]
+    idx = [idx[x:x+comm.size] for x in range(0, len(idx), comm.size)]
     idx = comm.scatter(idx, root=0)
     comm.barrier()
 

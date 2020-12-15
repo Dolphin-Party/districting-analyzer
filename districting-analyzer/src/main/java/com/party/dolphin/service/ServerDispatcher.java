@@ -73,6 +73,12 @@ public class ServerDispatcher {
                 job = readOutputFiles(job);
                 //job.analyzeJobResults();
                 job.setStatus(JobStatus.finishProcessing);
+            } else if (job.getStatus() == JobStatus.error) {
+                try {
+                    deleteFiles(job.getOutputFile());
+                } catch (IOException ioex) {
+                    System.err.println(ioex.getMessage());
+                }
             }
         }
         return job;

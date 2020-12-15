@@ -33,6 +33,39 @@ public class SeaWulfController {
     }
 
     public Job checkJobStatus(Job job) {
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            checkSeaWulfJobScript,
+            Integer.toString(job.getSeawulfJobId())
+        );
+        //pb.redirectErrorStream(true);
+
+        String jobStatusLine;
+        try {
+            process = pb.start();
+            jobStatusLine = processOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+        return job;
+    }
+
+        int i = jobStatusLine.indexOf('=');
+        int j = jobStatusLine.indexOf(' ', i);
+        jobStatusLine = jobStatusLine.substring(i+1, j);
+        System.err.println("Slurm job status: "+ jobStatusLine);
+        switch (jobStatusLine) {
+            case "PENDING":
+            case "RUNNING":
+                break;
+            case "COMPLETED":
+                job.setStatus(JobStatus.finishDistricting);
+                if (getOutputData(job))
+                    break;
+            case "FAILED":
+            default:
+                job.setStatus(JobStatus.error);
+        }
         return job;
     }
 
@@ -75,13 +108,6 @@ public class SeaWulfController {
             job.setStatus(JobStatus.error);
             return job;
         }
-        try {
-            process.waitFor();
-        } catch (InterruptedException intEx) {
-            process.destroy();
-            job.setStatus(JobStatus.error);
-            return job;
-        }
 
         seawulfJobId = seawulfJobId.trim();
         seawulfJobId = seawulfJobId.substring(seawulfJobId.lastIndexOf(' ')+1);
@@ -119,10 +145,6 @@ public class SeaWulfController {
     }
 
     private boolean getOutputData(Job job) {
-        return true;
-    }
-
-    private boolean readOutputData(Job job) {
         return true;
     }
 

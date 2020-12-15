@@ -39,11 +39,11 @@ public class ServerDispatcher {
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
         if (!job.getIsSeawulf()) {
-        if (!writePrecinctsFile(job)) {
-            System.out.println("Failed to create or write file");
-            job.setStatus(JobStatus.error);
-            return job;
-        }
+            if (!writePrecinctsFile(job)) {
+                System.out.println("Failed to create or write file");
+                job.setStatus(JobStatus.error);
+                return job;
+            }
         }
         job.setArgsFilePath(
             String.format(jobDirPathTemplate + argsFileName, job.getId())
@@ -90,7 +90,7 @@ public class ServerDispatcher {
         if (job.getIsSeawulf())
             seawulfController.cancelJob(job);
         else
-        job.setStatus(JobStatus.stopped);
+            job.setStatus(JobStatus.stopped);
         return job;
     }
 

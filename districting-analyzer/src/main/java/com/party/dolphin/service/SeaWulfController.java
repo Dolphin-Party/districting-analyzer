@@ -64,6 +64,9 @@ public class SeaWulfController {
                 job.setStatus(JobStatus.finishDistricting);
                 if (getOutputData(job))
                     break;
+            case "CANCELLED":
+                job.setStatus(JobStatus.stopped);
+                break;
             case "FAILED":
             default:
                 job.setStatus(JobStatus.error);
@@ -113,6 +116,7 @@ public class SeaWulfController {
 
         seawulfJobId = seawulfJobId.trim();
         seawulfJobId = seawulfJobId.substring(seawulfJobId.lastIndexOf(' ')+1);
+        System.err.println("SeaWulf job id: " + seawulfJobId);
         job.setSeawulfJobId(
             Integer.parseInt(seawulfJobId)
         );

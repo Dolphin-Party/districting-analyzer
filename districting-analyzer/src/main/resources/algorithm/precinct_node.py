@@ -1,5 +1,6 @@
 from typing import Set
 from shapely.geometry import shape
+import json as j
 
 
 class PrecinctNode(object):
@@ -29,8 +30,9 @@ class PrecinctNode(object):
     def from_json(json: dict):
         res = {}
         for precinct in json["precincts"]:
+            s = j.loads(precinct["shape"])
             res[precinct["precinctId"]] = PrecinctNode(precinct["precinctId"], precinct["population"],
-                                                       shape(precinct["shape"]["features"][0]["geometry"]))
+                                                       shape(s))
         for edge in json["edges"]:
             precinct1 = res[edge["precinctId"]]
             precinct2 = res[edge["neighborId"]]

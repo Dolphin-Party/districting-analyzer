@@ -2,6 +2,7 @@ package com.party.dolphin.model;
 
 import com.party.dolphin.model.enums.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,13 +19,14 @@ public class Job {
     private State state;
     private int numberDistrictings;
     private int iterations;
-    private String compactnessAmount; // TODO: annotations for enum & enum itself
+    private double compactnessAmount; // TODO: annotations for enum & enum itself
     private double percentDiff;
     private DemographicType targetDemographic;
     private boolean isSeawulf;
+    private int seawulfJobId;
     private String argsFilePath;
     private String precinctFilePath;
-    private String outputFilePath;
+    private File outputFile;
     private List<Districting> districtings;
     private List<BoxWhisker> boxWhiskers;
     private int averageDistricting;
@@ -84,10 +86,10 @@ public class Job {
     }
 
     @Column(name="compactnessAmount")
-    public String getCompactnessAmount() {
+    public double getCompactnessAmount() {
         return this.compactnessAmount;
     }
-    public void setCompactnessAmount(String compactnessAmount) {
+    public void setCompactnessAmount(double compactnessAmount) {
         this.compactnessAmount = compactnessAmount;
     }
 
@@ -117,6 +119,15 @@ public class Job {
         this.isSeawulf = isSeawulf;
     }
 
+    @Column(name="seawulfJobId")
+    public int getSeawulfJobId() {
+        return this.seawulfJobId;
+    }
+
+    public void setSeawulfJobId(int seawulfJobId) {
+        this.seawulfJobId = seawulfJobId;
+    }
+
     @Transient
     public String getArgsFilePath() {
         return this.argsFilePath;
@@ -134,11 +145,11 @@ public class Job {
     }
 
     @Transient
-    public String getOutputFilePath() {
-        return this.outputFilePath;
+    public File getOutputFile() {
+        return this.outputFile;
     }
-    public void setOutputFilePath(String outputFilePath) {
-        this.outputFilePath = outputFilePath;
+    public void setOutputFile(File file) {
+        this.outputFile = file;
     }
 
     @OneToMany(mappedBy="job", cascade=CascadeType.ALL)

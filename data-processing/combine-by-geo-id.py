@@ -64,7 +64,9 @@ def process_state(state_name):
                 precinctId = geoid[5:]
                 return ('%s%06s' % (countyId, precinctId)).replace(' ', '0')
             geoids = [format_geoid(r) for r in shp_file['GEOID10'].values.tolist()]
+            #simplified_geometries = shp_file['geometry'].simplify(0.0001)
             shp_file[primary_key] = geoids 
+            #shp_file['simplified_geometry'] = simplified_geometries
             precinct_geos = precinct_geos.append(shp_file[[primary_key, 'geometry']])
 
             # generate sql for geo data

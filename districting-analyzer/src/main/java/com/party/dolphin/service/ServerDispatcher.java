@@ -17,13 +17,12 @@ public class ServerDispatcher {
 
     // TODO: Turn all of these into global env. variables/properties
     public static final String algorithmFileName = "src/main/resources/randomdistricter.py";
-    public static final String sendFileScript = "src/main/resources/sendFile.sh";
+    //public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
-    public static final String argsFilePathTemplate = "files/tmp/job_args_%d.json";
-    public static final String outputDirPathTemplate = "files/tmp/job_%d_out/";
+    public static final String jobDirPathTemplate = "files/job_%d/";
+    public static final String argsFileName = "job_args.json";
     public static final String outputFileName = "results.json";
-
 
     @Autowired
     private JobService jobService;
@@ -39,13 +38,15 @@ public class ServerDispatcher {
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
+        if (!job.getIsSeawulf()) {
         if (!writePrecinctsFile(job)) {
             System.out.println("Failed to create or write file");
             job.setStatus(JobStatus.error);
             return job;
         }
+        }
         job.setArgsFilePath(
-            String.format(argsFilePathTemplate, job.getId())
+            String.format(jobDirPathTemplate + argsFileName, job.getId())
         );
         if (!writeArgsFile(job)) {
             System.out.println("Failed to create or write file");
@@ -54,7 +55,7 @@ public class ServerDispatcher {
         }
 
         if (job.getIsSeawulf())
-            job = seawulfController.sendJob(job);
+            job = seawulfController.runJob(job);
         else
             job = runLocally(job);
         return job;
@@ -62,52 +63,59 @@ public class ServerDispatcher {
 
     public Job checkJobStatus(Job job) {
         if (job.getStatus() == JobStatus.running) {
-            job.setOutputFilePath(
-                String.format(outputDirPathTemplate + outputFileName, job.getId())
-            );
+            String outputFile = String.format(jobDirPathTemplate + outputFileName, job.getId());
+            job.setOutputFile(new File(outputFile));
 
             if (job.getIsSeawulf())
                 job = seawulfController.checkJobStatus(job);
             else
                 job = checkLocalJob(job);
 
-            // if (job.getStatus() == JobStatus.finishDistricting) {
-            //     job = readOutputFiles(job);
-            //     job.analyzeJobResults();
-            //     job.setStatus(JobStatus.finishProcessing);
-        // }
+            if (job.getStatus() == JobStatus.finishDistricting) {
+                job = readOutputFiles(job);
+                //job.analyzeJobResults();
+                job.setStatus(JobStatus.finishProcessing);
+            } else if (job.getStatus() == JobStatus.error) {
+                try {
+                    deleteFiles(job.getOutputFile());
+                } catch (IOException ioex) {
+                    System.err.println(ioex.getMessage());
+                }
+            }
         }
         return job;
     }
 
     public Job cancelJob(Job job) {
+        if (job.getIsSeawulf())
+            seawulfController.cancelJob(job);
+        else
         job.setStatus(JobStatus.stopped);
         return job;
     }
 
     private Job runLocally(Job job) {
-        String outputDir = String.format(outputDirPathTemplate, job.getId());
-        job.setOutputFilePath(outputDir + outputFileName);
-        if (!createDir(outputDir)) {
+        String outputFilePath = String.format(jobDirPathTemplate + outputFileName, job.getId());
+        job.setOutputFile(new File(outputFilePath));
+        if (!createDir(job.getOutputFile().getParent())) {
             System.out.println("Failed to create output dir");
             job.setStatus(JobStatus.error);
             return job;
         }
 
-        Process process;
         ProcessBuilder pb = new ProcessBuilder(
             "python3",
-            "fib.py",
+            algorithmFileName,
             job.getArgsFilePath(),
             job.getPrecinctFilePath(),
-            outputDir
+            job.getOutputFile().getParent()
         );
         pb.redirectErrorStream(true);
-        pb.redirectOutput(new File(job.getOutputFilePath()));
+        pb.redirectOutput(job.getOutputFile());
         try {
-            process = pb.start();
+            pb.start();
             job.setStatus(JobStatus.running);
-            debugProcessOutput(process);
+            //debugProcessOutput(process);
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
@@ -117,8 +125,7 @@ public class ServerDispatcher {
     }
 
     private Job checkLocalJob(Job job) {
-        File file = new File(job.getOutputFilePath());
-        if (!file.exists())
+        if (!job.getOutputFile().exists())
             return job;
         // else file finished
         job.setStatus(JobStatus.finishDistricting);
@@ -155,12 +162,19 @@ public class ServerDispatcher {
             .flatMap(p -> p.stream())
             .map(p -> modelConverter.createPrecinctDto(p))
             .collect(Collectors.toList());
+        for (PrecinctDto p : precincts) {
+            if (!p.convertShapeToCoordinates())
+                return false;
+        }
         List<PrecinctNeighborDto> precinctEdges = precincts.stream()
             .map(p -> p.getEdges())
             .flatMap(l -> l.stream())
             .collect(Collectors.toList());
         precincts.stream()
-            .forEach(p -> p.setNeighbors(null));
+            .forEach(p -> {
+                p.setNeighbors(null);
+                p.setDemographics(null);
+            });
 
         Map<String, Object> map = new HashMap<String, Object>();
         System.out.println("Num. precincts: " + precincts.size());
@@ -204,9 +218,8 @@ public class ServerDispatcher {
     }
 
     /** Read file **/
-    private Job readOutputFiles(Job job) {
-        File file = new File(job.getOutputFilePath());
-        if (!file.exists()) {
+    public Job readOutputFiles(Job job) {
+        if (!job.getOutputFile().exists()) {
             System.out.println("File not found");
             job.setStatus(JobStatus.error);
             return job;
@@ -215,7 +228,7 @@ public class ServerDispatcher {
         ObjectMapper mapper = new ObjectMapper();
         String[][][] ids;
         try {
-            ids = mapper.readValue(file, String[][][].class);
+            ids = mapper.readValue(job.getOutputFile(), String[][][].class);
         } catch (IOException ioex) {
             System.out.println(ioex.getMessage());
             job.setStatus(JobStatus.error);
@@ -225,44 +238,59 @@ public class ServerDispatcher {
         ArrayList<Districting> districtings = new ArrayList<Districting>(job.getNumberDistrictings());
         for (String[][] districting : ids) {
             Districting d = parseDistrictingDistricts(districting, job);
-            d = jobService.saveDistricting(d);
             districtings.add(d);
         }
         job.setDistrictings(districtings);
         job = jobService.saveJob(job);
+
+        try {
+            deleteFiles(job.getOutputFile());
+        } catch (IOException ioex) {
+            System.err.println(ioex.getMessage());
+        }
         return job;
     }
 
-    private Districting parseDistrictingDistricts(String[][] districting, Job job) {
-        DistrictingDto dto = new DistrictingDto();
-        dto.setJobId(job.getId());
-        dto.setTargetDemographic(job.getTargetDemographic());
+    private Districting parseDistrictingDistricts(String[][] districtingDistricts, Job job) {
+        Districting districting = new Districting();
+        districting = jobService.saveDistricting(districting);
+        districting.setJob(job);
+        districting.setTargetDemographic(job.getTargetDemographic());
+
         ArrayList<District> districts = new ArrayList<District>();
-        for (String[] district : districting) {
+        for (String[] district : districtingDistricts) {
             District d = parseDistrictPrecincts(district);
+            d.setDistricting(districting);
             d = jobService.saveDistrict(d);
             districts.add(d);
         }
-        dto.setDistricts(
-            districts.stream()
-                .map(di -> di.getId())
-                .collect(Collectors.toList())
-        );
-        return dtoConverter.createDistricting(dto);
+
+        districting.setDistricts(districts);
+        districting = jobService.saveDistricting(districting);
+        return districting;
     }
 
-    private District parseDistrictPrecincts(String[] district) {
+    private District parseDistrictPrecincts(String[] districtPrecincts) {
         DistrictDto dto = new DistrictDto();
         HashSet<String> precincts = new HashSet<String>();
-        for (String precinctId : district) {
+        for (String precinctId : districtPrecincts) {
             precincts.add(precinctId);
         }
         dto.setPrecincts(precincts);
-        return dtoConverter.createDistrict(dto);
+        return dtoConverter.createNewDistrict(dto);
     }
 
-    // Debug, for printing process stdout/stderr
-    private void debugProcessOutput(Process process) {
+    private void deleteFiles(File file) throws IOException {
+        if (file.isDirectory()) {
+            for (File innerFile : file.listFiles()) {
+                deleteFiles(innerFile);
+            }
+        }
+        if (!file.delete())
+            throw new IOException("Could not delete file: "+ file.getAbsolutePath());
+    }
+
+    private String processOutput(Process process) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder builder = new StringBuilder();
@@ -271,11 +299,10 @@ public class ServerDispatcher {
                 builder.append(line);
                 builder.append("\n");
             }
-            String result = builder.toString();
-            System.out.println(result);
+            return builder.toString();
         } catch (IOException ioex) {
             ioex.printStackTrace();
+            return null;
         }
     }
-
 }

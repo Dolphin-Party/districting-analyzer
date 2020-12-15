@@ -50,10 +50,11 @@ CREATE TABLE IF NOT EXISTS Jobs (
     `status` varchar(255),
     numberDistrictings int,
     iterations int,
-    compactnessAmount varchar(255),
-    percentDiff float,
+    compactnessAmount decimal,
+    percentDiff decimal,
     targetDemographic varchar(255),
     isSeawulf boolean,
+    seawulfJobId int,
     averageDistricting int,
     extremeDistricting int
 );
@@ -114,6 +115,10 @@ CREATE TABLE IF NOT EXISTS BoxWhiskerIdSequence (
 );
 
 INSERT INTO JobIdSequence VALUE (1);
-INSERT INTO DistrictingIdSequence VALUE (1);
+INSERT INTO DistrictingIdSequence VALUE (5);
 INSERT INTO DistrictIdSequence VALUE (1);
 INSERT INTO BoxWhiskerIdSequence VALUE (1);
+
+ALTER TABLE Counties ADD INDEX (stateID);
+ALTER TABLE Precincts ADD INDEX (countyID);
+ALTER TABLE Districts ADD INDEX (districtingID);

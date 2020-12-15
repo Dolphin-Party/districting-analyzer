@@ -3,6 +3,9 @@ package com.party.dolphin.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.party.dolphin.model.enums.DemographicType;
 
 import java.util.*;
@@ -69,4 +72,24 @@ public class PrecinctDto {
                     .collect(Collectors.toList());
     }
 
+    // This function is probably brittle,
+    // but we only need it to work once per state
+    public boolean convertShapeToCoordinates() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Map<
+                String, List<
+                    Map<String, String>
+                >
+            > geojson = mapper.readValue(this.shape, Map.class);
+            String coordinates = mapper.writeValueAsString(
+                geojson.get("features").get(0).get("geometry")
+            );
+            this.shape = coordinates;
+        } catch (JsonProcessingException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

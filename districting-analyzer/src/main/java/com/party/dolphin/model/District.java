@@ -45,7 +45,12 @@ public class District implements Comparable<District> {
     }
 
     @ManyToMany
-    @JoinTable(name="DistrictPrecincts")
+    @JoinTable(
+        name="DistrictPrecincts",
+        joinColumns={
+            @JoinColumn(name="districtID", referencedColumnName="ID", nullable=false)},
+        inverseJoinColumns={
+            @JoinColumn(name="precinctID", referencedColumnName="ID", nullable=false)})
     public Set<Precinct> getPrecincts() {
         return this.precincts;
     }

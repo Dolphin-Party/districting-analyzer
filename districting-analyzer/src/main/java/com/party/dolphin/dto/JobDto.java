@@ -11,7 +11,7 @@ public class JobDto {
     private int stateId;
     private int numberDistrictings;
     private int iterations;
-    private String compactnessAmount; // TODO: See Job.java
+    private double compactnessAmount; // TODO: See Job.java
     private double percentDiff;
     private DemographicType targetDemographic; // TODO: enum or String?
     private boolean isSeawulf;
@@ -56,10 +56,10 @@ public class JobDto {
         this.iterations = iterations;
     }
 
-    public String getCompactnessAmount() {
+    public double getCompactnessAmount() {
         return this.compactnessAmount;
     }
-    public void setCompactnessAmount(String compactnessAmount) {
+    public void setCompactnessAmount(double compactnessAmount) {
         this.compactnessAmount = compactnessAmount;
     }
 

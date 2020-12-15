@@ -19,7 +19,25 @@ export default class JobHistoryTab extends Component<{}, State> {
         jobs:[],
         noJobsText: this.props.noJobsText,
         isLoading: true,
-        stateDict: {5: "Arkansas", 37: "North Carolina", 51: "Virginia"}
+        stateDict: {5: "Arkansas", 37: "North Carolina", 51: "Virginia"},
+        demographicDict: {
+          black: "Black/African American",
+          whiteNonHispanic:'White Non-Hispanic',
+          hispanic:'Hispanic',
+          asian:'Asian',
+          americanIndian:'American Indian',
+          pacific:'Pacific',
+          twoOrMoreRaces:'Two Or More Races'
+        },
+        statusDict: {
+          notStarted: "Not Started",
+          running: "Running",
+          stopped: "Stopped",
+          error: "Error",
+          finishDistricting: "Finished Districting",
+          finishProcessing: "Finished Processsing"
+        }
+
       };
       this.handleLoad = this.handleLoad.bind(this)
       this.jobsAvailability = this.jobsAvailability.bind(this)
@@ -55,7 +73,6 @@ jobButtonOptions() {
   }
 
   shouldComponentUpdate(){
-    console.log("Component has updated!")
     return true
   }
 
@@ -90,12 +107,10 @@ jobButtonOptions() {
     const cancelButton= document.getElementsByClassName('cancelButton');
     const { isLoading, stateData } = this.state;
     if (isLoading) {
-      console.log(this.state.jobs)
       return <div>Loading...</div>;
     }else{
     return (
       <div className='jobs-list'>
-        <p className='noJobsText' style={this.props.noJobsText}>You currently have no jobs.</p>
         {this.state.jobs.map((job, key) => (
           <div
             key={key}
@@ -114,7 +129,7 @@ jobButtonOptions() {
                 </tr>
                 <tr>
                   <td>Status</td>
-                  <td>{job.status}</td>
+                  <td>{this.state.statusDict[job.status]}</td>
                 </tr>
                 <tr>
                   <td>Number of Districtings:</td>
@@ -126,7 +141,7 @@ jobButtonOptions() {
                 </tr>
                 <tr>
                   <td>Racial/Ethnic Demographic:</td>
-                  <td> {job.targetDemographic}</td>
+                  <td> {this.state.demographicDict[job.targetDemographic]}</td>
                 </tr>
                 <tr>
                   <td>% of voting age population:</td>

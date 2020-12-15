@@ -32,6 +32,7 @@ export default class Home extends Component<{}, State> {
       districtingMenuStyle: {visibility: 'hidden'},
       districtingState: null,
       districtingOn: false,
+      districtingJobId: null,
       boxWhiskerJob: {
         jobId: '',
         status: '',
@@ -93,10 +94,10 @@ export default class Home extends Component<{}, State> {
   }
 
   handleBoxWhiskerSelect = (data, job) => {
-    console.log("handling districting display")
     this.setState({boxWhiskerJob: data});
     this.setState({districtingMenuStyle: {visibility: 'visible'}, districtingOn: true});
     this.setState({districtingState: job.stateId})
+    this.setState({districtingJobId: job.jobId})
   }
 
   render() {
@@ -107,7 +108,7 @@ export default class Home extends Component<{}, State> {
       return (
         <div>
         <LeafletMap
-          districtingMenuStyle={this.state.districtingMenuStyle} districtingState={this.state.districtingState} districtingOn={this.state.districtingOn}
+          districtingMenuStyle={this.state.districtingMenuStyle} districtingState={this.state.districtingState} districtingOn={this.state.districtingOn} districtingJobId={this.state.districtingJobId}
           stateData={this.state.stateData} currState={this.state.currState} currDem={this.state.currDem}
           onStateSelect={this.handleStateSelect} onDemSelect={this.handleDemSelect} onReset={this.handleReset} handleHeatMapSelect={this.handleHeatMapSelect}/>
         <SeawulfClientControl currState={this.state.currState} currDem={this.state.currDem} submitAvailability={this.state.submitAvailability} warnText={this.state.warnText} onBoxWhiskerSelect={this.handleBoxWhiskerSelect}/>

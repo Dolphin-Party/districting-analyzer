@@ -9,7 +9,11 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import ToggleButton from 'react-bootstrap/ToggleButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { makeStyles} from '@material-ui/core/styles';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import purple from '@material-ui/core/colors/purple';
+import { green } from '@material-ui/core/colors';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Checkbox} from '@material-ui/core';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
 import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
 import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
@@ -18,6 +22,9 @@ import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
 import northCarolinaDistricts from '../assets/geojson/northCarolinaDistricts.json'
 import alabama from '../assets/geojson/alabama.json'
+import florida from '../assets/geojson/florida.json'
+import tennessee from '../assets/geojson/tennessee.json'
+import georgia from '../assets/geojson/georgia.json'
 
 import radioButton from '../components/radioButton'
 import union from '@turf/union'
@@ -45,6 +52,72 @@ const layerControl= document.getElementsByClassName('leaflet-control-layers');
 const heatMapLegend= document.getElementsByClassName('heatMapLegend');
 const virginiaPrecinctLayer= document.getElementsByClassName('virginiaPrecinctLayer');
 
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#0000ff',
+    },
+    secondary: {
+      main: '#ffa500',
+    },
+    default: {
+      main: '#ff0000',
+    },
+    inherit: {
+      main: '#008000',
+    }
+  },
+});
+
+const RandomCheckbox = withStyles({
+  root: {
+    color: "#00FF00",
+    '&$checked': {
+      color: "#00FF00",
+    },
+  },
+  checked: {},
+})(props => <Checkbox color="default" {...props} />);
+
+const AverageCheckbox = withStyles({
+  root: {
+    color: '#0000ff',
+    '&$checked': {
+      color: '#0000ff',
+    },
+  },
+  checked: {},
+})(props => <Checkbox color="default" {...props} />);
+
+const ExtremeCheckbox = withStyles({
+  root: {
+    color: "#ffa500",
+    '&$checked': {
+      color: "#ffa500",
+    },
+  },
+  checked: {},
+})(props => <Checkbox color="default" {...props} />);
+
+const MinimumCheckbox = withStyles({
+  root: {
+    color: "#990000",
+    '&$checked': {
+      color: "#990000",
+    },
+  },
+  checked: {},
+})(props => <Checkbox color="default" {...props} />);
+
+
+const themeDict = {
+  Random: "primary",
+  Average: "secondary",
+  Extreme: "palette.inherit",
+  Minimum: "palette.default"
+}
+
 export default class LeafletMap extends Component<{}, State> {
   constructor(props) {
     super(props);
@@ -55,6 +128,15 @@ export default class LeafletMap extends Component<{}, State> {
       lng: -95.712891,
       zoom: 5,
       mapInfo: {text1: "", text2: "", text3: "", text4: "", text5: "", text6: "", text7: "", text8: ""},
+      demographicDict: {
+        black: "Black/African American",
+        whiteNonHispanic:'White Non-Hispanic',
+        hispanic:'Hispanic',
+        asian:'Asian',
+        americanIndian:'Native American',
+        pacific:'Pacific',
+        twoOrMoreRaces:'Two Or More Races'
+      },
       stateDensity: " ",
       statePopulation: " ",
       stateNumDistricts: " ",
@@ -63,6 +145,7 @@ export default class LeafletMap extends Component<{}, State> {
       isLoading: true,
       precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
       // precincts: {arkansas: [], virginia: [], northCarolina: []},
+      // districts: {arkansas: [], virginia: [], northCarolina: []},
       districts: {arkansas: arkansasDistricts, virginia: virginiaDistricts, northCarolina: northCarolinaDistricts},
       stateDict: {51: 0, 37:1, 5:2},
       precinctDisplay: false,
@@ -93,8 +176,15 @@ export default class LeafletMap extends Component<{}, State> {
       heatMapLegendStyle: {visibility: 'hidden'},
       districtingMenuStyle: {visibility: 'visible'},
       districtingState: this.props.districtingState,
-      currentDist: [],
+      currentDist: [alabama, florida, georgia, tennessee],
       selectedDistricting: null,
+      districtingJobId: this.props.districtingJobId,
+      checkedDist: {
+        Random: false,
+        Average: false,
+        Extreme: false,
+        Minimum: false
+      },
       precinctColor: '#3B2B59',
       stateDefaultStyle: {
         color: '#3B2B59',
@@ -122,6 +212,36 @@ export default class LeafletMap extends Component<{}, State> {
         fillColor: "white",
         fillOpacity: 0.5,
       },
+      districtingStyle:  {
+        0: {
+        color: '#00FF00',
+        weight: 2,
+        fillColor: "transparent",
+        fillOpacity: 0,
+        },
+        1: {
+        color: '#0000ff',
+        weight: 2,
+        fillColor: "transparent",
+        fillOpacity: 0,
+        },
+        2: {
+        color: '#ffa500',
+        weight: 2,
+        fillColor: "transparent",
+        fillOpacity: 0,
+        },
+        3: {
+        color: '#990000',
+        weight: 2,
+        fillColor: "transparent",
+        fillOpacity: 0,
+        }
+      },
+      defaultDistrictingStyle: {
+        color: 'transparent',
+        fillColor: "transparent",
+      }
     };
     this.resetMap = this.resetMap.bind(this);
     this.resetPrecinct = this.resetPrecinct.bind(this);
@@ -130,6 +250,7 @@ export default class LeafletMap extends Component<{}, State> {
     this.getPrecinctColor = this.getPrecinctColor.bind(this)
     this.getStateData = this.getStateData.bind(this)
     this.componentDidUpdate = this.componentDidUpdate.bind(this)
+    this.getdistrictingStyle = this.getdistrictingStyle.bind(this)
   }
 
   componentDidUpdate(prevProps){
@@ -151,9 +272,6 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   highlightFeature = (e) => {
-    console.log("highligthing feature")
-    console.log("calling getDistricting")
-    this.getDistricting()
     var layer = e.target;
     this.updateMapInfo("State: ", layer.feature.properties.name, "Population: ", layer.feature.properties.population, "Number of Districts: ", layer.feature.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateDensity=layer.feature.properties.density
@@ -275,30 +393,31 @@ export default class LeafletMap extends Component<{}, State> {
       }
     }else if(this.props.districtingOn){
       // const d = feature.properties.random.districtID -- something like this
-      const d = feature.properties.districtID
-      var color = d > 15 ? '#cbc7d4' :
-          d > 14  ? '#08ff8b' :
-          d > 13  ? '#5df5ae' :
-          d > 12  ? '#1de085' :
-          d > 11  ? '#00c468' :
-          d > 10  ? '#0d7343' :
-          d > 9  ? '#54876f' :
-         d > 8  ? '#1b4332' :
-         d > 7  ? '#2d6a4f' :
-         d > 6  ? '#40916c' :
-         d > 5  ? '#52b788' :
-         d > 4  ? '#74c69d' :
-         d > 3  ? '#95d5b2' :
-         d > 2  ? '#b7e4c7' :
-         d > 1  ? '#d8f3dc' :
-                  '#d8f3dc';
-      return {
-        weight: 2,
-        color: color,
-        dashArray: '',
-        fillColor: color,
-        fillOpacity: 1.0,
-      }
+      // const d = feature.properties.districtID
+      // var color = d > 15 ? '#cbc7d4' :
+      //     d > 14  ? '#08ff8b' :
+      //     d > 13  ? '#5df5ae' :
+      //     d > 12  ? '#1de085' :
+      //     d > 11  ? '#00c468' :
+      //     d > 10  ? '#0d7343' :
+      //     d > 9  ? '#54876f' :
+      //    d > 8  ? '#1b4332' :
+      //    d > 7  ? '#2d6a4f' :
+      //    d > 6  ? '#40916c' :
+      //    d > 5  ? '#52b788' :
+      //    d > 4  ? '#74c69d' :
+      //    d > 3  ? '#95d5b2' :
+      //    d > 2  ? '#b7e4c7' :
+      //    d > 1  ? '#d8f3dc' :
+      //             '#d8f3dc';
+      // return {
+      //   weight: 2,
+      //   color: color,
+      //   dashArray: '',
+      //   fillColor: color,
+      //   fillOpacity: 1.0,
+      // }
+      return this.state.precinctDefaultStyle
     }else{
       return this.state.precinctDefaultStyle
     }
@@ -318,8 +437,10 @@ export default class LeafletMap extends Component<{}, State> {
     //   union = turf.union(poly1, poly2, union);
     // }
     //
-    // this.setState({currentDist: [mergedDistrict]})
+    // this.setState({currentDist: [alabama, florida, georgia, tennessee]})
     // console.log("New Union performed ", mergedDistrict)
+
+    // GET REQUESTS FOR DISTRICTINGS HERE
   }
 
   getTargetDemographicPopulation(targetDem, targetPop){
@@ -370,11 +491,39 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   districtingOn(){
+    // this.getDistricting()
     this.setState({districtingMenuStyle: {visibility: 'visible'}})
   }
 
   handleDistrictingRadioOption(e, option){
+    this.getDistricting()
     this.setState({selectedDistricting: option})
+    var dist = this.state.checkedDist
+    if (dist[option]==true){
+        dist[option] = false
+    }else{
+      dist[option] = true
+    }
+    this.setState({checkedDist: dist})
+    var optionDict = {"Random": 0, "Average": 1, "Extreme": 2, "Minimum": 3}
+    // var distStyle = this.state.districtingStyle[optionDict[option]]
+    // console.log("distStyle ", distStyle)
+    // if (distStyle.visibility == 'visible'){
+    //   distStyle.visibility = 'hidden'
+    // }else{
+    //   distStyle.visibility = 'visible'
+    // }
+    // this.state.districtingStyle[optionDict[option]] = distStyle
+  }
+
+  getdistrictingStyle(dist, i){
+    // var optionDict = {"Random": 0, "Average": 1, "Extreme": 2, "Minimum": 3}
+    var optionDict = {0: "Random", 1:"Average", 2:"Extreme", 3:"Minimum"}
+    if(this.state.checkedDist[optionDict[dist]]){
+      return this.state.districtingStyle[dist]
+    }else{
+      return this.state.defaultDistrictingStyle
+    }
   }
 
   render() {
@@ -395,6 +544,15 @@ export default class LeafletMap extends Component<{}, State> {
     const camelcaseStates = ['virginia', 'northCarolina']
     const dropdownDemographics = ['Black or African American', 'Non-Hispanic White', 'Hispanic and Latino', 'Asian', 'Native Americans and Alaska Natives','Native Hawaiians and Other Pacific Islanders', 'Two or more races' ]
     const districtingTypes = ['Random', 'Average', 'Extreme', 'Minimum']
+    const GreenCheckbox = withStyles({
+      root: {
+        color: green[400],
+        '&$checked': {
+          color: green[600],
+        },
+      },
+      checked: {},
+    })((props) => <Checkbox color="default" {...props} />);
 
     return (
       <div className='leftside'>
@@ -421,18 +579,32 @@ export default class LeafletMap extends Component<{}, State> {
           </Dropdown>
           <Button className="button" style={this.state.heatMapButton} onClick={(e) => this.heatMapOn(e)}>Heat Map</Button>
           <p className='currMap-Info'> Selected State: {this.props.currState}</p>
-          <p className='currMap-Info'> Selected Demographic: {this.props.currDem}</p>
+          <p className='currMap-Info'> Selected Demographic: {this.state.demographicDict[this.props.currDem]}</p>
         </div>
       <div className='leaflet-container'>
         <Map center={position} zoom={this.state.zoom} ref={mapRef} onClick={this.mapClick}>
         <div className='districtingMenu' style={this.props.districtingMenuStyle}>
+          <MuiThemeProvider theme={theme}>
             <FormControl component="fieldset"><FormLabel component="legend">Districtings</FormLabel>
-                {districtingTypes.map((type, i, array) =>
-                  <RadioGroup value={this.state.selectedDistricting}>
-                    <FormControlLabel value={type} control={<Radio />} label={type} onClick={(e) => this.handleDistrictingRadioOption(e, type)}/>
-                  </RadioGroup>
-                )}
+            <p>JobID: {this.props.districtingJobId}</p>
+                <FormControlLabel
+                  control={<RandomCheckbox checked={this.state.checkedDist[('Random')]} onClick={(e) => this.handleDistrictingRadioOption(e, 'Random')} name={'Random'} />}
+                  label={'Random'}
+                />
+                <FormControlLabel
+                  control={<AverageCheckbox checked={this.state.checkedDist[("Average")]} onClick={(e) => this.handleDistrictingRadioOption(e, "Average")} name={"Average"} />}
+                  label={"Average"}
+                />
+                <FormControlLabel
+                  control={<ExtremeCheckbox checked={this.state.checkedDist[("Extreme")]}  onClick={(e) => this.handleDistrictingRadioOption(e, "Extreme")} name={"Extreme"} />}
+                  label={"Extreme"}
+                />
+                <FormControlLabel
+                  control={<MinimumCheckbox checked={this.state.checkedDist[("Minimum")]}  onClick={(e) => this.handleDistrictingRadioOption(e, "Minimum")} name={"Minimum"} />}
+                  label={"Minimum"}
+                />
             </FormControl>
+            </MuiThemeProvider>
         </div>
         <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>
@@ -445,14 +617,12 @@ export default class LeafletMap extends Component<{}, State> {
             </div>
           )}
         </div>
-
+<button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <div className='map-information'>
           {Object.entries(this.state.mapInfo).map( ([i, text]) => (
             <p key={i} className='state-info'>{text}</p>
           ))}
         </div>
-
-        <button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url={'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken}
@@ -481,22 +651,12 @@ export default class LeafletMap extends Component<{}, State> {
           </Overlay>
           <Overlay name="District Borders">
               <LayerGroup ref={secondOverlayRef}>
-                <GeoJSON key="districtLayer"
+                <GeoJSON key={"districtLayer"+stateName}
                   data={this.state.districts[stateName]}
                   style={this.state.stateDefaultStyle}
                   ></GeoJSON>
           </LayerGroup>
         </Overlay>
-        {(this.state.currentDist).map((dist, i) =>
-          <Overlay name="Districting Boundary">
-              <LayerGroup ref={thirdOverlayRef}>
-                <GeoJSON key="districtLayer"
-                  data={this.state.currentDist[i]}
-                  style={this.state.stateDefaultStyle}
-                  ></GeoJSON>
-          </LayerGroup>
-          </Overlay>
-      )}
             </LayersControl>
         )}
             <LayersControl position="topright" id="arkansasLayers">
@@ -524,6 +684,12 @@ export default class LeafletMap extends Component<{}, State> {
           </LayerGroup>
           </Overlay>
               </LayersControl>
+            {(this.state.currentDist).map((dist, i) =>
+              <GeoJSON key={i}
+                data={this.state.currentDist[i]}
+                style={this.getdistrictingStyle.bind(dist, i)}
+                ></GeoJSON>
+          )}
         </Map>
       </div>
     </div>

@@ -101,7 +101,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
     //       }
     //       );
     jobDict[jobId].status = updatedStatus;
-    if (updatedStatus == 'Finished'){
+    if (updatedStatus == 'finishDistricting'){
       jobDict[jobId].buttonOption = 'Delete';
       jobDict[jobId].boxWhiskerAvailability = {opacity: '1'}
     }

@@ -5,18 +5,6 @@ import NameLogo from "../assets/media/logos/Dolphin-Party.png"
 const navLinks = [
   { title: 'HOME',
     path: '/',
-  },
-  {
-    title: 'ABOUT',
-    path: '/about'
-  },
-  {
-    title: 'MEET THE TEAM',
-    path: '/meet-the-team'
-  },
-  {
-    title: 'REFERENCES',
-    path: '/references'
   }
 ]
 

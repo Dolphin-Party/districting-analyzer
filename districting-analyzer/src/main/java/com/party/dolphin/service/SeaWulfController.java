@@ -49,8 +49,8 @@ public class SeaWulfController {
             jobStatusLine = processOutput(process);
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
-        return job;
-    }
+            return job;
+        }
 
         int i = jobStatusLine.indexOf('=');
         int j = jobStatusLine.indexOf(' ', i);

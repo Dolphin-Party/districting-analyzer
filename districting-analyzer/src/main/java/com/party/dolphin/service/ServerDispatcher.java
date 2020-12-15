@@ -17,11 +17,11 @@ public class ServerDispatcher {
 
     // TODO: Turn all of these into global env. variables/properties
     public static final String algorithmFileName = "src/main/resources/randomdistricter.py";
-    public static final String sendFileScript = "src/main/resources/sendFile.sh";
+    //public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String jobDirPathTemplate = "files/job_%d/";
-    public static final String argsFilePathTemplate = "job_args.json";
+    public static final String argsFileName = "job_args.json";
     public static final String outputFileName = "results.json";
 
     @Autowired
@@ -35,16 +35,16 @@ public class ServerDispatcher {
 
     /** Job Control **/
     public Job runJob(Job job) {
-        job.setPrecinctFilePath(
-            String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
-        );
-        if (!writePrecinctsFile(job)) {
-            System.out.println("Failed to create or write file");
-            job.setStatus(JobStatus.error);
-            return job;
-        }
+        // job.setPrecinctFilePath(
+        //     String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
+        // );
+        // if (!writePrecinctsFile(job)) {
+        //     System.out.println("Failed to create or write file");
+        //     job.setStatus(JobStatus.error);
+        //     return job;
+        // }
         job.setArgsFilePath(
-            String.format(jobDirPathTemplate + argsFilePathTemplate, job.getId())
+            String.format(jobDirPathTemplate + argsFileName, job.getId())
         );
         if (!writeArgsFile(job)) {
             System.out.println("Failed to create or write file");

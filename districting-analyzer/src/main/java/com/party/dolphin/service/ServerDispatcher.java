@@ -38,10 +38,12 @@ public class ServerDispatcher {
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
+        if (!job.getIsSeawulf()) {
         if (!writePrecinctsFile(job)) {
             System.out.println("Failed to create or write file");
             job.setStatus(JobStatus.error);
             return job;
+        }
         }
         job.setArgsFilePath(
             String.format(jobDirPathTemplate + argsFileName, job.getId())

@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS Jobs (
     percentDiff decimal,
     targetDemographic varchar(255),
     isSeawulf boolean,
+    seawulfJobId int,
     averageDistricting int,
     extremeDistricting int
 );

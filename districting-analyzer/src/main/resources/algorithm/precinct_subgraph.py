@@ -1,6 +1,7 @@
 from typing import Set
-from precinct_node import PrecinctNode
 import compactness as cmp
+
+from precinct_node import PrecinctNode
 
 
 class PrecinctSubgraph(object):

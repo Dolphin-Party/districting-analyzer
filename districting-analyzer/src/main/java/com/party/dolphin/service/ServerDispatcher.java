@@ -53,7 +53,7 @@ public class ServerDispatcher {
         }
 
         if (job.getIsSeawulf())
-            job = seawulfController.sendJob(job);
+            job = seawulfController.runJob(job);
         else
             job = runLocally(job);
         return job;

@@ -16,7 +16,7 @@ public class SeaWulfController {
     public static final String jobDirPathTemplate = "/gpfs/projects/CSE416/Dolphins/job_%d/";
 
     // TODO: Test this with data
-    public Job sendJob(Job job) {
+    public Job runJob(Job job) {
         if (!sendData(job)) {
             System.out.println("Could not send precinct data to the SeaWulf");
             job.setStatus(JobStatus.error);
@@ -30,6 +30,10 @@ public class SeaWulfController {
     }
 
     public Job checkJobStatus(Job job) {
+        return job;
+    }
+
+    public Job cancelJob(Job job) {
         return job;
     }
 
@@ -93,6 +97,10 @@ public class SeaWulfController {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean getOutputData(Job job) {
         return true;
     }
 

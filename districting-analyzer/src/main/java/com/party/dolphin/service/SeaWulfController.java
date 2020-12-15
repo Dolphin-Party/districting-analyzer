@@ -44,10 +44,10 @@ public class SeaWulfController {
         );
         //pb.redirectErrorStream(true);
 
-        String submitted;
+        String seawulfJobId;
         try {
             process = pb.start();
-            submitted = processOutput(process);
+            seawulfJobId = processOutput(process);
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
@@ -61,8 +61,10 @@ public class SeaWulfController {
             return job;
         }
 
+        seawulfJobId = seawulfJobId.trim();
+        seawulfJobId = seawulfJobId.substring(seawulfJobId.lastIndexOf(' ')+1);
         job.setSeawulfJobId(
-            Integer.parseInt(submitted.substring(submitted.lastIndexOf(' ')+1))
+            Integer.parseInt(seawulfJobId)
         );
         job.setStatus(JobStatus.running);
         return job;
@@ -74,6 +76,7 @@ public class SeaWulfController {
             "bash",
             sendFileScript,
             job.getArgsFilePath()
+                .substring(0, job.getArgsFilePath().lastIndexOf('/')+1)
         );
         pb.redirectErrorStream(true);
         try {

@@ -50,10 +50,11 @@ CREATE TABLE IF NOT EXISTS Jobs (
     `status` varchar(255),
     numberDistrictings int,
     iterations int,
-    compactnessAmount varchar(255),
-    percentDiff float,
+    compactnessAmount decimal,
+    percentDiff decimal,
     targetDemographic varchar(255),
     isSeawulf boolean,
+    seawulfJobId int,
     averageDistricting int,
     extremeDistricting int
 );

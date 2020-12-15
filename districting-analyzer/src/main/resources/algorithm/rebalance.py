@@ -32,9 +32,9 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
             new_dist1, new_dist2 = st.cut(e)
             new_dist1_meets_pop = abs(new_dist1.population - target_pop) <= pop_variance
             new_dist1_meets_compactness = new_dist1.compactness >= target_compactness
-
             new_dist2_meets_pop = abs(new_dist2.population - target_pop) <= pop_variance
             new_dist2_meets_compactness = new_dist2.compactness >= target_compactness
+
             new_dists_meet_params = new_dist1_meets_pop and new_dist1_meets_compactness \
                                     and new_dist2_meets_pop and new_dist2_meets_compactness
             if new_dists_meet_params:
@@ -49,6 +49,8 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
             neighbor_nodes = set()
             for node in new_dist1.nodes:
                 neighbor_nodes = neighbor_nodes | (node.adjacent_precincts - new_dist1.nodes)
+            selected_district.neighbors.remove(selected_neighbor)
+            selected_neighbor.neighbors.remove(selected_district)
             candidate_neighbors = selected_district.neighbors | selected_neighbor.neighbors
             for neighbor in candidate_neighbors:
                 if len(neighbor_nodes.intersection(neighbor.nodes)):
@@ -67,6 +69,11 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
 
             new_dist1.neighbors.add(new_dist2)
             new_dist2.neighbors.add(new_dist1)
+
+            districts.subgraphs.remove(selected_neighbor)
+            districts.subgraphs.remove(selected_district)
+            districts.subgraphs.add(new_dist1)
+            districts.subgraphs.add(new_dist2)
     else:
         new_dists_beat_params = False
         #  if at least 1 district doesn't meet parameter, find cut that improves both scores
@@ -78,7 +85,7 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
             new_dist1_pop_diff = abs(new_dist1.population - target_pop)
             new_dist1_compactness = new_dist1.compactness
             new_dist2_pop_diff = abs(new_dist2.population - target_pop)
-            new_dist2_compactness = new_dist2.comapctness
+            new_dist2_compactness = new_dist2.compactness
 
             new_dists_beat_params = (new_dist1_pop_diff < dist_pop_diff
                                      and new_dist1_compactness > dist_compactness
@@ -100,6 +107,8 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
             neighbor_nodes = set()
             for node in new_dist1.nodes:
                 neighbor_nodes = neighbor_nodes | (node.adjacent_precincts - new_dist1.nodes)
+            selected_district.neighbors.remove(selected_neighbor)
+            selected_neighbor.neighbors.remove(selected_district)
             candidate_neighbors = selected_district.neighbors | selected_neighbor.neighbors
             for neighbor in candidate_neighbors:
                 if len(neighbor_nodes.intersection(neighbor.nodes)):
@@ -118,5 +127,10 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
 
             new_dist1.neighbors.add(new_dist2)
             new_dist2.neighbors.add(new_dist1)
+
+            districts.subgraphs.remove(selected_neighbor)
+            districts.subgraphs.remove(selected_district)
+            districts.subgraphs.add(new_dist1)
+            districts.subgraphs.add(new_dist2)
     #  Optional: if 1 doesn't meet parameters and the other does, find cut that improves score for 1 and stays within
     #            parameter for the other

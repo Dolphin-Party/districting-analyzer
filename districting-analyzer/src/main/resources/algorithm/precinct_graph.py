@@ -34,3 +34,6 @@ class PrecinctGraph(object):
     @property
     def population(self):
         return sum(map(lambda d: d.population, self.__subgraphs))
+
+    def __repr__(self):
+        return f'{self.subgraphs}'

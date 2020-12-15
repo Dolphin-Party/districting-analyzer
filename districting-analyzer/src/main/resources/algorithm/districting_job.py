@@ -8,8 +8,8 @@ def generate_districting(districting: PrecinctGraph, iterations: int, target_pop
     for _ in range(iterations):
         # select two districts at random
         rebalance_district(districting, target_pop, pop_variance, target_compactness)
-    loc = f'{out_dir}/districting{iteration}'
-    with open(loc) as f:
+    loc = f'{out_dir}/districting{iteration}.json'
+    with open(loc, 'w+') as f:
         res = []
 
         for district in districting.subgraphs:

@@ -5,113 +5,163 @@ import java.io.*;
 import com.party.dolphin.model.Job;
 import com.party.dolphin.model.enums.JobStatus;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SeaWulfController {
 
-    public static final String algorithmDirName = "files/algorithm/";
-    public static final String sendFileScript = "src/main/esources/sendFile.sh";
+    public static final String sendFileScript = "src/main/resources/sendFile.sh";
+    public static final String getFileScript = "src/main/resources/get_output.sh";
+    public static final String startSeaWulfJobScript = "src/main/resources/run_seawulf_job.sh";
+    public static final String checkSeaWulfJobScript = "src/main/resources/check_seawulf_job.sh";
+    public static final String cancelSeaWulfJobScript = "src/main/resources/cancel_seawulf_job.sh";
 
-    // TODO: Test this with data
-    public Job sendJob(Job job) {
-        // Process process;
-        // ProcessBuilder pb = new ProcessBuilder("python3", "src/main/resources/fib.py");
-        // pb.redirectErrorStream(true);
-        // try {
-        //     process = pb.start();
-        //     debugProcessOutput(process);
-        // } catch (IOException ioex) {
-        //     System.out.println(ioex.getMessage());
-        // }
-        // return true;
+    //public static final String seawulfDirPath = "/gpfs/projects/CSE416/Dolphins/";
+    public static final String jobDirPathTemplate = "/gpfs/projects/CSE416/Dolphins/job_%d/";
 
-        // if (!sendData(job.getState())) {
-        //     System.out.println("Could not send precinct data to the SeaWulf");
-        //     return false;
-        // }
+    // TODO: Test this with the algorithm
+    // TODO: Clean up redundant process builder and try-catch blocks
+    public Job runJob(Job job) {
+        if (!sendData(job)) {
+            System.out.println("Could not send precinct data to the SeaWulf");
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+        job = startJob(job);
+        if (job.getStatus() == JobStatus.error) {
+            System.out.println("Error when starting job on SeaWulf");
+        }
+        return job;
+    }
 
+    public Job checkJobStatus(Job job) {
         Process process;
-        ProcessBuilder pb = new ProcessBuilder("bash", "src/main/resources/send_to_slurm.sh");
-        pb.redirectErrorStream(true);
-        //sendData(job);
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            checkSeaWulfJobScript,
+            Integer.toString(job.getSeawulfJobId())
+        );
+        //pb.redirectErrorStream(true);
+
+        String jobStatusLine;
         try {
             process = pb.start();
-            debugProcessOutput(process);
+            jobStatusLine = processOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+        return job;
+    }
+
+        int i = jobStatusLine.indexOf('=');
+        int j = jobStatusLine.indexOf(' ', i);
+        jobStatusLine = jobStatusLine.substring(i+1, j);
+        System.err.println("Slurm job status: "+ jobStatusLine);
+        switch (jobStatusLine) {
+            case "PENDING":
+            case "RUNNING":
+                break;
+            case "COMPLETED":
+                job.setStatus(JobStatus.finishDistricting);
+                if (getOutputData(job))
+                    break;
+            case "FAILED":
+            default:
+                job.setStatus(JobStatus.error);
+        }
+        return job;
+    }
+
+    public Job cancelJob(Job job) {
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            cancelSeaWulfJobScript,
+            Integer.toString(job.getSeawulfJobId())
+        );
+        //pb.redirectErrorStream(true);
+
+        try {
+            pb.start();
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
             return job;
         }
+        job.setStatus(JobStatus.stopped);
+        return job;
+    }
+
+    private Job startJob(Job job) {
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            startSeaWulfJobScript,
+            Integer.toString(job.getId()),
+            job.getPrecinctFilePath()
+                .substring(job.getPrecinctFilePath().lastIndexOf('/'))
+        );
+        //pb.redirectErrorStream(true);
+
+        String seawulfJobId;
         try {
-            process.waitFor();
-        } catch (InterruptedException intEx) {
-            process.destroy();
+            process = pb.start();
+            seawulfJobId = processOutput(process);
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
             return job;
         }
 
+        seawulfJobId = seawulfJobId.trim();
+        seawulfJobId = seawulfJobId.substring(seawulfJobId.lastIndexOf(' ')+1);
+        job.setSeawulfJobId(
+            Integer.parseInt(seawulfJobId)
+        );
         job.setStatus(JobStatus.running);
         return job;
     }
 
-    public Job checkJobStatus(Job job) {
-        return job;
-    }
-
-    // public boolean writeJobScript(Job job){
-    //   // create a slurm script file
-    //   File file = new File("job.slurm");
-    //   FleWriter writer = new FileWriter("job.slurm")
-    //   writer.write("#!/bin/bash")
-    //   writer.write("#")
-    //   writer.write("#SBATCH --job-name="+job.jobId)
-    //   writer.write("#SBATCH --output="+job.jobId+".txt")
-    //   writer.write("#SBATCH --ntasks-per-node=40")
-    //   writer.write("#SBATCH --nodes=2")
-    //   writer.write("#SBATCH --time=05:00")
-    //   writer.write("#SBATCH -p short-40core")
-    //   writer.write("#SBATCH --nodes=2")
-    //   writer.write("#SBATCH --mail-type=BEGIN,END")
-    //   writer.write("#SBATCH --mail-user=kamile.demir@stonybrook.edu")
-    //   writer.write("module load slurm")
-    //   writer.write("module load shared")
-    //   writer.write("python run.py %s\n" %data)
-    // }
-
-    // TODO: How much to send? Just precincts? State? Counties?
     private boolean sendData(Job job) {
         Process process;
         ProcessBuilder pb = new ProcessBuilder(
             "bash",
             sendFileScript,
-            job.getArgsFilePath(),
-            job.getPrecinctFilePath()
+            job.getArgsFilePath()
+                .substring(0, job.getArgsFilePath().lastIndexOf('/')+1)
         );
         pb.redirectErrorStream(true);
         try {
             process = pb.start();
-            debugProcessOutput(process);
+            System.out.println(processOutput(process));
         } catch (IOException ioEx) {
             System.out.println(ioEx.getMessage());
             return false;
         }
+
+        return true;
+    }
+
+    private boolean getOutputData(Job job) {
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            getFileScript,
+            Integer.toString(job.getId()),
+            job.getOutputFile().getAbsolutePath()
+        );
+        pb.redirectErrorStream(true);
         try {
-            process.waitFor();
-        } catch (InterruptedException intEx) {
-            process.destroy();
+            process = pb.start();
+            System.out.println(processOutput(process));
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
             return false;
         }
 
+        System.err.println("Output file received");
         return true;
     }
 
-    private boolean readOutputData(Job job) {
-        return true;
-    }
-
-    private void debugProcessOutput(Process process) {
+    private String processOutput(Process process) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder builder = new StringBuilder();
@@ -120,10 +170,10 @@ public class SeaWulfController {
                 builder.append(line);
                 builder.append("\n");
             }
-            String result = builder.toString();
-            System.out.println(result);
+            return builder.toString();
         } catch (IOException ioex) {
             ioex.printStackTrace();
+            return null;
         }
     }
 

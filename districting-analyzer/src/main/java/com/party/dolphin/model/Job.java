@@ -23,6 +23,7 @@ public class Job {
     private double percentDiff;
     private DemographicType targetDemographic;
     private boolean isSeawulf;
+    private int seawulfJobId;
     private String argsFilePath;
     private String precinctFilePath;
     private File outputFile;
@@ -116,6 +117,15 @@ public class Job {
     }
     public void setIsSeawulf(boolean isSeawulf) {
         this.isSeawulf = isSeawulf;
+    }
+
+    @Column(name="seawulfJobId")
+    public int getSeawulfJobId() {
+        return this.seawulfJobId;
+    }
+
+    public void setSeawulfJobId(int seawulfJobId) {
+        this.seawulfJobId = seawulfJobId;
     }
 
     @Transient

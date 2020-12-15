@@ -17,11 +17,11 @@ public class ServerDispatcher {
 
     // TODO: Turn all of these into global env. variables/properties
     public static final String algorithmFileName = "src/main/resources/randomdistricter.py";
-    public static final String sendFileScript = "src/main/resources/sendFile.sh";
+    //public static final String sendFileScript = "src/main/resources/sendFile.sh";
 
     public static final String precinctFilePathTemplate = "files/%s_precincts.json";
     public static final String jobDirPathTemplate = "files/job_%d/";
-    public static final String argsFilePathTemplate = "job_args.json";
+    public static final String argsFileName = "job_args.json";
     public static final String outputFileName = "results.json";
 
     @Autowired
@@ -38,13 +38,15 @@ public class ServerDispatcher {
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
+        if (!job.getIsSeawulf()) {
         if (!writePrecinctsFile(job)) {
             System.out.println("Failed to create or write file");
             job.setStatus(JobStatus.error);
             return job;
         }
+        }
         job.setArgsFilePath(
-            String.format(jobDirPathTemplate + argsFilePathTemplate, job.getId())
+            String.format(jobDirPathTemplate + argsFileName, job.getId())
         );
         if (!writeArgsFile(job)) {
             System.out.println("Failed to create or write file");
@@ -53,7 +55,7 @@ public class ServerDispatcher {
         }
 
         if (job.getIsSeawulf())
-            job = seawulfController.sendJob(job);
+            job = seawulfController.runJob(job);
         else
             job = runLocally(job);
         return job;
@@ -73,12 +75,21 @@ public class ServerDispatcher {
                 job = readOutputFiles(job);
                 //job.analyzeJobResults();
                 job.setStatus(JobStatus.finishProcessing);
+            } else if (job.getStatus() == JobStatus.error) {
+                try {
+                    deleteFiles(job.getOutputFile());
+                } catch (IOException ioex) {
+                    System.err.println(ioex.getMessage());
+                }
             }
         }
         return job;
     }
 
     public Job cancelJob(Job job) {
+        if (job.getIsSeawulf())
+            seawulfController.cancelJob(job);
+        else
         job.setStatus(JobStatus.stopped);
         return job;
     }
@@ -231,6 +242,12 @@ public class ServerDispatcher {
         }
         job.setDistrictings(districtings);
         job = jobService.saveJob(job);
+
+        try {
+            deleteFiles(job.getOutputFile());
+        } catch (IOException ioex) {
+            System.err.println(ioex.getMessage());
+        }
         return job;
     }
 
@@ -263,8 +280,17 @@ public class ServerDispatcher {
         return dtoConverter.createNewDistrict(dto);
     }
 
-    // Debug, for printing process stdout/stderr
-    private void debugProcessOutput(Process process) {
+    private void deleteFiles(File file) throws IOException {
+        if (file.isDirectory()) {
+            for (File innerFile : file.listFiles()) {
+                deleteFiles(innerFile);
+            }
+        }
+        if (!file.delete())
+            throw new IOException("Could not delete file: "+ file.getAbsolutePath());
+    }
+
+    private String processOutput(Process process) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder builder = new StringBuilder();
@@ -273,10 +299,10 @@ public class ServerDispatcher {
                 builder.append(line);
                 builder.append("\n");
             }
-            String result = builder.toString();
-            System.out.println(result);
+            return builder.toString();
         } catch (IOException ioex) {
             ioex.printStackTrace();
+            return null;
         }
     }
 }

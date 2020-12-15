@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class SeaWulfController {
 
-    //public static final String localAlgorithmDirName = "files/algorithm/";
     public static final String sendFileScript = "src/main/resources/sendFile.sh";
     public static final String startSeaWulfJobScript = "src/main/resources/run_seawulf_job.sh";
+    public static final String checkSeaWulfJobScript = "src/main/resources/check_seawulf_job.sh";
+    public static final String cancelSeaWulfJobScript = "src/main/resources/cancel_seawulf_job.sh";
+
+    //public static final String seawulfDirPath = "/gpfs/projects/CSE416/Dolphins/";
     public static final String jobDirPathTemplate = "/gpfs/projects/CSE416/Dolphins/job_%d/";
 
     // TODO: Test this with data
@@ -34,6 +37,21 @@ public class SeaWulfController {
     }
 
     public Job cancelJob(Job job) {
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            cancelSeaWulfJobScript,
+            Integer.toString(job.getSeawulfJobId())
+        );
+        //pb.redirectErrorStream(true);
+
+        try {
+            pb.start();
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+            job.setStatus(JobStatus.error);
+            return job;
+        }
+        job.setStatus(JobStatus.stopped);
         return job;
     }
 

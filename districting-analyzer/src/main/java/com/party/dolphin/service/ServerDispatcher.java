@@ -79,6 +79,9 @@ public class ServerDispatcher {
     }
 
     public Job cancelJob(Job job) {
+        if (job.getIsSeawulf())
+            seawulfController.cancelJob(job);
+        else
         job.setStatus(JobStatus.stopped);
         return job;
     }
@@ -231,6 +234,12 @@ public class ServerDispatcher {
         }
         job.setDistrictings(districtings);
         job = jobService.saveJob(job);
+
+        try {
+            deleteFiles(job.getOutputFile());
+        } catch (IOException ioex) {
+            System.err.println(ioex.getMessage()
+        }
         return job;
     }
 
@@ -263,8 +272,17 @@ public class ServerDispatcher {
         return dtoConverter.createNewDistrict(dto);
     }
 
-    // Debug, for printing process stdout/stderr
-    private void debugProcessOutput(Process process) {
+    private void deleteFiles(File file) throws IOException {
+        if (file.isDirectory()) {
+            for (File innerFile : file.listFiles()) {
+                deleteFiles(innerFile);
+            }
+        }
+        if (!file.delete())
+            throw new IOException("Could not delete file: "+ file.getAbsolutePath());
+    }
+
+    private String processOutput(Process process) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder builder = new StringBuilder();
@@ -273,10 +291,10 @@ public class ServerDispatcher {
                 builder.append(line);
                 builder.append("\n");
             }
-            String result = builder.toString();
-            System.out.println(result);
+            return builder.toString();
         } catch (IOException ioex) {
             ioex.printStackTrace();
+            return null;
         }
     }
 }

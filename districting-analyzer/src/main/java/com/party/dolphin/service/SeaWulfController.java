@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 public class SeaWulfController {
 
     public static final String sendFileScript = "src/main/resources/sendFile.sh";
+    public static final String getFileScript = "src/main/resources/get_output.sh";
     public static final String startSeaWulfJobScript = "src/main/resources/run_seawulf_job.sh";
     public static final String checkSeaWulfJobScript = "src/main/resources/check_seawulf_job.sh";
     public static final String cancelSeaWulfJobScript = "src/main/resources/cancel_seawulf_job.sh";
@@ -18,7 +19,8 @@ public class SeaWulfController {
     //public static final String seawulfDirPath = "/gpfs/projects/CSE416/Dolphins/";
     public static final String jobDirPathTemplate = "/gpfs/projects/CSE416/Dolphins/job_%d/";
 
-    // TODO: Test this with data
+    // TODO: Test this with the algorithm
+    // TODO: Clean up redundant process builder and try-catch blocks
     public Job runJob(Job job) {
         if (!sendData(job)) {
             System.out.println("Could not send precinct data to the SeaWulf");
@@ -134,17 +136,28 @@ public class SeaWulfController {
             System.out.println(ioEx.getMessage());
             return false;
         }
-        try {
-            process.waitFor();
-        } catch (InterruptedException intEx) {
-            process.destroy();
-            return false;
-        }
 
         return true;
     }
 
     private boolean getOutputData(Job job) {
+        Process process;
+        ProcessBuilder pb = new ProcessBuilder(
+            "bash",
+            getFileScript,
+            Integer.toString(job.getId()),
+            job.getOutputFile().getAbsolutePath()
+        );
+        pb.redirectErrorStream(true);
+        try {
+            process = pb.start();
+            System.out.println(processOutput(process));
+        } catch (IOException ioEx) {
+            System.out.println(ioEx.getMessage());
+            return false;
+        }
+
+        System.err.println("Output file received");
         return true;
     }
 

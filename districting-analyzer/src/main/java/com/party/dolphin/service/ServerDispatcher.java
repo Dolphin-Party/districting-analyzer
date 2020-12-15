@@ -244,7 +244,7 @@ public class ServerDispatcher {
         try {
             deleteFiles(job.getOutputFile());
         } catch (IOException ioex) {
-            System.err.println(ioex.getMessage()
+            System.err.println(ioex.getMessage());
         }
         return job;
     }

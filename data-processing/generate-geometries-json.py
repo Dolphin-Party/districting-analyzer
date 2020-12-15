@@ -26,6 +26,7 @@ def process_state(state_name):
                 return ('%s%06s' % (countyId, precinctId)).replace(' ', '0')
             geoids = [format_geoid(r) for r in shp_file['GEOID10'].values.tolist()]
             shp_file[primary_key] = geoids 
+            shp_file['geometry'] = shp_file['geometry'].simplify(0.000001)
             precinct_geos = precinct_geos.append(shp_file[[primary_key, 'geometry']])
 
             # generate json for geo data

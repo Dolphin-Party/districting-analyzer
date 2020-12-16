@@ -148,7 +148,7 @@ jobButtonOptions() {
                   <td> {job.buttonOption}</td>
                 </tr>
                 <tr>
-                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='running' ? 'Cancel' : 'Delete' }</Button>{' '}</td>
+                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='finishDistricting' ? 'Delete' : 'Cancel' }</Button>{' '}</td>
                   <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobSelect(e,key,job)}>Display Districting</Button>{' '}</td>
                 </tr>
               </tbody>

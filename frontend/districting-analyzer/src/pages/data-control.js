@@ -21,11 +21,10 @@ export default class DataControl extends Component<{}, State> {
     return (
       <div>
       <div className="map_filter">
-        <Button variant="primary" className="button">View Current Districting</Button>{' '}
-        <Button variant="primary" className="button">Export Graphs & Data</Button>{' '}
+        <p>Legend: Pls style me tomorrow</p>
       </div>
       <div className='box-whisker-plot-section'>
-        <BoxWhiskerPlot boxWhiskerData={this.props.boxWhiskerData}></BoxWhiskerPlot>
+        <BoxWhiskerPlot boxWhiskerData={this.props.boxWhiskerData} enactedPlan={this.props.enactedPlan}></BoxWhiskerPlot>
       </div>
         </div>
       )

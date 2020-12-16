@@ -19,6 +19,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
       noJobsText:{visibility: 'visible',},
       submitAvailability: this.props.submitAvailability,
       jobIdDict: {"Arkansas":5, "North Carolina":37, "Virginia":51},
+      stateDict: {5: "Arkansas", 37: "North Carolina", 51: "Virginia"}
     };
     this.onJobAdded = this.onJobAdded.bind(this);
   }
@@ -38,12 +39,14 @@ export default class SeawulfClientControl extends Component<{}, State> {
       numberDistrictings: newJob.numberDistrictings,
       compactnessAmount: newJob.compactnessAmount,
       targetDemographic: newJob.targetDemographic,
+      percentDiff: newJob.pvap,
     }).then(function(response){
       if(!response){
         console.log("Error:", response);
       }else{
         jobDict[response.data] = newJob;
         console.log("Successful!", response.data);
+        alert("Successfully Created Job #", response.data)
       }
     })
   }
@@ -57,7 +60,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
           if(!response){
             console.log("Job Delete Error:", response);
           }else{
-            alert("Job #"+job.jobId+" was deleted successfully")
+            alert("Job #"+job.jobId+" Deleted Successfully")
           }
         })
       }else{
@@ -65,7 +68,7 @@ export default class SeawulfClientControl extends Component<{}, State> {
         }).then(function(response){
           if(response){
             job.status = 'stopped';
-            alert("Job #"+job.jobId+" was stopped successfully")
+            alert("Job #"+job.jobId+" Cancelled Successfully")
           }else{
             console.log("Job Delete Error:", response);
           }
@@ -120,24 +123,16 @@ export default class SeawulfClientControl extends Component<{}, State> {
     jobPlotData = { //temporary dummy data,to be deleted
       jobId: job.jobId,
       status: job.status,
-      state: job.state,
+      state: this.state.stateDict[job.stateId],
       numberDistrictings: job.numberDistrictings,
       compactnessAmount: job.compactnessAmount,
       targetDemographic: job.targetDemographic,
       pvap: job.pvap,
       dataPoints: [
-        { label: "1",  y: [179, 256, 300, 418, 274] },
-        { label: "2",  y: [252, 346, 409, 437, 374.5] },
-        { label: "3",  y: [236, 281.5, 336.5, 428, 313] },
-        { label: "4",  y: [340, 382, 430, 452, 417] },
-        { label: "5",  y: [194, 224.5, 342, 384, 251] },
-        { label: "6",  y: [241, 255, 276.5, 294, 274.5] },
-        { label: "7",  y: [340, 382, 430, 452, 417] },
-        { label: "8",  y: [194, 224.5, 342, 384, 251] },
-        { label: "9",  y: [241, 255, 276.5, 294, 274.5] },
-        { label: "10",  y: [241, 255, 276.5, 294, 274.5] },
-        { label: "11",  y: [241, 255, 276.5, 294, 274.5] },
-        { label: "12",  y: [241, 255, 276.5, 294, 274.5] },
+        { label: "1",  y: [1790, 2560, 3000, 4180, 2740] },
+        { label: "2",  y: [2520, 3460, 4090, 4370, 3740] },
+        { label: "3",  y: [2360, 2810, 3360, 4280, 3130] },
+        { label: "4",  y: [3400, 3820, 4300, 4520, 4170] },
       ],
     }
     this.props.onBoxWhiskerSelect(jobPlotData, job);

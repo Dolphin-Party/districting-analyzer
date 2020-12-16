@@ -19,10 +19,9 @@ class BoxWhiskerPlot extends Component {
 		const options = {
 			theme: "light2",
 			animationEnabled: false,
-			width:1000,
 			height:300,
 			title:{
-				text: "Job #" + this.props.boxWhiskerData.jobId + " | State: " + this.props.boxWhiskerData.state +" | Districting Data"
+				text: "Job #" + this.props.boxWhiskerData.jobId + " | State: " + this.props.boxWhiskerData.state
 			},
 			axisY: {
 				title: "Target Demographic VAP%"
@@ -30,8 +29,16 @@ class BoxWhiskerPlot extends Component {
 			data: [{
 				type: "boxAndWhisker",
 				yValueFormatString: ""%"",
-				dataPoints: this.props.boxWhiskerData.dataPoints
-			}]
+				dataPoints: this.props.boxWhiskerData.dataPoints,
+			},
+			{
+				type: "scatter",
+				markerSize: 15,
+				toolTipContent: "District: {x+1} Population: {y}",
+				dataPoints: this.props.enactedPlan,
+			}
+
+		],
 		}
 		return (
 		<div>

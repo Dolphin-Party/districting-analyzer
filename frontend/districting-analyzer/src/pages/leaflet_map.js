@@ -14,9 +14,9 @@ import purple from '@material-ui/core/colors/purple';
 import { green } from '@material-ui/core/colors';
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Checkbox} from '@material-ui/core';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import virginiaPrecincts from '../assets/geojson/VirginiaPrecincts_.json'
-import northCarolinaPrecincts from '../assets/geojson/NorthCarolinaPrecincts_.json'
-import arkansasPrecincts from '../assets/geojson/ArkansasPrecinctData.json'
+import virginiaPrecincts from '../assets/geojson/VA_formatted_precincts.json'
+import northCarolinaPrecincts from '../assets/geojson/NC_formatted_precincts.json'
+import arkansasPrecincts from '../assets/geojson/AK_formatted_precincts.json'
 import teamStates from '../assets/geojson/teamstates.json'
 import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
@@ -25,6 +25,7 @@ import alabama from '../assets/geojson/alabama.json'
 import florida from '../assets/geojson/florida.json'
 import tennessee from '../assets/geojson/tennessee.json'
 import georgia from '../assets/geojson/georgia.json'
+// import AK_frontend_precincts from '../assets/geojson/AK_frontend_precincts/AK_frontend_precincts.json'
 
 import radioButton from '../components/radioButton'
 import union from '@turf/union'
@@ -141,10 +142,10 @@ export default class LeafletMap extends Component<{}, State> {
       statePopulation: " ",
       stateNumDistricts: " ",
       stateSelected: false,
-      states: teamStates,
+      states: this.props.stateData,
       isLoading: true,
       precincts: {arkansas: arkansasPrecincts, virginia: virginiaPrecincts, northCarolina: northCarolinaPrecincts},
-      // precincts: {arkansas: [], virginia: [], northCarolina: []},
+      // precincts: {arkansas: arkansasPrecincts, virginia: [], northCarolina: []},
       // districts: {arkansas: [], virginia: [], northCarolina: []},
       districts: {arkansas: arkansasDistricts, virginia: virginiaDistricts, northCarolina: northCarolinaDistricts},
       stateDict: {51: 0, 37:1, 5:2},
@@ -173,9 +174,13 @@ export default class LeafletMap extends Component<{}, State> {
       },
       heatMapOn: false,
       heatMapButton: {backgroundColor: '#3B2B59'},
-      heatMapLegendStyle: {visibility: 'hidden'},
+      heatMapMenuStyle:  {display: 'none'},
+      heatMapLegendStyle: {display: 'none'},
+      heatMapLegendStyleAverage: {display: 'none'},
+      heatMapOption: 'original',
       districtingMenuStyle: {visibility: 'visible'},
       districtingState: this.props.districtingState,
+      districtingOn: false,
       currentDist: [alabama, florida, georgia, tennessee],
       selectedDistricting: null,
       districtingJobId: this.props.districtingJobId,
@@ -241,6 +246,35 @@ export default class LeafletMap extends Component<{}, State> {
       defaultDistrictingStyle: {
         color: 'transparent',
         fillColor: "transparent",
+      },
+      stateAverage: {
+        Virginia: {
+          black: '19.4',
+          whiteNonHispanic: '68.6',
+          hispanic: '3.2',
+          asian: '5.5',
+          americanIndian: '0.4',
+          pacific: '0.1',
+          twoOrMoreRaces: '2.9'
+        },
+        Arkansas: {
+          black: '15.4',
+          whiteNonHispanic: '77.0',
+          hispanic: '3.2',
+          asian: '1.2',
+          americanIndian: '0.8',
+          pacific: '0.2',
+          twoOrMoreRaces: '2.0'
+        },
+        'North Carolina': {
+          black: '22.1',
+          whiteNonHispanic: '71.2',
+          hispanic: '9.1',
+          asian: '2.8',
+          americanIndian: '1.6',
+          pacific: '0.2',
+          twoOrMoreRaces: '2.0'
+        }
       }
     };
     this.resetMap = this.resetMap.bind(this);
@@ -251,6 +285,9 @@ export default class LeafletMap extends Component<{}, State> {
     this.getStateData = this.getStateData.bind(this)
     this.componentDidUpdate = this.componentDidUpdate.bind(this)
     this.getdistrictingStyle = this.getdistrictingStyle.bind(this)
+    this.districtingOn = this.districtingOn.bind(this)
+    this.districtingOff = this.districtingOff.bind(this)
+    this.heatMapOption = this.heatMapOption.bind(this)
   }
 
   componentDidUpdate(prevProps){
@@ -275,7 +312,7 @@ export default class LeafletMap extends Component<{}, State> {
     var layer = e.target;
     this.updateMapInfo("State: ", layer.feature.properties.name, "Population: ", layer.feature.properties.population, "Number of Districts: ", layer.feature.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateDensity=layer.feature.properties.density
-    const statePopulation = layer.feature.properties.population
+    const statePopulation = layer.feature.population
     const stateNumDistricts = layer.feature.properties.numDistricts
     this.setState({stateDensity: stateDensity, statePopulation: statePopulation, stateNumDistricts:stateNumDistricts});
     layer.setStyle(this.state.stateHighlightStyle);
@@ -291,6 +328,7 @@ export default class LeafletMap extends Component<{}, State> {
       var e = e.target.feature
     }
     const stateName= e.properties.name
+    console.log(e.properties)
     this.updateMapInfo("State: ", e.properties.name, "Population: ", e.properties.population, "Number of Districts: ", e.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateLat = e.properties.lat
     const stateLng = e.properties.lng
@@ -301,7 +339,7 @@ export default class LeafletMap extends Component<{}, State> {
 
     dropdownStateSelect(ev, stateNum){
       var geoJSON = this.state.states
-      var e = geoJSON['features'][stateNum]
+      var e = geoJSON[stateNum]
       this.clickSelectState(null, e)
     }
 
@@ -347,18 +385,25 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightPrecinct = (e) => {
     var layer = e.target;
-    console.log("precinct,", e.target)
+
     var precinct = e.target.feature.properties
     var demData = precinct.demographicData
+    var black = Math.round(demData.black)
+    var whiteNonHispanic = Math.round(demData.whiteNonHispanic)
+    var hispanic = Math.round(demData.asian)
+    var asian = Math.round(demData.black)
+    var americanIndian = Math.round(demData.americanIndian)
+    var pacific = Math.round(demData.pacific)
+    var twoOrMoreRaces = Math.round(demData.twoOrMoreRaces)
     this.updateMapInfo(
-    "Precinct: ", precinct.Precinct,
-    "Black or African American Total: " + Math.round(demData.blackPop), ", VAP:" + Math.round(demData.blackPop),
-    "Non-Hispanic White Total: " + Math.round(demData.whitePop), ", VAP: " + Math.round(demData.whitePop),
-    "Hispanic/Latino Total: " + Math.round(demData.hispaPop), ", VAP: " + Math.round(demData.hispaPop),
-    "Asian: "+ Math.round(demData.asianPop) , ", VAP: "+ Math.round(demData.asianPop),
-    "Native Americans & Alaska Natives "+ Math.round(demData.nativPop), ", VAP"+ Math.round(demData.nativPop),
-    "Native Hawaiians and Other Pacific Islanders Total: " + Math.round(demData.hawaiPop),  ", VAP: "+ Math.round(demData.hawaiPop),
-    "Two or more races Total: "+ Math.round(demData.otherPop), ", VAP: "+ Math.round(demData.otherPop))
+    "Black or African American", black,
+    "Non-Hispanic White: ", whiteNonHispanic,
+    "Hispanic/Latino: ",hispanic,
+    "Asian: ",asian,
+    "Native Americans & Alaska Natives ", americanIndian,
+    "Native Hawaiians and Other Pacific Islanders: ",pacific,
+    "Two or more races:",twoOrMoreRaces,
+  "", "")
     layer.setStyle(this.state.precinctHighlightStyle);
   }
 
@@ -369,27 +414,55 @@ export default class LeafletMap extends Component<{}, State> {
 
   getPrecinctColor = (component, feature, layer) => {
     if(this.state.heatMapOn){
-      const totalPop = feature.properties.demographicData.totalPop
-      const targetDem = this.props.currDem
-      var demData = feature.properties.demographicData
-      var targetPop = this.getTargetDemographicPopulation(targetDem, demData)
-      const d = (targetPop/totalPop)
-      var color = d > .90 ? '#6e0016' :
-         d > .80  ? '#85001b' :
-         d > .70  ? '#a30021' :
-         d > .60  ? '#BD0026' :
-         d > .50  ? '#E31A1C' :
-         d > .40  ? '#FC4E2A' :
-         d > .30  ? '#FD8D3C' :
-         d > .20  ? '#FEB24C' :
-         d > .10  ? '#FED976' :
-                  '#FFEDA0';
-      return {
-        weight: 2,
-        color: color,
-        dashArray: '',
-        fillColor: color,
-        fillOpacity: 1.0,
+      if(this.state.heatMapOption == 'original'){
+        const totalPop = feature.properties.demographicData.totalPop
+        const targetDem = this.props.currDem
+        var demData = feature.properties.demographicData
+        var targetPop = this.getTargetDemographicPopulation(targetDem, demData)
+        const d = (targetPop/totalPop)
+        var color = d > .90 ? '#6e0016' :
+           d > .80  ? '#85001b' :
+           d > .70  ? '#a30021' :
+           d > .60  ? '#BD0026' :
+           d > .50  ? '#E31A1C' :
+           d > .40  ? '#FC4E2A' :
+           d > .30  ? '#FD8D3C' :
+           d > .20  ? '#FEB24C' :
+           d > .10  ? '#FED976' :
+                    '#FFEDA0';
+        return {
+          weight: 2,
+          color: color,
+          dashArray: '',
+          fillColor: color,
+          fillOpacity: 1.0,
+        }
+      }else{ //HEAT MAP OPTION
+        const totalPop = feature.properties.demographicData.totalPop
+        const targetDem = this.props.currDem
+        var demData = feature.properties.demographicData
+        var targetPop = this.getTargetDemographicPopulation(targetDem, demData)
+        const precinctPercent = (targetPop/totalPop)*100
+        const stateAverage = this.state.stateAverage[this.props.currState][targetDem]
+        const d = precinctPercent - stateAverage
+        console.log("state avg:", stateAverage, "precinct: ", precinctPercent, "d: ", d)
+        var color = d > 20 ? '#751010' :
+           d > 15  ? '#a61f1f' :
+           d > 10  ? '#cf3c3c' :
+           d > 5  ? '#e06363' :
+           d > 0  ? '#ffffff' :
+           d > -5  ? '#e0fbff' :
+           d > -10  ? '#c9f8ff' :
+           d > -15  ? '#9ad1d9' :
+           d > -20  ? '#7db5bd' :
+                    '#4a1024';
+        return {
+          weight: 2,
+          color: color,
+          dashArray: '',
+          fillColor: color,
+          fillOpacity: 1.0,
+        }
       }
     }else if(this.props.districtingOn){
       // const d = feature.properties.random.districtID -- something like this
@@ -446,25 +519,25 @@ export default class LeafletMap extends Component<{}, State> {
   getTargetDemographicPopulation(targetDem, targetPop){
     switch(targetDem){
       case 'black':
-        return targetPop.blackPop
+        return targetPop.black
         break;
       case 'whiteNonHispanic':
-        return targetPop.whitePop
+        return targetPop.whiteNonHispanic
         break;
       case 'hispanic':
-        return targetPop.hispaPop
+        return targetPop.americanIndian
         break;
       case 'asian':
-        return targetPop.asianPop
+        return targetPop.asian
         break;
       case 'americanIndian':
-        return targetPop.nativPop
+        return targetPop.americanIndian
         break;
       case 'pacific':
-        return targetPop.hawaiPop
+        return targetPop.pacific
         break;
       case 'twoOrMoreRaces':
-        return targetPop.otherPop
+        return targetPop.twoOrMoreRaces
         break;
     }
   }
@@ -479,24 +552,76 @@ export default class LeafletMap extends Component<{}, State> {
 
   heatMapOn(e){
     if(this.state.heatMapOn){
-      this.setState({heatMapLegendStyle: {visibility: 'hidden'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
+      this.setState({heatMapLegendStyle: {display: 'none'}, heatMapLegendStyleAverage: {display: 'none'}, heatMapMenuStyle:  {display: 'none'}, heatMapOn: false, heatMapButton: {backgroundColor: '#3B2B59', borderColor: 'grey', borderWidth: 'thick'}})
     }else{
       if(this.props.currDem != null){
         this.props.handleHeatMapSelect()
-        this.setState({heatMapLegendStyle: {visibility: 'visible'}, heatMapOn: true, heatMapButton: {backgroundColor: '#3B2B59', borderColor: '#39ff14', borderWidth: 'thick'}})
+        this.districtingOff()
+        this.setState({heatMapLegendStyle: {display: 'block'}, heatMapMenuStyle:  {display: 'block'}, heatMapOn: true, heatMapButton: {backgroundColor: '#3B2B59', borderColor: '#39ff14', borderWidth: 'thick'}})
       }else{
         alert("Please select target demographic for heat map")
       }
     }
   }
 
+  heatMapOption(e, option){
+    this.setState({heatMapOption: option})
+    if(option=='original'){
+      this.setState({
+        heatMapStyles: {
+        0:{backgroundColor: '#FFEDA0'},
+        1:{backgroundColor: '#FED976'},
+        2:{backgroundColor: '#FEB24C'},
+        3:{backgroundColor: '#FD8D3C'},
+        4:{backgroundColor: '#FC4E2A'},
+        5:{backgroundColor: '#E31A1C'},
+        6:{backgroundColor: '#BD0026'},
+        7:{backgroundColor: '#a30021'},
+        8:{backgroundColor: '#85001b'},
+        9:{backgroundColor: '#6e0016'},
+      }})
+      this.setState({
+        heatMapLegendStyle:{display: 'block'}
+      })
+      this.setState({
+        heatMapLegendStyleAverage:{display: 'none'}
+      })
+    }else{
+      this.setState({
+        heatMapStyles: {
+        0:{backgroundColor: '#7db5bd'},
+        1:{backgroundColor: '#9ad1d9'},
+        2:{backgroundColor: '#c9f8ff'},
+        3:{backgroundColor: '#e0fbff'},
+        4:{backgroundColor: '#ffffff'},
+        5:{backgroundColor: '#cf3c3c'},
+        6:{backgroundColor: '#a61f1f'},
+        7:{backgroundColor: '#751010'},
+        8:{backgroundColor: '#85001b'},
+        9:{backgroundColor: '#6e0016'},
+      }})
+      this.setState({
+        heatMapLegendStyleAverage:{display: 'block'}
+      })
+      this.setState({
+        heatMapLegendStyle:{display: 'none'}
+      })
+    }
+  }
+
   districtingOn(){
-    // this.getDistricting()
     this.setState({districtingMenuStyle: {visibility: 'visible'}})
+    this.setState({districtingOn: true})
+  }
+
+  districtingOff(){
+    this.props.handleDistrictingClose()
+    this.setState({districtingOn: false})
   }
 
   handleDistrictingRadioOption(e, option){
     this.getDistricting()
+    this.districtingOn()
     this.setState({selectedDistricting: option})
     var dist = this.state.checkedDist
     if (dist[option]==true){
@@ -517,10 +642,13 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   getdistrictingStyle(dist, i){
-    // var optionDict = {"Random": 0, "Average": 1, "Extreme": 2, "Minimum": 3}
     var optionDict = {0: "Random", 1:"Average", 2:"Extreme", 3:"Minimum"}
-    if(this.state.checkedDist[optionDict[dist]]){
-      return this.state.districtingStyle[dist]
+    if(this.state.districtingOn){
+      if(this.state.checkedDist[optionDict[dist]]){
+        return this.state.districtingStyle[dist]
+      }else{
+        return this.state.defaultDistrictingStyle
+      }
     }else{
       return this.state.defaultDistrictingStyle
     }
@@ -540,8 +668,9 @@ export default class LeafletMap extends Component<{}, State> {
       },
     });
     const heatMapGrades = [0,10,20,30,40,50,60,70,80,90]
+    const heatMapAverageGrades = [20, 15, 10, 5, 0, -5, -10, -15, -20]
     const dropdownStates = ['Virginia', 'North Carolina', 'Arkansas']
-    const camelcaseStates = ['virginia', 'northCarolina']
+    const camelcaseStates = ['virginia', 'northCarolina', 'arkansas']
     const dropdownDemographics = ['Black or African American', 'Non-Hispanic White', 'Hispanic and Latino', 'Asian', 'Native Americans and Alaska Natives','Native Hawaiians and Other Pacific Islanders', 'Two or more races' ]
     const districtingTypes = ['Random', 'Average', 'Extreme', 'Minimum']
     const GreenCheckbox = withStyles({
@@ -605,6 +734,16 @@ export default class LeafletMap extends Component<{}, State> {
                 />
             </FormControl>
             </MuiThemeProvider>
+            <Button variant="button" className="submitButton" onClick={this.districtingOff}>Close</Button>{' '}
+        </div>
+        <div className='heatMapMenu' style={this.state.heatMapMenuStyle}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Map Options</FormLabel>
+            <RadioGroup aria-label="gender" name="gender1" value={this.state.heatMapOption}>
+              <FormControlLabel value="original" control={<Radio />} label="Original" onClick={(e) => this.heatMapOption(e, "original")}/>
+              <FormControlLabel value="state" control={<Radio />} label="State Average" onClick={(e) => this.heatMapOption(e, "state")} />
+            </RadioGroup>
+          </FormControl>
         </div>
         <div className='heatMapLegend' style={this.state.heatMapLegendStyle}>
           {heatMapGrades.map((grade, i, array) =>
@@ -617,7 +756,19 @@ export default class LeafletMap extends Component<{}, State> {
             </div>
           )}
         </div>
-<button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
+        <div className='heatMapLegend' style={this.state.heatMapLegendStyleAverage}>
+          <p> Above/Below State Average </p>
+          {heatMapAverageGrades.map((grade, i, array) =>
+            <div key={i} className='text'>
+              <i style={this.state.heatMapStyles[i]}></i>
+              {(heatMapAverageGrades[i] > 0)
+                ? <p key={i}>{grade}% above </p>
+                : <p key={i}>{grade}% below</p>
+              }
+            </div>
+          )}
+        </div>
+        <button className="reset-button" onClick={this.resetMap} >Reset Map</button>{' '}
         <div className='map-information'>
           {Object.entries(this.state.mapInfo).map( ([i, text]) => (
             <p key={i} className='state-info'>{text}</p>
@@ -659,31 +810,6 @@ export default class LeafletMap extends Component<{}, State> {
         </Overlay>
             </LayersControl>
         )}
-            <LayersControl position="topright" id="arkansasLayers">
-            <Overlay name="Precinct Borders">
-                  <LayerGroup id="arkansasPrecincts" ref={firstOverlayRef}>
-                <GeoJSON key="precinctLayer"
-                  id='precinctLayer'
-                  data={this.state.precincts.arkansas}
-                  style={() => ({
-                  color: this.state.precinctColor,
-                  weight: 1,
-                  fillColor: "transparent",
-                  fillOpacity: 0.5,
-                  })}
-                  onEachFeature={this.onEachPrecinct.bind(null, this)}
-                ></GeoJSON>
-              </LayerGroup>
-            </Overlay>
-            <Overlay name="District Borders">
-              <LayerGroup id="arkansasDistricts" ref={secondOverlayRef}>
-                <GeoJSON
-                  data={arkansasDistricts}
-                  style={this.state.stateDefaultStyle}>
-                </GeoJSON>
-          </LayerGroup>
-          </Overlay>
-              </LayersControl>
             {(this.state.currentDist).map((dist, i) =>
               <GeoJSON key={i}
                 data={this.state.currentDist[i]}

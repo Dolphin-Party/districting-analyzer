@@ -15,15 +15,15 @@ const useStyles = makeStyles((theme) => ({
 
 const marks = [
   {
-    value: 0,
+    value: 60,
     label: 'Least',
   },
   {
-    value: 25,
+    value: 65,
     label: 'Less',
   },
   {
-    value: 50,
+    value: 70,
     label: 'Average',
   },
   {
@@ -31,7 +31,7 @@ const marks = [
     label: 'Very',
   },
   {
-    value: 100,
+    value: 80,
     label: 'Extremely',
   },
 ];
@@ -39,7 +39,7 @@ const marks = [
 
 
 const CompactnessSlider= ({onNewNumber}) => {
-  const [value, setValue] = React.useState(50);
+  const [value, setValue] = React.useState(70);
   const classes = useStyles();
 
   const valuetext = (value) => {
@@ -53,9 +53,11 @@ const CompactnessSlider= ({onNewNumber}) => {
   return (
     <div className={classes.root}>
       <Slider
-        defaultValue={50}
+        defaultValue={70}
         aria-labelledby="discrete-slider-custom"
-        step={25}
+        step={5}
+        min={60}
+        max={80}
         valueLabelDisplay="auto"
         marks={marks}
         onChange={handleChange}

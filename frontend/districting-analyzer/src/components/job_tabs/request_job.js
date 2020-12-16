@@ -29,7 +29,7 @@ export default class RequestJobTab extends Component<{}, State> {
       pvap: null,
       buttonOption: 'Cancel',
       boxWhiskerAvailability: {opacity: '0.2'},
-      compDict: {0: 'Least', 25:'Less', 50:'Average', 75:'Very', 100:'Extremely'}
+      compDict: {60: 'Least', 65:'Less', 70:'Average', 75:'Very', 80:'Extremely'}
     };
     this.handleJobAdd = this.handleJobAdd.bind(this)
   }
@@ -63,7 +63,7 @@ export default class RequestJobTab extends Component<{}, State> {
       <InputSlider data={randDistBound} onNewNumber={this.setNumRandomDistrictings}></InputSlider>
       <p>Compactness %</p>
       <CompactnessSlider onNewNumber={this.setCompactness}></CompactnessSlider>
-      <p>Target Demographic VAP %</p>
+      <p>% Difference </p>
       <InputSlider data={vapBound} onNewNumber={this.setVAP}></InputSlider>
       <Button variant="button" className="submitButton" onClick={this.handleJobAdd} style={this.props.submitAvailability}>Generate Districting Comparisons</Button>{' '}
       <p className='warnText'>{this.props.warnText}</p>

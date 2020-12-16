@@ -305,7 +305,14 @@ public class ServerDispatcher {
 
         job = readOutputFiles(job);
         System.err.println("output files read");
-        job.analyzeJobResults();
+        job.calcNumberCounties();
+        job = jobService.saveJob(job);
+        job.genOrderedDistricts();
+        job = jobService.saveJob(job);
+        job.genBoxWhisker();
+        job = jobService.saveJob(job);
+        job.findRepresentativeDistrictings();
+        job = jobService.saveJob(job);
         summaryFileGenerator.generateSummaryFile(
             job,
             String.format(jobDirPathTemplate + summaryFileName, job.getId())

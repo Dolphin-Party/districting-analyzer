@@ -41,12 +41,12 @@ def process_state(state_name):
                 demographic = demographics_map.get(col_name) 
                 if not demographic:
                     continue
-                sql.write("INSERT INTO PrecinctVAPDemographics (`precinctID`, `demographic`, `population`) VALUES ('%s', '%s', '%s');\n" % (precinctID, demographic, population))
+                sql.write("UPDATE PrecinctDemographics SET `votingAgePopulation` = %d WHERE `precinctID` = '%s' AND `demographic` = '%s';\n" % (population, precinctID, demographic))
 
         # generate sql for total population 
         for _, row in demographic_data.iterrows():
             precinctID = row[-1]
-            sql.write("UPDATE Precincts SET `VotingAgePopulation` = %d WHERE `ID` = '%s';\n" % (int(row[2]), precinctID))
+            sql.write("UPDATE Precincts SET `votingAgePopulation` = %d WHERE `ID` = '%s';\n" % (int(row[2]), precinctID))
 
 def main(args):
     process_state(args[1])

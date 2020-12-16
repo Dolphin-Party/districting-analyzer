@@ -299,6 +299,21 @@ public class ServerDispatcher {
     }
 
     /** Other methods **/
+    public Job analyzeJobDebug(Job job) {
+        String outputFile = String.format(jobDirPathTemplate + outputFileName, job.getId());
+        job.setOutputFile(new File(outputFile));
+
+        job = readOutputFiles(job);
+        System.err.println("output files read");
+        job.analyzeJobResults();
+        summaryFileGenerator.generateSummaryFile(
+            job,
+            String.format(jobDirPathTemplate + summaryFileName, job.getId())
+        );
+        job.setStatus(JobStatus.finishProcessing);
+        return job;
+    }
+
     public boolean generateSummaryFile(Job job) {
         return summaryFileGenerator.generateSummaryFile(
             job,

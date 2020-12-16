@@ -47,6 +47,11 @@ public class JobController {
     }
 
     // Debug
+    @GetMapping(value="/job/{jobId}/analyze")
+    public JobDto analyzeJob(@PathVariable int jobId) {
+        return jobService.analyzeJob(jobId);
+    }
+
     @PostMapping(value="/job/{jobId}/genSummary")
     public boolean genSummaryFile(@PathVariable int jobId) {
         return jobService.genSummaryFile(jobId);

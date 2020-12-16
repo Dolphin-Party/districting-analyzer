@@ -54,6 +54,13 @@ public class JobService {
         return modelConverter.createJobDto(job);
     }
 
+    public JobDto analyzeJob(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        job = serverDispatcher.analyzeJobDebug(job);
+        job = jobRepository.save(job);
+        return modelConverter.createJobDto(job);
+    }
+
     // public boolean cancelJob(int jobId) {
     //     Job job = jobRepository.findById(jobId);
     //     job = serverDispatcher.checkJobStatus(job);

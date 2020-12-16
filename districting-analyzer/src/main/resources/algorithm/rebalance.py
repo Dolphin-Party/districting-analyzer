@@ -42,15 +42,15 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
 
         if new_dists_meet_params:
             for neighbor in selected_district.neighbors:
-                neighbor.neighbors.remove(selected_district)
+                neighbor.neighbors.discard(selected_district)
             for neighbor in selected_neighbor.neighbors:
-                neighbor.neighbors.remove(selected_neighbor)
+                neighbor.neighbors.discard(selected_neighbor)
             # compute neighbors
             neighbor_nodes = set()
             for node in new_dist1.nodes:
                 neighbor_nodes = neighbor_nodes | (node.adjacent_precincts - new_dist1.nodes)
-            selected_district.neighbors.remove(selected_neighbor)
-            selected_neighbor.neighbors.remove(selected_district)
+            selected_district.neighbors.discard(selected_neighbor)
+            selected_neighbor.neighbors.discard(selected_district)
             candidate_neighbors = selected_district.neighbors | selected_neighbor.neighbors
             for neighbor in candidate_neighbors:
                 if len(neighbor_nodes.intersection(neighbor.nodes)):
@@ -100,15 +100,15 @@ def rebalance_district(districts: PrecinctGraph, target_pop: int, pop_variance: 
 
         if new_dists_beat_params:
             for neighbor in selected_district.neighbors:
-                neighbor.neighbors.remove(selected_district)
+                neighbor.neighbors.discard(selected_district)
             for neighbor in selected_neighbor.neighbors:
-                neighbor.neighbors.remove(selected_neighbor)
+                neighbor.neighbors.discard(selected_neighbor)
             # compute neighbors
             neighbor_nodes = set()
             for node in new_dist1.nodes:
                 neighbor_nodes = neighbor_nodes | (node.adjacent_precincts - new_dist1.nodes)
-            selected_district.neighbors.remove(selected_neighbor)
-            selected_neighbor.neighbors.remove(selected_district)
+            selected_district.neighbors.discard(selected_neighbor)
+            selected_neighbor.neighbors.discard(selected_district)
             candidate_neighbors = selected_district.neighbors | selected_neighbor.neighbors
             for neighbor in candidate_neighbors:
                 if len(neighbor_nodes.intersection(neighbor.nodes)):

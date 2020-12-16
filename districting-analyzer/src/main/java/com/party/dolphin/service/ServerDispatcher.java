@@ -243,11 +243,6 @@ public class ServerDispatcher {
         job.setDistrictings(districtings);
         job = jobService.saveJob(job);
 
-        try {
-            deleteFiles(job.getOutputFile());
-        } catch (IOException ioex) {
-            System.err.println(ioex.getMessage());
-        }
         return job;
     }
 

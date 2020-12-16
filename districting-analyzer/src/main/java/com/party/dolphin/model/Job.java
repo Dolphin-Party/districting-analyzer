@@ -193,19 +193,19 @@ public class Job {
         this.findRepresentativeDistrictings();
     }
 
-    private void calcNumberCounties() {
+    public void calcNumberCounties() {
         for (Districting d : this.districtings) {
             d.calcNumberCounties();
         }
     }
 
-    private void genOrderedDistricts() {
+    public void genOrderedDistricts() {
         for (Districting d : this.districtings) {
             d.genOrderedDistricts(this.targetDemographic);
         }
     }
 
-    private void genBoxWhisker() {
+    public void genBoxWhisker() {
         int numDistricts = this.districtings.get(0).getDistricts().size();
         int numDistrictings = this.districtings.size();
         int i, j;
@@ -235,7 +235,7 @@ public class Job {
 
     // Based on euclidean distance for target demographic percent VAP
     // compared to the average for each district
-    private void findRepresentativeDistrictings() {
+    public void findRepresentativeDistrictings() {
         List<Double> districtAverages = this.boxWhiskers.stream()
             .map(bw -> bw.getAverage())
             .collect(Collectors.toList());

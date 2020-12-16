@@ -2,3 +2,11 @@
 .listing
 .idea
 .ssh
+
+AK*
+NC*
+VA*
+Dummy*
+curl-format.txt
+
+.vimrc

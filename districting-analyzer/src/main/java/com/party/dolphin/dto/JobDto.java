@@ -1,5 +1,7 @@
 package com.party.dolphin.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.party.dolphin.model.enums.*;
 
 import java.util.List;
@@ -49,6 +51,7 @@ public class JobDto {
         this.numberDistrictings = numberDistrictings;
     }
 
+    @JsonProperty(access=Access.WRITE_ONLY)
     public int getIterations() {
         return this.iterations;
     }

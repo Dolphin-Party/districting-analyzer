@@ -10,6 +10,7 @@ public class State {
     /* Fields */
     private int id;
     private String name;
+    private String abbreviation;
     private int population;
     private String shape;
     private Set<County> counties;
@@ -32,6 +33,14 @@ public class State {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(name="abbreviation")
+    public String getAbbreviation() {
+        return this.abbreviation;
+    }
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
     }
 
     @Column(name="population")

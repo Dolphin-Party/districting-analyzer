@@ -31,7 +31,11 @@ public class JobService {
     /** Job Control **/
     public int addJob(JobDto jobDto) {
         Job job = new Job();
-        BeanUtils.copyProperties(jobDto, job);
+        if (jobDto.getIterations() == 0)
+            BeanUtils.copyProperties(jobDto, job, "iterations");
+        else {
+            BeanUtils.copyProperties(jobDto, job);
+        }
         job.setStatus(JobStatus.notStarted);
         State state = dataService.getState(jobDto.getStateId());
         job.setState(state);

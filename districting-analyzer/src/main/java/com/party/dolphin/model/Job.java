@@ -18,7 +18,7 @@ public class Job {
     private JobStatus status;
     private State state;
     private int numberDistrictings;
-    private int iterations;
+    private int iterations = 100;
     private double compactnessAmount; // TODO: annotations for enum & enum itself
     private double percentDiff;
     private DemographicType targetDemographic;

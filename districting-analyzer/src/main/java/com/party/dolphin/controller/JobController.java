@@ -28,7 +28,7 @@ public class JobController {
 
     @PostMapping(value="/job/{jobId}/cancel")
     public boolean cancelJob(@PathVariable int jobId) {
-        return jobService.cancelJob(jobId);
+        return jobService.deleteJob(jobId);
     }
 
     @PostMapping(value="/job/{jobId}/delete")

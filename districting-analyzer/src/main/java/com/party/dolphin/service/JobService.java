@@ -49,17 +49,22 @@ public class JobService {
         return modelConverter.createJobDto(job);
     }
 
-    public boolean cancelJob(int jobId) {
-        Job job = jobRepository.findById(jobId);
-        job = serverDispatcher.checkJobStatus(job);
-        if (job.getStatus() == JobStatus.running)
-            job = serverDispatcher.cancelJob(job);
-        job = jobRepository.save(job);
-        return true;
-    }
+    // public boolean cancelJob(int jobId) {
+    //     Job job = jobRepository.findById(jobId);
+    //     job = serverDispatcher.checkJobStatus(job);
+    //     if (job.getStatus() == JobStatus.running)
+    //         job = serverDispatcher.cancelJob(job);
+    //     job = jobRepository.save(job);
+    //     return true;
+    // }
 
     public boolean deleteJob(int jobId) {
         Job job = jobRepository.findById(jobId);
+        if (job == null)
+            return false;
+        job = serverDispatcher.checkJobStatus(job);
+        if (job.getStatus() == JobStatus.running)
+            job = serverDispatcher.cancelJob(job);
         jobRepository.delete(job);
         return true;
     }

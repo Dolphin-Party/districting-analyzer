@@ -1,11 +1,12 @@
 package com.party.dolphin.controller;
 
-import java.util.List;
+import java.io.File;
 
 import com.party.dolphin.dto.*;
 import com.party.dolphin.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
 
 // TODO: Return DTO instead of model objects
@@ -34,5 +35,25 @@ public class JobController {
     @PostMapping(value="/job/{jobId}/delete")
     public boolean deleteJob(@PathVariable int jobId) {
         return jobService.deleteJob(jobId);
+    }
+
+    @GetMapping(value="/job/{jobId}/summary")
+    public @ResponseBody FileSystemResource getSummaryFile(@PathVariable int jobId) {
+        File file = jobService.getSummaryFile(jobId);
+        if (file == null)
+            return null;
+        else
+            return new FileSystemResource(file);
+    }
+
+    // Debug
+    @GetMapping(value="/job/{jobId}/analyze")
+    public JobDto analyzeJob(@PathVariable int jobId) {
+        return jobService.analyzeJob(jobId);
+    }
+
+    @PostMapping(value="/job/{jobId}/genSummary")
+    public boolean genSummaryFile(@PathVariable int jobId) {
+        return jobService.genSummaryFile(jobId);
     }
 }

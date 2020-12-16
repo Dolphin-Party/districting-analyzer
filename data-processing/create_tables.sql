@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS Districts (
 
 CREATE TABLE IF NOT EXISTS DistrictPrecincts (
 	districtID int NOT NULL,
-	precinctID int NOT NULL,
+	precinctID char(11) NOT NULL,
 	PRIMARY KEY (districtID,precinctID)
 );
 

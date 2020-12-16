@@ -6,6 +6,7 @@ public class StateDto {
     /* Fields */
     private int stateId;
     private String name;
+    private String abbreviation;
     private String shape;
     private int population;
     private Set<Integer> counties;
@@ -25,6 +26,13 @@ public class StateDto {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAbbreviation() {
+        return this.abbreviation;
+    }
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
     }
 
     public String getShape() {

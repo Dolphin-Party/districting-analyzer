@@ -10,12 +10,16 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	flatDir {
+		dirs 'libs'
+	}
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'de.grundid.opendatalab:geojson-jackson-1.14'
 	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

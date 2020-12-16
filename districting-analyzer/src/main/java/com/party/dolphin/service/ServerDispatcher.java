@@ -23,6 +23,9 @@ public class ServerDispatcher {
     public static final String jobDirPathTemplate = "files/job_%d/";
     public static final String argsFileName = "job_args.json";
     public static final String outputFileName = "results.json";
+    public static final String summaryFileName = "summary.json";
+
+    public static final int maxLocalDistrictings = 10;
 
     @Autowired
     private JobService jobService;
@@ -32,9 +35,16 @@ public class ServerDispatcher {
     private ModelConverter modelConverter;
     @Autowired
     private SeaWulfController seawulfController;
+    @Autowired
+    private SummaryFileGenerator summaryFileGenerator;
 
     /** Job Control **/
     public Job runJob(Job job) {
+        if (job.getNumberDistrictings() > maxLocalDistrictings)
+            job.setIsSeawulf(true);
+        else
+            job.setIsSeawulf(false);
+
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
@@ -73,7 +83,11 @@ public class ServerDispatcher {
 
             if (job.getStatus() == JobStatus.finishDistricting) {
                 job = readOutputFiles(job);
-                //job.analyzeJobResults();
+                job.analyzeJobResults();
+                summaryFileGenerator.generateSummaryFile(
+                    job,
+                    String.format(jobDirPathTemplate + summaryFileName, job.getId())
+                );
                 job.setStatus(JobStatus.finishProcessing);
             } else if (job.getStatus() == JobStatus.error) {
                 try {
@@ -246,6 +260,15 @@ public class ServerDispatcher {
         return job;
     }
 
+    public File getSummaryFile(Job job) {
+        String summaryFilePath = String.format(jobDirPathTemplate + summaryFileName, job.getId());
+        File file = new File(summaryFilePath);
+        if (file.exists())
+            return file;
+        else
+            return null;
+    }
+
     private Districting parseDistrictingDistricts(String[][] districtingDistricts, Job job) {
         Districting districting = new Districting();
         districting = jobService.saveDistricting(districting);
@@ -273,6 +296,36 @@ public class ServerDispatcher {
         }
         dto.setPrecincts(precincts);
         return dtoConverter.createNewDistrict(dto);
+    }
+
+    /** Other methods **/
+    public Job analyzeJobDebug(Job job) {
+        String outputFile = String.format(jobDirPathTemplate + outputFileName, job.getId());
+        job.setOutputFile(new File(outputFile));
+
+        job = readOutputFiles(job);
+        System.err.println("output files read");
+        job.calcNumberCounties();
+        job = jobService.saveJob(job);
+        job.genOrderedDistricts();
+        job = jobService.saveJob(job);
+        job.genBoxWhisker();
+        job = jobService.saveJob(job);
+        job.findRepresentativeDistrictings();
+        job = jobService.saveJob(job);
+        summaryFileGenerator.generateSummaryFile(
+            job,
+            String.format(jobDirPathTemplate + summaryFileName, job.getId())
+        );
+        job.setStatus(JobStatus.finishProcessing);
+        return job;
+    }
+
+    public boolean generateSummaryFile(Job job) {
+        return summaryFileGenerator.generateSummaryFile(
+            job,
+            String.format(jobDirPathTemplate + summaryFileName, job.getId())
+        );
     }
 
     private void deleteFiles(File file) throws IOException {

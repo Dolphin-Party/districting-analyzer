@@ -32,7 +32,7 @@ def process_districts():
         vectors = state_demographics_vectors[stateIds[stateID]]
         for dem in demographics_map:
             demographic_vector = vectors[demographics_map[dem]]
-            demographic_vector.append(row[dem])
+            demographic_vector.append(round(row[dem]/row[2], 2)*100)
     for state in state_demographics_vectors:
         for dem in state_demographics_vectors[state]:
             state_demographics_vectors[state][dem].sort()

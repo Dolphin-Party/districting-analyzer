@@ -1,5 +1,6 @@
 package com.party.dolphin.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,11 @@ public class JobService {
     /** Job Control **/
     public int addJob(JobDto jobDto) {
         Job job = new Job();
-        BeanUtils.copyProperties(jobDto, job);
+        if (jobDto.getIterations() == 0)
+            BeanUtils.copyProperties(jobDto, job, "iterations");
+        else {
+            BeanUtils.copyProperties(jobDto, job);
+        }
         job.setStatus(JobStatus.notStarted);
         State state = dataService.getState(jobDto.getStateId());
         job.setState(state);
@@ -45,6 +50,13 @@ public class JobService {
     public JobDto getJobStatus(int jobId) {
         Job job = jobRepository.findById(jobId);
         job = serverDispatcher.checkJobStatus(job);
+        job = jobRepository.save(job);
+        return modelConverter.createJobDto(job);
+    }
+
+    public JobDto analyzeJob(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        job = serverDispatcher.analyzeJobDebug(job);
         job = jobRepository.save(job);
         return modelConverter.createJobDto(job);
     }
@@ -110,6 +122,14 @@ public class JobService {
                         .collect(Collectors.toList());
     }
 
+    /** Get Summary File **/
+    public File getSummaryFile(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        if (job.getStatus() != JobStatus.finishProcessing)
+            return null;
+        return serverDispatcher.getSummaryFile(job);
+    }
+
     /** Save entities **/
     public Job saveJob(Job job) {
         return jobRepository.save(job);
@@ -134,5 +154,10 @@ public class JobService {
         District district = new District();
         district = districtRepository.save(district);
         return district.getId();
+    }
+
+    public boolean genSummaryFile(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        return serverDispatcher.generateSummaryFile(job);
     }
 }

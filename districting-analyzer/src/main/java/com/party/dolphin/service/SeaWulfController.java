@@ -48,12 +48,16 @@ public class SeaWulfController {
             process = pb.start();
             jobStatusLine = processOutput(process);
         } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
-        return job;
-    }
+            System.err.println(ioEx.getMessage());
+            return job;
+        }
 
         int i = jobStatusLine.indexOf('=');
         int j = jobStatusLine.indexOf(' ', i);
+        if (j == -1) {
+            System.err.println("Could not get job status: "+ jobStatusLine);
+            return job;
+        }
         jobStatusLine = jobStatusLine.substring(i+1, j);
         System.err.println("Slurm job status: "+ jobStatusLine);
         switch (jobStatusLine) {
@@ -64,6 +68,9 @@ public class SeaWulfController {
                 job.setStatus(JobStatus.finishDistricting);
                 if (getOutputData(job))
                     break;
+            case "CANCELLED":
+                job.setStatus(JobStatus.stopped);
+                break;
             case "FAILED":
             default:
                 job.setStatus(JobStatus.error);
@@ -82,7 +89,7 @@ public class SeaWulfController {
         try {
             pb.start();
         } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
+            System.err.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
             return job;
         }
@@ -106,13 +113,19 @@ public class SeaWulfController {
             process = pb.start();
             seawulfJobId = processOutput(process);
         } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
+            System.err.println(ioEx.getMessage());
             job.setStatus(JobStatus.error);
             return job;
         }
 
         seawulfJobId = seawulfJobId.trim();
+        if (seawulfJobId.isEmpty()) {
+            System.err.println("Could not start the job");
+            job.setStatus(JobStatus.error);
+            return job;
+        }
         seawulfJobId = seawulfJobId.substring(seawulfJobId.lastIndexOf(' ')+1);
+        System.err.println("SeaWulf job id: " + seawulfJobId);
         job.setSeawulfJobId(
             Integer.parseInt(seawulfJobId)
         );
@@ -133,7 +146,7 @@ public class SeaWulfController {
             process = pb.start();
             System.out.println(processOutput(process));
         } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
+            System.err.println(ioEx.getMessage());
             return false;
         }
 
@@ -153,7 +166,7 @@ public class SeaWulfController {
             process = pb.start();
             System.out.println(processOutput(process));
         } catch (IOException ioEx) {
-            System.out.println(ioEx.getMessage());
+            System.err.println(ioEx.getMessage());
             return false;
         }
 

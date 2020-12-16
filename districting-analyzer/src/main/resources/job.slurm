@@ -15,10 +15,10 @@
 #echo My job ID is: $SLURM_JOB_ID
 
 # Load python3
-module load python/3.8.6
+module load anaconda/3
 
 # Load the python virtualenv
-source ./algorithm/venv/bin/activate
+source activate my_env
 
 # Run the script
 # $1 is the database job ID

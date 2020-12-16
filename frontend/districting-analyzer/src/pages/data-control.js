@@ -21,7 +21,8 @@ export default class DataControl extends Component<{}, State> {
     return (
       <div>
       <div className="map_filter">
-        <p>Legend: Pls style me tomorrow</p>
+        <i className="dot"> </i>
+        <p className="graphLegend">Enacted Plan</p>
       </div>
       <div className='box-whisker-plot-section'>
         <BoxWhiskerPlot boxWhiskerData={this.props.boxWhiskerData} enactedPlan={this.props.enactedPlan}></BoxWhiskerPlot>

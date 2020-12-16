@@ -25,6 +25,7 @@ const InputSlider = ({onNewNumber, data}) => {
     onNewNumber(newValue);
   };
   const handleInputChange = (event) => {
+    console.log(Number(event.target.value))
     setValue(event.target.value === '' ? '' : Number(event.target.value));
   };
   const handleBlur = () => {

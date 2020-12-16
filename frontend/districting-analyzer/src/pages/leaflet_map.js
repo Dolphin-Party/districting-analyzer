@@ -21,10 +21,6 @@ import teamStates from '../assets/geojson/teamstates.json'
 import virginiaDistricts from '../assets/geojson/virginiaDistricts.json'
 import arkansasDistricts from '../assets/geojson/arkansasDistricts.json'
 import northCarolinaDistricts from '../assets/geojson/northCarolinaDistricts.json'
-import alabama from '../assets/geojson/alabama.json'
-import florida from '../assets/geojson/florida.json'
-import tennessee from '../assets/geojson/tennessee.json'
-import georgia from '../assets/geojson/georgia.json'
 // import AK_frontend_precincts from '../assets/geojson/AK_frontend_precincts/AK_frontend_precincts.json'
 
 import radioButton from '../components/radioButton'
@@ -32,6 +28,14 @@ import union from '@turf/union'
 import sample_districting from '../assets/geojson/sample_districting.json'
 import * as turf from '@turf/turf'
 import * as geojsonMerge from '@mapbox/geojson-merge'
+
+import NC_random from '../assets/geojson/NC_districting_1.json'
+import NC_average from '../assets/geojson/NC_districting_3.json'
+import NC_extreme from '../assets/geojson/NC_districting_5.json'
+import NC_minimum from '../assets/geojson/NC_districting_7.json'
+
+import VA_random from '../assets/geojson/VA_districting_9.json'
+import VA_average from '../assets/geojson/VA_districting_12.json'
 
 const { Overlay } = LayersControl;
 const precinctLayerRef = useRef();
@@ -181,7 +185,7 @@ export default class LeafletMap extends Component<{}, State> {
       districtingMenuStyle: {visibility: 'visible'},
       districtingState: this.props.districtingState,
       districtingOn: false,
-      currentDist: [alabama, florida, georgia, tennessee],
+      currentDist: [NC_random, NC_average, NC_extreme, NC_minimum],
       selectedDistricting: null,
       districtingJobId: this.props.districtingJobId,
       checkedDist: {
@@ -195,6 +199,13 @@ export default class LeafletMap extends Component<{}, State> {
         color: '#3B2B59',
         weight: 2,
         fillColor: "#3B2B59",
+        fillOpacity: 0.5,
+        dashArray: '3'
+      },
+      districtDefaultStyle:{
+        color: '#3B2B59',
+        weight: 2,
+        fillColor: "transparent",
         fillOpacity: 0.5,
         dashArray: '3'
       },
@@ -310,6 +321,7 @@ export default class LeafletMap extends Component<{}, State> {
 
   highlightFeature = (e) => {
     var layer = e.target;
+    console.log("Highlighting, ", layer.feature.properties.name)
     this.updateMapInfo("State: ", layer.feature.properties.name, "Population: ", layer.feature.properties.population, "Number of Districts: ", layer.feature.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateDensity=layer.feature.properties.density
     const statePopulation = layer.feature.population
@@ -328,7 +340,7 @@ export default class LeafletMap extends Component<{}, State> {
       var e = e.target.feature
     }
     const stateName= e.properties.name
-    console.log(e.properties)
+    // console.log("STATE INFO", e)
     this.updateMapInfo("State: ", e.properties.name, "Population: ", e.properties.population, "Number of Districts: ", e.properties.numDistricts, "", "", "", "", "", "", "", "", "", "")
     const stateLat = e.properties.lat
     const stateLng = e.properties.lng
@@ -445,7 +457,7 @@ export default class LeafletMap extends Component<{}, State> {
         const precinctPercent = (targetPop/totalPop)*100
         const stateAverage = this.state.stateAverage[this.props.currState][targetDem]
         const d = precinctPercent - stateAverage
-        console.log("state avg:", stateAverage, "precinct: ", precinctPercent, "d: ", d)
+        // console.log("state avg:", stateAverage, "precinct: ", precinctPercent, "d: ", d)
         var color = d > 20 ? '#751010' :
            d > 15  ? '#a61f1f' :
            d > 10  ? '#cf3c3c' :
@@ -497,7 +509,13 @@ export default class LeafletMap extends Component<{}, State> {
   }
 
   getDistricting(){
-    console.log("getDistricting")
+    // console.log("getDistricting")
+    // console.log("NC_RANDOM", NC_random)
+    // console.log("precinct", arkansasPrecincts)
+    if(this.props.currState == 'Virginia'){
+      console.log("VIRGINIA!")
+      // this.setState({currentDist: [VA_random, VA_average, VA_random, VA_random]})
+    }
     // var mergedDistrict = geojsonMerge.merge(sample_districting);
     // var precincts = sample_districting
     // var poly1 = turf.polygon(precincts[0]["geometry"]["coordinates"], {"fill": "#0f0"});
@@ -510,7 +528,7 @@ export default class LeafletMap extends Component<{}, State> {
     //   union = turf.union(poly1, poly2, union);
     // }
     //
-    // this.setState({currentDist: [alabama, florida, georgia, tennessee]})
+
     // console.log("New Union performed ", mergedDistrict)
 
     // GET REQUESTS FOR DISTRICTINGS HERE
@@ -804,7 +822,7 @@ export default class LeafletMap extends Component<{}, State> {
               <LayerGroup ref={secondOverlayRef}>
                 <GeoJSON key={"districtLayer"+stateName}
                   data={this.state.districts[stateName]}
-                  style={this.state.stateDefaultStyle}
+                  style={this.state.districtDefaultStyle}
                   ></GeoJSON>
           </LayerGroup>
         </Overlay>

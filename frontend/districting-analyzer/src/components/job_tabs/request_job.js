@@ -51,6 +51,7 @@ export default class RequestJobTab extends Component<{}, State> {
     this.setState({targetDemographic: newValue});
   }
   setVAP = (newValue) => {
+    console.log("setVAP", newValue)
     this.setState({pvap: newValue});
   }
   render() {
@@ -63,7 +64,7 @@ export default class RequestJobTab extends Component<{}, State> {
       <InputSlider data={randDistBound} onNewNumber={this.setNumRandomDistrictings}></InputSlider>
       <p>Compactness %</p>
       <CompactnessSlider onNewNumber={this.setCompactness}></CompactnessSlider>
-      <p>% Difference </p>
+      <p>% Deviation From Ideal </p>
       <InputSlider data={vapBound} onNewNumber={this.setVAP}></InputSlider>
       <Button variant="button" className="submitButton" onClick={this.handleJobAdd} style={this.props.submitAvailability}>Generate Districting Comparisons</Button>{' '}
       <p className='warnText'>{this.props.warnText}</p>

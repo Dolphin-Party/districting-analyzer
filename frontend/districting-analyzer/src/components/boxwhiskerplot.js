@@ -21,7 +21,7 @@ class BoxWhiskerPlot extends Component {
 			animationEnabled: false,
 			height:300,
 			title:{
-				text: "Job #" + this.props.boxWhiskerData.jobId + " | State: " + this.props.boxWhiskerData.state
+				text: "Job #" + this.props.boxWhiskerData.jobId + " | State: " + this.props.boxWhiskerData.state + " | Black or African American"
 			},
 			axisY: {
 				title: "Target Demographic VAP%"

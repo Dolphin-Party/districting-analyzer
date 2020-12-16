@@ -36,41 +36,39 @@ export default class Home extends Component<{}, State> {
       districtingOn: false,
       districtingJobId: null,
       enactedPlan: {
-        "Arkansas": [
-      		{ x: 0, y: 2150},
-      		{ x: 1, y: 1750},
-      		{ x: 2, y: 3250},
-      		{ x: 3, y: 6350},
-      	],
+        "Arkansas":
+        [{ x: 0, y: 527328},
+        { x: 1, y: 544414},
+        { x: 2, y: 569431},
+        { x: 3, y: 604056}],
         "North Carolina": [
-      		{ x: 0, y: 2150},
-      		{ x: 1, y: 1750},
-      		{ x: 2, y: 3250},
-      		{ x: 3, y: 6350},
-          { x: 4, y: 2150},
-      		{ x: 5, y: 1750},
-      		{ x: 6, y: 3250},
-      		{ x: 7, y: 6350},
-          { x: 8, y: 2150},
-      		{ x: 9, y: 1750},
-      		{ x: 10, y: 3250},
-      		{ x: 11, y: 6350},
-          { x: 12, y: 1750},
-      		{ x: 13, y: 3250},
+      		{ x: 0, y: 3.0},
+      		{ x: 1, y: 12.0},
+      		{ x: 2, y: 12.0},
+      		{ x: 3, y: 12.0},
+          { x: 4, y: 15.0},
+      		{ x: 5, y: 17.0},
+      		{ x: 6, y: 17.0},
+      		{ x: 7, y: 17.0},
+          { x: 8, y: 19.0},
+      		{ x: 9, y: 19.0},
+      		{ x: 10, y: 32.0},
+      		{ x: 11, y: 51.0},
+          { x: 12, y: 54.0},
       	],
         "Virginia:":[
-          { x: 0, y: 2150},
-      		{ x: 1, y: 1750},
-      		{ x: 2, y: 3250},
-      		{ x: 3, y: 6350},
-          { x: 4, y: 2150},
-      		{ x: 5, y: 1750},
-      		{ x: 6, y: 3250},
-      		{ x: 7, y: 6350},
-          { x: 8, y: 2150},
-      		{ x: 9, y: 1750},
-      		{ x: 10, y: 3250},
-      		{ x: 11, y: 6350},
+          { x: 0, y: 36722},
+      		{ x: 1, y: 49256},
+      		{ x: 2, y: 79249},
+      		{ x: 3, y: 91197},
+          { x: 4, y: 101464},
+      		{ x: 5, y: 105968},
+      		{ x: 6, y: 122840},
+      		{ x: 7, y: 149277},
+          { x: 8, y: 154458},
+      		{ x: 9, y: 230080},
+      		{ x: 10, y: 430888},
+      		{ x: 11, y: 430888},
       	]
       },
       boxWhiskerJob: {
@@ -90,6 +88,7 @@ export default class Home extends Component<{}, State> {
     axios.get("/backend/state/all/info").then(response => {
       this.setState({ stateData: [JSON.parse(response.data[2].shape), JSON.parse(response.data[1].shape), JSON.parse(response.data[0].shape)]});
       this.setState({ isLoading: false });
+      console.log("STATE ARRAY", this.state.stateData)
     })
   }
 

@@ -144,11 +144,11 @@ jobButtonOptions() {
                   <td> {this.state.demographicDict[job.targetDemographic]}</td>
                 </tr>
                 <tr>
-                  <td>% of voting age population:</td>
-                  <td> {job.buttonOption}</td>
+                  <td>% Difference</td>
+                  <td> {job.percentDiff}</td>
                 </tr>
                 <tr>
-                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='finishDistricting' ? 'Delete' : 'Cancel' }</Button>{' '}</td>
+                  <td><Button variant="button" className="button" onClick={(e) => this.handleJobCancelDelete(e,job)}>{(job.status)=='finishProcessing' ? 'Delete' : 'Cancel' }</Button>{' '}</td>
                   <td> <Button variant="button" className="button" style={job.boxWhiskerAvailability} onClick={(e) => this.handleJobSelect(e,key,job)}>Display Districting</Button>{' '}</td>
                 </tr>
               </tbody>

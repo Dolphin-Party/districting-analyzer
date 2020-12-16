@@ -6,6 +6,7 @@ USE dolphins;
 CREATE TABLE IF NOT EXISTS States (
 	ID int PRIMARY KEY,
     `name` varchar(255),
+    abbreviation char(2),
     shape JSON,
     population int(11),
     numberDistricts int,
@@ -50,8 +51,8 @@ CREATE TABLE IF NOT EXISTS Jobs (
     `status` varchar(255),
     numberDistrictings int,
     iterations int,
-    compactnessAmount decimal,
-    percentDiff decimal,
+    compactnessAmount decimal(10,2),
+    percentDiff decimal(10,2),
     targetDemographic varchar(255),
     isSeawulf boolean,
     seawulfJobId int,

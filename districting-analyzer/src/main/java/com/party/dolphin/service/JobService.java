@@ -1,5 +1,6 @@
 package com.party.dolphin.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -114,6 +115,14 @@ public class JobService {
                         .collect(Collectors.toList());
     }
 
+    /** Get Summary File **/
+    public File getSummaryFile(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        if (job.getStatus() != JobStatus.finishProcessing)
+            return null;
+        return serverDispatcher.getSummaryFile(job);
+    }
+
     /** Save entities **/
     public Job saveJob(Job job) {
         return jobRepository.save(job);
@@ -138,5 +147,10 @@ public class JobService {
         District district = new District();
         district = districtRepository.save(district);
         return district.getId();
+    }
+
+    public boolean genSummaryFile(int jobId) {
+        Job job = jobRepository.findById(jobId);
+        return serverDispatcher.generateSummaryFile(job);
     }
 }

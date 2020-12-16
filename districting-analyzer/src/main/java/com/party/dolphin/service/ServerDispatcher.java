@@ -23,6 +23,7 @@ public class ServerDispatcher {
     public static final String jobDirPathTemplate = "files/job_%d/";
     public static final String argsFileName = "job_args.json";
     public static final String outputFileName = "results.json";
+    public static final String summaryFileName = "summary.json";
 
     @Autowired
     private JobService jobService;
@@ -32,6 +33,8 @@ public class ServerDispatcher {
     private ModelConverter modelConverter;
     @Autowired
     private SeaWulfController seawulfController;
+    @Autowired
+    private SummaryFileGenerator summaryFileGenerator;
 
     /** Job Control **/
     public Job runJob(Job job) {
@@ -73,7 +76,11 @@ public class ServerDispatcher {
 
             if (job.getStatus() == JobStatus.finishDistricting) {
                 job = readOutputFiles(job);
-                //job.analyzeJobResults();
+                job.analyzeJobResults();
+                summaryFileGenerator.generateSummaryFile(
+                    job,
+                    String.format(jobDirPathTemplate + summaryFileName, job.getId())
+                );
                 job.setStatus(JobStatus.finishProcessing);
             } else if (job.getStatus() == JobStatus.error) {
                 try {
@@ -246,6 +253,15 @@ public class ServerDispatcher {
         return job;
     }
 
+    public File getSummaryFile(Job job) {
+        String summaryFilePath = String.format(jobDirPathTemplate + summaryFileName, job.getId());
+        File file = new File(summaryFilePath);
+        if (file.exists())
+            return file;
+        else
+            return null;
+    }
+
     private Districting parseDistrictingDistricts(String[][] districtingDistricts, Job job) {
         Districting districting = new Districting();
         districting = jobService.saveDistricting(districting);
@@ -273,6 +289,14 @@ public class ServerDispatcher {
         }
         dto.setPrecincts(precincts);
         return dtoConverter.createNewDistrict(dto);
+    }
+
+    /** Other methods **/
+    public boolean generateSummaryFile(Job job) {
+        return summaryFileGenerator.generateSummaryFile(
+            job,
+            String.format(jobDirPathTemplate + summaryFileName, job.getId())
+        );
     }
 
     private void deleteFiles(File file) throws IOException {

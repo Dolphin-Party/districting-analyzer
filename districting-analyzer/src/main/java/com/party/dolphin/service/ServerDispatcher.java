@@ -25,6 +25,8 @@ public class ServerDispatcher {
     public static final String outputFileName = "results.json";
     public static final String summaryFileName = "summary.json";
 
+    public static final int maxLocalDistrictings = 10;
+
     @Autowired
     private JobService jobService;
     @Autowired
@@ -38,6 +40,11 @@ public class ServerDispatcher {
 
     /** Job Control **/
     public Job runJob(Job job) {
+        if (job.getNumberDistrictings() > maxLocalDistrictings)
+            job.setIsSeawulf(true);
+        else
+            job.setIsSeawulf(false);
+
         job.setPrecinctFilePath(
             String.format(precinctFilePathTemplate, job.getState().getName().replace(' ', '_'))
         );
